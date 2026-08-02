@@ -4,7 +4,7 @@ A multilingual, AI-powered personal portfolio site featuring a RAG-driven conver
 avatar. Visitors can ask questions about my professional, academic, and personal
 background via text or voice, browse my CV and project portfolio, and book time with me.
 
-**Status:** pre-scaffold — see [`project-roadmap.md`](./project-roadmap.md) for the full
+**Status:** Phase 1 (scaffold) in progress — see [`project-roadmap.md`](./project-roadmap.md) for the full
 build plan and current phase.
 
 ## Features (planned)
@@ -21,35 +21,48 @@ build plan and current phase.
 
 ## Tech stack
 
-| Layer | Choice | Status |
-|---|---|---|
-| Framework | Astro (proposed) | pending confirmation |
-| Styling | Tailwind CSS (proposed) | pending confirmation |
-| Hosting | Cloudflare Pages | confirmed |
-| LLM (text) | `gemma-4-31b-it` via Google AI Studio API | confirmed |
-| LLM (voice) | Gemini 2.5 Flash Native Audio Dialog via Google AI Studio API | confirmed |
-| Vector DB | Chroma Cloud | confirmed |
-| Content/booking source | Notion (via Notion API) | confirmed |
-| 3D avatar | Ready Player Me + TalkingHead.js (proposed, Phase 8) | pending |
+| Layer                  | Choice                                                                        | Status    |
+| ---------------------- | ----------------------------------------------------------------------------- | --------- |
+| Framework              | Astro (`output: 'server'`, React + Tailwind integrations)                     | confirmed |
+| Styling                | Tailwind CSS                                                                  | confirmed |
+| Package manager        | pnpm                                                                          | confirmed |
+| Hosting                | Cloudflare Workers (static assets + server routes, via `@astrojs/cloudflare`) | confirmed |
+| LLM (text)             | `gemma-4-31b-it` via Google AI Studio API                                     | confirmed |
+| LLM (voice)            | Gemini 2.5 Flash Native Audio Dialog via Google AI Studio API                 | confirmed |
+| Vector DB              | Chroma Cloud                                                                  | confirmed |
+| Content/booking source | Notion (via Notion API)                                                       | confirmed |
+| 3D avatar              | Ready Player Me + TalkingHead.js (proposed, Phase 8)                          | pending   |
 
-See `project-roadmap.md` Phase 1.1 for open stack decisions.
+Note: Cloudflare has consolidated Pages into Workers — the Astro Cloudflare adapter now
+deploys exclusively to Workers (with static assets), not Pages. Functionally equivalent,
+different terminology (see roadmap Phase 1.2 for the note on this pivot).
 
 ## Project structure
 
 ```
 .
 ├── content/            # RAG source material: professional/ academic/ personal/
+├── src/
+│   ├── layouts/         # Shared Astro layouts
+│   ├── pages/            # Routes (and, later, api/* server routes)
+│   └── styles/           # Tailwind entrypoint
+├── public/               # Static assets
+├── astro.config.mjs
+├── wrangler.jsonc         # Cloudflare Worker config
 ├── project-description.txt   # Original project brief
 ├── project-roadmap.md        # Phased, step-by-step build plan (source of truth)
 ├── LICENSE
 └── README.md
 ```
 
-(Application source will be added once the framework scaffold lands — Phase 1.2 of the roadmap.)
-
 ## Development
 
-Setup instructions will be added once the project is scaffolded (Phase 1.2).
+```sh
+pnpm install
+pnpm dev        # local dev server
+pnpm build      # production build (Worker + static assets)
+pnpm preview    # preview the Worker build locally via wrangler
+```
 
 ## License
 

@@ -8,14 +8,16 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 ## Phase 0 — Foundations & Tooling ✅ (mostly done)
 
 ### 0.1 Accounts & access
+
 - [x] GitHub repo `gigalipa/interactive-portfolio` created
 - [x] Cloudflare account connected (MCP)
 - [x] Google AI Studio account (for `gemma-4-31b-it` + Gemini 2.5 Flash Native Audio Dialog API keys)
 - [x] Chroma Cloud account + database `interactive-portfolio` created, MCP connected
 - [x] Notion workspace connected (MCP)
-- [ ] Generate and store remaining API keys as Cloudflare Pages **secrets** (never client-side): Google AI Studio key, Notion internal integration token
+- [x] Generate and store remaining API keys as Cloudflare Worker **secrets** (never client-side): Google AI Studio key, Notion internal integration token
 
 ### 0.2 Claude Code tooling
+
 - [x] GitHub MCP connected
 - [x] Cloudflare MCP suite connected (api, docs, bindings, builds, observability)
 - [x] Notion MCP connected
@@ -26,21 +28,26 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 
 ## Phase 1 — Project Scaffold & Design System
 
-### 1.1 Stack decisions — **DECISION NEEDED**
-- [ ] Confirm framework: recommend **Astro** (islands architecture — ships near-zero JS for static CV/Portfolio pages, React/Preact islands for the interactive chat + booking widgets, first-class i18n routing, deploys natively to Cloudflare Pages)
-- [ ] Confirm package manager (recommend `pnpm`)
-- [ ] Confirm styling approach (recommend Tailwind CSS for the glass/blur/glow design system — utility classes map cleanly to the repeated glassmorphism patterns)
+### 1.1 Stack
+
+- [x] Framework: **Astro** (islands architecture — ships near-zero JS for static CV/Portfolio pages, React islands for the interactive chat + booking widgets, first-class i18n routing, deploys to Cloudflare Workers via `@astrojs/cloudflare`)
+- [x] Package manager **pnpm**
+- [x] Styling approach **Tailwind CSS** (glass/blur/glow design system — utility classes map cleanly to the repeated glassmorphism patterns)
 - [ ] Confirm 3D/animation library for later avatar phase (leaning `TalkingHead.js` on top of Ready Player Me GLB export + Three.js — confirm in Phase 8, not now)
 
 ### 1.2 Repo scaffold
-- [ ] Initialize Astro project in `interactive-portfolio`
-- [ ] Configure `wrangler.jsonc` / Cloudflare Pages project settings
-- [ ] Set up ESLint + Prettier + TypeScript strict mode
-- [ ] Set up Vitest (or equivalent) for unit tests, Playwright for e2e/visual checks
-- [ ] Configure GitHub Actions (or Cloudflare's native Git integration) for CI: lint, typecheck, test, build on PR
-- [ ] Connect repo to Cloudflare Pages via the **Cloudflare Workers & Pages GitHub App** (not the PAT — see prior discussion) for auto-deploy on push to `main`, preview deploys on PRs
+
+- [x] Initialize Astro project in `interactive-portfolio` (TypeScript strict via `astro/tsconfigs/strict`, React + Tailwind integrations added)
+- [x] Add `@astrojs/cloudflare` adapter (`output: 'server'`) + minimal `wrangler.jsonc`
+  - **Pivot (2026-08-02):** the current Astro Cloudflare adapter no longer deploys to Cloudflare Pages — it targets **Cloudflare Workers with static assets** exclusively (Cloudflare has been consolidating Pages into Workers). Functionally equivalent (one Worker serves static pages + API routes), just different deploy target/terminology. All later "Pages Function" references in this roadmap mean **Worker route/handler** now; "Cloudflare Pages GitHub App" auto-deploy becomes **Cloudflare Workers Builds** (Git-connected CI/CD for Workers).
+- [x] Set up ESLint + Prettier + TypeScript strict mode (React-specific lint plugins dropped for now — incompatible with ESLint 10 at runtime; revisit later)
+- [x] Set up Vitest for unit tests, Playwright for e2e/visual checks (smoke tests passing on chromium + webkit)
+- [x] Configure GitHub Actions for CI: lint, format check, typecheck, unit tests, build on PR/push to main; separate e2e job (Playwright, chromium)
+- [ ] Connect repo to Cloudflare via **Workers Builds** (Git integration in the Cloudflare dashboard, successor to the Pages GitHub App) for auto-deploy on push to `main`, preview deploys on PRs
+- [ ] Provision the bindings the adapter auto-enabled at build time: an `IMAGES` binding (Cloudflare Images) and a `SESSION` KV namespace — confirm these are actually needed before wiring real resources, or disable if unused
 
 ### 1.3 Design system
+
 - [ ] Define design tokens: color palette (deep dark blue → electric blue gradient, cyan accents), spacing scale, border-radius, glow/blur values
 - [ ] Build reusable primitives: `GlassPanel`, `GlowButton`, `FloatingIcon`, `HamburgerMenu`
 - [ ] Import and place the top-left logo (PNG to be supplied)
@@ -49,6 +56,7 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 - [ ] Build base responsive layout shell (mobile-first, breakpoints for tablet/desktop)
 
 ### 1.4 Internationalization scaffold
+
 - [ ] Set up i18n routing (`/en`, `/es`, `/fr`) using Astro's built-in i18n
 - [ ] Set up translation file structure (e.g. `src/i18n/en.json`, `es.json`, `fr.json`)
 - [ ] Build language switcher UI (part of hamburger menu or a floating control)
@@ -59,11 +67,13 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 ## Phase 2 — Content Architecture & RAG Pipeline
 
 ### 2.1 Content folders
+
 - [ ] Create `content/professional/`, `content/academic/`, `content/personal/` folders (source of truth for RAG)
 - [ ] Agree on file format per folder (Markdown recommended — easy to chunk, diff, and version)
 - [ ] User populates folders with source material (bio, resume details, project write-ups, personal background, etc.)
 
 ### 2.2 Ingestion pipeline
+
 - [ ] Write `scripts/ingest.ts`: reads content folders, chunks documents (sensible chunk size/overlap for chat-length answers), generates embeddings, upserts into Chroma Cloud collection
 - [ ] Decide embedding model (Google's `text-embedding-004`/Gemini embeddings to stay in the same free-tier ecosystem, or Chroma's default — confirm cost/limits)
 - [ ] Add metadata per chunk (source folder, doc title, language) to support filtered retrieval and multilingual answers
@@ -71,6 +81,7 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 - [ ] Document the re-ingestion workflow (how to update the KB when content changes)
 
 ### 2.3 Retrieval + prompting
+
 - [ ] Design the RAG prompt template: system instructions (persona, tone, boundaries — what the avatar should/shouldn't answer), retrieved-context injection, conversation history handling
 - [ ] Decide top-k retrieval count and any re-ranking/filtering logic
 - [ ] Handle multilingual retrieval: query in visitor's language, retrieve across content (translate query or store multilingual chunks — decide during build)
@@ -82,12 +93,14 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 Per prior decision: build the interaction layer before the visual 3D avatar, since visuals are UX polish on top of a working chat.
 
 ### 3.1 Backend proxy
-- [ ] Build a Cloudflare Pages Function (`/functions/api/chat`) that: receives visitor message, queries Chroma for context, calls `gemma-4-31b-it` via Google AI Studio API with the RAG-augmented prompt, returns response
+
+- [ ] Build an Astro server API route (`src/pages/api/chat.ts`, runs as a Worker handler) that: receives visitor message, queries Chroma for context, calls `gemma-4-31b-it` via Google AI Studio API with the RAG-augmented prompt, returns response
 - [ ] Keep the Google AI Studio API key server-side only (Cloudflare secret), never exposed to the client
 - [ ] Add basic rate limiting / abuse protection (Cloudflare's built-in tools) since this is a public-facing paid-API endpoint
 - [ ] Add conversation history handling (session-scoped, not persisted server-side unless desired)
 
 ### 3.2 Chat UI
+
 - [ ] Build floating bottom-center chatbox: text input + send button + waves button (voice toggle, wired up in Phase 4)
 - [ ] Style per spec: dark electric-blue outline, black background, glass/blur, external glow
 - [ ] Build chat bubble components: avatar messages (left, dark electric-blue outline/dark-blue fill), visitor messages (right, light-cyan outline/blue-grey fill)
@@ -96,6 +109,7 @@ Per prior decision: build the interaction layer before the visual 3D avatar, sin
 - [ ] Loading/thinking state, error state (API failure, rate limit hit)
 
 ### 3.3 Placeholder hero
+
 - [ ] Static/lightly-animated placeholder in the avatar's eventual position (e.g. glowing orb or silhouette) so Phase 3 ships a complete, good-looking page without blocking on the 3D avatar work
 
 ---
@@ -127,13 +141,15 @@ Per prior decision: stock Gemini Live API voice, not a cloned voice — keeps la
 ## Phase 6 — Portfolio Page
 
 ### 6.1 Content sourcing
+
 - [ ] Define project schema (title, category, date, description, media, links)
 - [ ] Pull project content from Notion via Notion MCP (`notion-search`, `notion-fetch`, `notion-query-database-view`) during a build-time or on-demand sync step
-- [ ] Decide sync mechanism: build-time fetch (simplest, content updates require redeploy) vs. runtime fetch via Pages Function (fresher, adds latency/complexity) — recommend **build-time** for a portfolio site
+- [ ] Decide sync mechanism: build-time fetch (simplest, content updates require redeploy) vs. runtime fetch via a Worker route (fresher, adds latency/complexity) — recommend **build-time** for a portfolio site
 - [ ] Store synced content as local Markdown/JSON in the repo (versioned, fast to render) rather than fetching Notion at request time
 - [ ] Handle project media (images/video) — download and optimize, or reference Notion-hosted URLs (check stability/expiry of Notion file URLs)
 
 ### 6.2 UI
+
 - [ ] Grid/list view grouped by category, ordered chronologically within each group
 - [ ] Project card component (glass-styled) with thumbnail, title, category, date
 - [ ] Individual project detail page/route per project: description, info, media gallery/video embed
@@ -144,15 +160,17 @@ Per prior decision: stock Gemini Live API voice, not a cloned voice — keeps la
 ## Phase 7 — Contact Page
 
 ### 7.1 Contact form
+
 - [ ] Build form (name, email, message) styled to the design system
-- [ ] Backend handling via Cloudflare Pages Function — send via Cloudflare Email Service or similar free-tier email relay
+- [ ] Backend handling via an Astro server API route (Worker handler) — send via Cloudflare Email Service or similar free-tier email relay
 - [ ] Add spam protection (Cloudflare Turnstile — free, already have the skill for it)
 - [ ] Display contact info (email, social/professional links)
 
 ### 7.2 Booking system (Notion-backed)
+
 - [ ] Create the "Bookings" database in Notion (via Notion MCP) with fields: date/time, visitor name, email, status, notes
 - [ ] Confirm Notion Calendar is subscribed to/fed by this database
-- [ ] Build a Cloudflare Pages Function acting as the booking API: reads existing bookings (to compute availability/busy slots), writes new booking rows, using a server-side Notion internal integration token (never exposed client-side)
+- [ ] Build an Astro server API route acting as the booking API: reads existing bookings (to compute availability/busy slots), writes new booking rows, using a server-side Notion internal integration token (never exposed client-side)
 - [ ] Build the booking UI: available-slot picker, confirmation flow
 - [ ] Handle double-booking prevention and time zone conversion (visitor's local time ↔ your calendar's time zone)
 - [ ] Optional: booking confirmation email (reuse the Cloudflare Email Service setup from 7.1)
@@ -164,16 +182,19 @@ Per prior decision: stock Gemini Live API voice, not a cloned voice — keeps la
 Text/voice interaction is the priority; this phase adds the visual layer on top of an already-working chat.
 
 ### 8.1 Avatar creation
+
 - [ ] User supplies reference photos
 - [ ] Generate a Ready Player Me (or similar free-tier) full-body/half-body GLB avatar from photos
 - [ ] Confirm avatar style (realistic vs. stylized) and adjust to match your likeness
 
 ### 8.2 Animation & lip-sync
+
 - [ ] Integrate `TalkingHead.js` (Three.js-based) for real-time lip-sync driven by TTS output
 - [ ] Source idle/gesture animations (Mixamo FBX, retargeted to the RPM rig) for natural idle movement
 - [ ] Wire lip-sync to the Gemini Live API audio stream (Phase 4) and to TTS-rendered text responses (Phase 3, if voice is off but avatar should still mouth-move — decide if needed)
 
 ### 8.3 Integration
+
 - [ ] Replace the Phase 3 placeholder hero with the full-screen 3D avatar canvas
 - [ ] Performance-check on mobile (3D rendering cost, fallback to a lighter/static presentation on low-end devices if needed)
 - [ ] Re-verify chat bubble layering over the now-live 3D canvas
@@ -205,7 +226,7 @@ Text/voice interaction is the priority; this phase adds the visual layer on top 
 ## Phase 11 — Launch
 
 - [ ] Final content review across all 3 languages
-- [ ] Custom domain setup on Cloudflare Pages (if applicable)
+- [ ] Custom domain setup on the Cloudflare Worker (if applicable)
 - [ ] Production secrets audit (all keys set as Cloudflare secrets, none in repo/client bundle)
 - [ ] Merge to `main`, confirm production deploy
 - [ ] Post-launch smoke test: chat, voice, CV accordion, portfolio links, contact form, booking flow — all 3 languages, mobile + desktop
