@@ -1,0 +1,32 @@
+So, I want to create an interactive portfolio website, powered by a RAG AI Agent which interacts with the visitors. It'll have of course, a GitHub repo that I'll connect to my Cloudflare account to publish the site via Cloudflare Pages. The website has to be like this:
+
+- Totally responsive design.
+- Multilingual (English, Spanish, French)
+- It must use only free tools, or, if paid, free-tier.
+- Four pages, accesible via top right hamburger-style menu:
+	1. Main
+	2. CV
+	3. Portfolio
+	4. Contact
+- Visually appealing, with glass/blur transparent backgrounds.
+- Top-left floating icon (My logo, I'll provide it to you in PNG)
+- Dark theme, soft gradients, blue tones, glows, electric accents.
+
+Now, I'll describe the pages.
+1. Main:
+This will be the main page, where visitors will land. It has an animated AI controlled 3D avatar of me, it moves naturally and speaks with the user, answering their questions and queries about me and my professional, academic, and personal profile, based on the information I'll provide in three respective folders, this information must feed the vector database that'll be used for the RAG (I'm thinking on using ChromaDB cloud's free tier).
+This avatar has to be capable of reading and writing (By using Gemma 4 26B as LLM, via Google's AI Studio API) and, if the user activates the voice chat, it must be able to listen and respond via audio (for this I think about using Gemini 2.5 Flash Native Audio Dialog via Google's AI Studio API).
+The interface will be something like: Deep dark blue to slightly lighter electric blue gradient background, the avatar centered, full screen size, top left corner icon, top right corner hamburger menu, a floating chatbox at the bottom center area, the chatbox has two buttons (send message / waves button, to activate voice chat) It has dark electric blue outline with black background. In text mode, the chat bubbles appear floating over the avatar, to the right for the user messages, and to the left for the avatar messages, easily differentiated by color (Dark electric blue outline and dark blue background for the avatar's, and light cyan outline and blueish grey background for the user's). The voice interface can be something like Gemini's. Every floating item has a slight external glow and blurred glass-like effect background.
+
+I don't know how to create the avatar, animate it, and make it AI controlled, so you'll have to help me with it or guide me through.
+
+2. CV:
+This section will show my CV with a quick overview and a deployable accordion-like list for: professional experience, my projects (with links to the respective project page), academic experience & certifications, other experiences, personal interests & background.
+
+3. Portfolio:
+This will be a showcase for my projects, grouped by category and organized chronologically. Each project will have its own page with description, information about the project and the respective multimedia (image/video). This information could be taken from the respective Notion page for each project.
+
+4. Contact:
+This will be a contact-me page, with a form and my contact info, but it'll also have a "book a meeting" functionality (possibly connected to my Notion Calendar)
+
+The entire site must be cohesive in style, load fast and follow the best UX/UI practices for the greatest user experience. Also, the content must be easy to read and optimized for SEO and GEO/AEO.
