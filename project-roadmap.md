@@ -51,7 +51,7 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 - [x] Define design tokens (Tailwind v4 `@theme` in `global.css`): named palette (void, deep-blue, electric-blue, signal-cyan, ion, slate-mist), glow shadow tokens, font tokens
 - [x] Build reusable primitives: `GlassPanel`, `GlowButton`, `FloatingIcon`, `HamburgerMenu` (`src/components/ui/`)
 - [x] Signature element: `PresenceRing` — animated glow ring encoding the AI's conversational state (idle/listening/speaking); doubles as the Phase 3.3 placeholder hero and will later wrap the real 3D avatar (Phase 8)
-- [ ] Import and place the top-left logo (PNG to be supplied) — `FloatingIcon` currently falls back to a "DP" monogram; swap in once you provide the file
+- [x] Import and place the top-left logo (`public/logo.png`, also used as favicon); `FloatingIcon` renders it directly with a glow (monogram fallback kept for when `src` is omitted)
 - [x] Build the hamburger menu (top-right) with the 4-route nav: Main / CV / Portfolio / Contact (native `<details>`, no JS framework — active-route highlight, closes on outside click)
 - [x] Typography: Space Grotesk (display) / Manrope (body) / JetBrains Mono (utility — status chips, labels), self-hosted via `@fontsource`
 - [x] Base responsive layout shell verified mobile → desktop via Playwright screenshots (chrome, menu open/closed, all 4 routes)
