@@ -43,8 +43,8 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 - [x] Set up ESLint + Prettier + TypeScript strict mode (React-specific lint plugins dropped for now — incompatible with ESLint 10 at runtime; revisit later)
 - [x] Set up Vitest for unit tests, Playwright for e2e/visual checks (smoke tests passing on chromium + webkit)
 - [x] Configure GitHub Actions for CI: lint, format check, typecheck, unit tests, build on PR/push to main; separate e2e job (Playwright, chromium)
-- [ ] Connect repo to Cloudflare via **Workers Builds** (Git integration in the Cloudflare dashboard, successor to the Pages GitHub App) for auto-deploy on push to `main`, preview deploys on PRs
-- [ ] Provision the bindings the adapter auto-enabled at build time: an `IMAGES` binding (Cloudflare Images) and a `SESSION` KV namespace — confirm these are actually needed before wiring real resources, or disable if unused
+- [x] Connect repo to Cloudflare via **Workers Builds** (Git integration, dashboard-authorized) for auto-deploy on push to `main`. Live at https://interactive-portfolio.daniel-peraza-1990.workers.dev
+- [x] `SESSION` KV namespace auto-provisioned on first deploy; `IMAGES`/`ASSETS` bindings wired by the adapter — revisit whether `SESSION`/`IMAGES` are actually needed once real features land (currently unused by app code)
 
 ### 1.3 Design system
 
