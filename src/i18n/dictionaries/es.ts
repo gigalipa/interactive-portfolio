@@ -11,6 +11,7 @@ export default {
 		description: "Daniel Peraza — portafolio interactivo impulsado por IA.",
 	},
 	home: {
+		title: "Daniel Peraza — Portafolio Interactivo",
 		status: "Señal: en línea",
 		tagline:
 			"Pregúntame lo que quieras sobre mi trabajo, trayectoria o proyectos — la interfaz conversacional llega en la Fase 3.",

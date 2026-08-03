@@ -11,6 +11,7 @@ export default {
 		description: "Daniel Peraza — interactive, AI-powered portfolio.",
 	},
 	home: {
+		title: "Daniel Peraza — Interactive Portfolio",
 		status: "Signal: online",
 		tagline:
 			"Ask me anything about my work, background, or projects — the conversational interface lands here in Phase 3.",

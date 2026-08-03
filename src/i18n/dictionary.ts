@@ -9,6 +9,7 @@ export interface Dictionary {
 		description: string;
 	};
 	home: {
+		title: string;
 		status: string;
 		tagline: string;
 	};
