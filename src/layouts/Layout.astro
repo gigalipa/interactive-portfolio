@@ -2,19 +2,18 @@
 import "../styles/global.css";
 import FloatingIcon from "../components/ui/FloatingIcon.astro";
 import HamburgerMenu from "../components/ui/HamburgerMenu.astro";
+import type { Locale } from "../i18n";
 
 interface Props {
 	title: string;
-	description?: string;
+	description: string;
+	lang: Locale;
 }
 
-const {
-	title,
-	description = "Daniel Peraza — interactive, AI-powered portfolio.",
-} = Astro.props;
+const { title, description, lang } = Astro.props;
 ---
 
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/png" href="/logo.png" />
@@ -24,8 +23,8 @@ const {
 		<title>{title}</title>
 	</head>
 	<body>
-		<FloatingIcon src="/logo.png" />
-		<HamburgerMenu />
+		<FloatingIcon src="/logo.png" lang={lang} />
+		<HamburgerMenu lang={lang} />
 		<slot />
 	</body>
 </html>

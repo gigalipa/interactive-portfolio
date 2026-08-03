@@ -11,6 +11,14 @@ export default defineConfig({
 	adapter: cloudflare(),
 	integrations: [react()],
 
+	i18n: {
+		defaultLocale: "en",
+		locales: ["en", "es", "fr"],
+		routing: {
+			prefixDefaultLocale: true,
+		},
+	},
+
 	vite: {
 		plugins: [tailwindcss()],
 	},

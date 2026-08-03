@@ -1,0 +1,36 @@
+---
+import Layout from "../layouts/Layout.astro";
+import GlassPanel from "../components/ui/GlassPanel.astro";
+import GlowButton from "../components/ui/GlowButton.astro";
+import { getDictionary, type Locale } from "../i18n";
+
+interface Props {
+	lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = getDictionary(lang);
+---
+
+<Layout
+	title={`${t.contact.title} — Daniel Peraza`}
+	description={t.meta.description}
+	lang={lang}
+>
+	<main class="flex min-h-screen items-center justify-center px-6 py-24">
+		<GlassPanel class="max-w-lg space-y-4 p-8 text-center" glow="cyan">
+			<p
+				class="text-signal-cyan/80 font-mono text-xs tracking-[0.2em] uppercase"
+			>
+				{t.contact.phase}
+			</p>
+			<h1 class="font-display text-ion mt-3 text-2xl font-semibold">
+				{t.contact.title}
+			</h1>
+			<p class="font-body text-ion/70 mt-3 text-sm">{t.contact.body}</p>
+			<GlowButton variant="cyan" href="mailto:hello@example.com">
+				{t.contact.cta}
+			</GlowButton>
+		</GlassPanel>
+	</main>
+</Layout>

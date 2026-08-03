@@ -58,10 +58,10 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 
 ### 1.4 Internationalization scaffold
 
-- [ ] Set up i18n routing (`/en`, `/es`, `/fr`) using Astro's built-in i18n
-- [ ] Set up translation file structure (e.g. `src/i18n/en.json`, `es.json`, `fr.json`)
-- [ ] Build language switcher UI (part of hamburger menu or a floating control)
-- [ ] Decide default/fallback locale and browser-locale auto-detect behavior
+- [x] Set up i18n routing (`/en/`, `/es/`, `/fr/`) using Astro's built-in i18n (`prefixDefaultLocale: true`, all three symmetric); page content lives in `src/views/*.astro` (parameterized by `lang`), with thin per-locale wrapper routes under `src/pages/{en,es,fr}/`
+- [x] Translation file structure: `src/i18n/dictionary.ts` (shared `Dictionary` type) + `src/i18n/dictionaries/{en,es,fr}.ts` (each `satisfies Dictionary` for compile-time completeness checking)
+- [x] Language switcher UI: EN/ES/FR chips inside the hamburger menu panel, below the nav links; swaps locale while preserving the current route
+- [x] Default locale `en`; root `/` server-redirects (302) based on `Accept-Language`, falling back to `en` if no match
 
 ---
 

@@ -1,26 +1,11 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import PresenceRing from "../components/ui/PresenceRing.astro";
----
+import { defaultLocale, locales } from "../i18n/locales";
 
-<Layout title="Daniel Peraza — Interactive Portfolio">
-	<main
-		class="flex min-h-screen flex-col items-center justify-center gap-8 px-6 text-center"
-	>
-		<PresenceRing state="idle" size={240} />
-		<div class="max-w-xl space-y-3">
-			<p
-				class="text-signal-cyan/80 font-mono text-xs tracking-[0.2em] uppercase"
-			>
-				Signal: online
-			</p>
-			<h1 class="font-display text-ion text-4xl font-semibold sm:text-5xl">
-				Daniel Peraza
-			</h1>
-			<p class="font-body text-ion/70 text-base sm:text-lg">
-				Ask me anything about my work, background, or projects — the
-				conversational interface lands here in Phase 3.
-			</p>
-		</div>
-	</main>
-</Layout>
+const acceptLanguage = Astro.request.headers.get("accept-language") ?? "";
+const preferred = acceptLanguage
+	.split(",")
+	.map((part) => part.trim().split(";")[0]?.slice(0, 2).toLowerCase())
+	.find((code) => (locales as readonly string[]).includes(code ?? ""));
+
+return Astro.redirect(`/${preferred ?? defaultLocale}/`, 302);
+---

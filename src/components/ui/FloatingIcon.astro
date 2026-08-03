@@ -1,11 +1,14 @@
 ---
+import type { Locale } from "../../i18n";
+
 interface Props {
 	src?: string;
-	href?: string;
+	lang: Locale;
 	label?: string;
 }
 
-const { src, href = "/", label = "Daniel Peraza — home" } = Astro.props;
+const { src, lang, label = "Daniel Peraza — home" } = Astro.props;
+const href = `/${lang}/`;
 ---
 
 {
