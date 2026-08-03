@@ -1,0 +1,26 @@
+---
+interface Props {
+	class?: string;
+	glow?: "none" | "blue" | "cyan";
+	as?: "div" | "section" | "nav" | "article";
+}
+
+const { class: className = "", glow = "none", as: Tag = "div" } = Astro.props;
+
+const glowClass =
+	glow === "blue"
+		? "shadow-glow-blue"
+		: glow === "cyan"
+			? "shadow-glow-cyan"
+			: "";
+---
+
+<Tag
+	class:list={[
+		"border-slate-mist bg-deep-blue/40 rounded-2xl border backdrop-blur-xl",
+		glowClass,
+		className,
+	]}
+>
+	<slot />
+</Tag>

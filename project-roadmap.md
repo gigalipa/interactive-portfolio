@@ -48,12 +48,13 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 
 ### 1.3 Design system
 
-- [ ] Define design tokens: color palette (deep dark blue → electric blue gradient, cyan accents), spacing scale, border-radius, glow/blur values
-- [ ] Build reusable primitives: `GlassPanel`, `GlowButton`, `FloatingIcon`, `HamburgerMenu`
-- [ ] Import and place the top-left logo (PNG to be supplied)
-- [ ] Build the hamburger menu (top-right) with the 4-route nav: Main / CV / Portfolio / Contact
-- [ ] Establish typography scale, confirm font choice (readable, modern, works across EN/ES/FR character sets)
-- [ ] Build base responsive layout shell (mobile-first, breakpoints for tablet/desktop)
+- [x] Define design tokens (Tailwind v4 `@theme` in `global.css`): named palette (void, deep-blue, electric-blue, signal-cyan, ion, slate-mist), glow shadow tokens, font tokens
+- [x] Build reusable primitives: `GlassPanel`, `GlowButton`, `FloatingIcon`, `HamburgerMenu` (`src/components/ui/`)
+- [x] Signature element: `PresenceRing` — animated glow ring encoding the AI's conversational state (idle/listening/speaking); doubles as the Phase 3.3 placeholder hero and will later wrap the real 3D avatar (Phase 8)
+- [ ] Import and place the top-left logo (PNG to be supplied) — `FloatingIcon` currently falls back to a "DP" monogram; swap in once you provide the file
+- [x] Build the hamburger menu (top-right) with the 4-route nav: Main / CV / Portfolio / Contact (native `<details>`, no JS framework — active-route highlight, closes on outside click)
+- [x] Typography: Space Grotesk (display) / Manrope (body) / JetBrains Mono (utility — status chips, labels), self-hosted via `@fontsource`
+- [x] Base responsive layout shell verified mobile → desktop via Playwright screenshots (chrome, menu open/closed, all 4 routes)
 
 ### 1.4 Internationalization scaffold
 

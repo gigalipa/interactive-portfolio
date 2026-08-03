@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+import GlassPanel from "../components/ui/GlassPanel.astro";
+---
+
+<Layout title="Portfolio — Daniel Peraza">
+	<main class="flex min-h-screen items-center justify-center px-6 py-24">
+		<GlassPanel class="max-w-lg p-8 text-center" glow="blue">
+			<p
+				class="text-signal-cyan/80 font-mono text-xs tracking-[0.2em] uppercase"
+			>
+				Phase 6
+			</p>
+			<h1 class="font-display text-ion mt-3 text-2xl font-semibold">
+				Portfolio
+			</h1>
+			<p class="font-body text-ion/70 mt-3 text-sm">
+				Projects grouped by category and chronology, synced from Notion, land
+				here.
+			</p>
+		</GlassPanel>
+	</main>
+</Layout>

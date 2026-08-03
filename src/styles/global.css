@@ -1,1 +1,71 @@
 @import "tailwindcss";
+
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource/manrope/400.css";
+@import "@fontsource/manrope/500.css";
+@import "@fontsource/manrope/600.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+/*
+ * Palette, named:
+ *  void          — base page background (near-black)
+ *  deep-blue     — gradient stop / panel base
+ *  electric-blue — primary accent: glows, avatar-message border, primary actions
+ *  signal-cyan   — secondary accent: visitor-message border, "listening" state
+ *  ion           — primary text on dark
+ *  slate-mist    — neutral glass fill / hairline borders
+ */
+@theme {
+	--font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+	--font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+	--color-void: #05060f;
+	--color-deep-blue: #0b1638;
+	--color-electric-blue: #2f5cff;
+	--color-electric-blue-soft: #5b7bff;
+	--color-signal-cyan: #67e8f9;
+	--color-ion: #eaf2ff;
+	--color-slate-mist: rgb(148 163 184 / 0.18);
+	--color-slate-mist-strong: rgb(148 163 184 / 0.32);
+
+	--shadow-glow-blue: 0 0 24px 2px rgb(47 92 255 / 0.35);
+	--shadow-glow-blue-lg: 0 0 48px 6px rgb(47 92 255 / 0.3);
+	--shadow-glow-cyan: 0 0 24px 2px rgb(103 232 249 / 0.35);
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-family: var(--font-display);
+	letter-spacing: -0.01em;
+}
+
+body {
+	font-family: var(--font-body);
+	background-color: var(--color-void);
+	background-image:
+		radial-gradient(
+			ellipse 80% 60% at 50% -10%,
+			rgb(47 92 255 / 0.16),
+			transparent 60%
+		),
+		linear-gradient(180deg, var(--color-void) 0%, var(--color-deep-blue) 100%);
+	background-attachment: fixed;
+	color: var(--color-ion);
+	min-height: 100vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

@@ -1,0 +1,106 @@
+---
+/**
+ * The avatar's presence indicator: an ambient glow ring that visually encodes
+ * the AI's conversational state. Ships now as the Main-page placeholder
+ * (Phase 3.3) and later wraps the real 3D avatar (Phase 8).
+ *
+ * State is a plain `data-state` attribute so it can be flipped from script
+ * later (`ring.dataset.state = "listening"`) without a framework.
+ */
+interface Props {
+	state?: "idle" | "listening" | "speaking";
+	size?: number;
+	class?: string;
+}
+
+const { state = "idle", size = 220, class: className = "" } = Astro.props;
+---
+
+<div
+	class:list={["presence-ring", className]}
+	data-state={state}
+	style={`--ring-size: ${size}px`}
+	role="status"
+	aria-label={`Assistant is ${state}`}
+>
+	<span class="ping ping-1"></span>
+	<span class="ping ping-2"></span>
+	<div class="core"></div>
+</div>
+
+<style>
+	.presence-ring {
+		position: relative;
+		width: var(--ring-size);
+		height: var(--ring-size);
+		display: grid;
+		place-items: center;
+	}
+
+	.core {
+		width: 62%;
+		height: 62%;
+		border-radius: 9999px;
+		background: radial-gradient(
+			circle at 35% 30%,
+			var(--color-electric-blue-soft),
+			var(--color-deep-blue) 70%
+		);
+		border: 1px solid var(--color-slate-mist-strong);
+		box-shadow: var(--shadow-glow-blue-lg);
+		transition:
+			box-shadow 0.4s ease,
+			background 0.4s ease;
+	}
+
+	.ping {
+		position: absolute;
+		inset: 0;
+		border-radius: 9999px;
+		border: 1px solid var(--color-electric-blue);
+		opacity: 0;
+		animation: ping-out 3.2s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+	}
+
+	.ping-2 {
+		animation-delay: 1.6s;
+	}
+
+	@keyframes ping-out {
+		0% {
+			transform: scale(0.55);
+			opacity: 0.55;
+		}
+		100% {
+			transform: scale(1.05);
+			opacity: 0;
+		}
+	}
+
+	/* Listening: tighter, faster, cyan-shifted — visitor has the floor */
+	.presence-ring[data-state="listening"] .core {
+		box-shadow: var(--shadow-glow-cyan);
+		background: radial-gradient(
+			circle at 35% 30%,
+			var(--color-signal-cyan),
+			var(--color-deep-blue) 70%
+		);
+	}
+	.presence-ring[data-state="listening"] .ping {
+		border-color: var(--color-signal-cyan);
+		animation-duration: 1.6s;
+	}
+
+	/* Speaking: brighter core, quicker double-pulse — assistant has the floor */
+	.presence-ring[data-state="speaking"] .core {
+		box-shadow: var(--shadow-glow-blue-lg);
+		background: radial-gradient(
+			circle at 35% 30%,
+			var(--color-electric-blue-soft),
+			var(--color-electric-blue) 70%
+		);
+	}
+	.presence-ring[data-state="speaking"] .ping {
+		animation-duration: 1.1s;
+	}
+</style>

@@ -1,0 +1,91 @@
+---
+const links = [
+	{ href: "/", label: "Main" },
+	{ href: "/cv", label: "CV" },
+	{ href: "/portfolio", label: "Portfolio" },
+	{ href: "/contact", label: "Contact" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<details class="menu fixed top-5 right-5 z-50 sm:top-6 sm:right-6">
+	<summary
+		aria-label="Open navigation menu"
+		class="border-slate-mist bg-deep-blue/50 shadow-glow-blue flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full border backdrop-blur-xl transition-transform duration-200 hover:scale-105 [&::-webkit-details-marker]:hidden"
+	>
+		<svg
+			class="menu-icon text-ion h-5 w-5"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+		>
+			<line class="bar bar-top" x1="4" y1="7" x2="20" y2="7"></line>
+			<line class="bar bar-mid" x1="4" y1="12" x2="20" y2="12"></line>
+			<line class="bar bar-bottom" x1="4" y1="17" x2="20" y2="17"></line>
+		</svg>
+	</summary>
+
+	<nav
+		aria-label="Primary"
+		class="border-slate-mist bg-deep-blue/60 shadow-glow-blue mt-3 flex min-w-44 flex-col gap-1 rounded-2xl border p-2 backdrop-blur-xl"
+	>
+		{
+			links.map((link) => {
+				const isActive =
+					link.href === "/"
+						? currentPath === "/"
+						: currentPath.startsWith(link.href);
+				return (
+					<a
+						href={link.href}
+						aria-current={isActive ? "page" : undefined}
+						class:list={[
+							"font-body rounded-xl px-4 py-2.5 text-sm transition-colors duration-150",
+							isActive
+								? "bg-electric-blue/20 text-ion"
+								: "text-ion/70 hover:bg-slate-mist hover:text-ion",
+						]}
+					>
+						{link.label}
+					</a>
+				);
+			})
+		}
+	</nav>
+</details>
+
+<style>
+	/* Close on outside click / Escape via native <details>; just style the transform */
+	.menu[open] > summary .bar-top {
+		transform: translateY(5px) rotate(45deg);
+	}
+	.menu[open] > summary .bar-mid {
+		opacity: 0;
+	}
+	.menu[open] > summary .bar-bottom {
+		transform: translateY(-5px) rotate(-45deg);
+	}
+	.bar {
+		transform-origin: center;
+		transition:
+			transform 0.2s ease,
+			opacity 0.2s ease;
+	}
+</style>
+
+<script>
+	// Close the menu when a nav link is clicked or focus leaves it.
+	const menu = document.querySelector<HTMLDetailsElement>("details.menu");
+	if (menu) {
+		menu.addEventListener("click", (event) => {
+			const target = event.target as HTMLElement;
+			if (target.tagName === "A") menu.open = false;
+		});
+		document.addEventListener("click", (event) => {
+			if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+		});
+	}
+</script>
