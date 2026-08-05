@@ -12,15 +12,17 @@ import type {
 } from "@notionhq/client";
 import { CloudClient } from "chromadb";
 import { encode, decode } from "gpt-tokenizer";
+import {
+	CHROMA_COLLECTION_NAME,
+	chromaCollectionOptions,
+} from "../src/lib/rag/config";
+import { embedTexts } from "../src/lib/rag/embed";
 
 const KNOWLEDGE_BASE_DATA_SOURCE_ID =
 	process.env.NOTION_KNOWLEDGE_BASE_DATA_SOURCE_ID ||
 	"9014f42b-a380-4526-8521-a5d20f491f58";
-const CHROMA_COLLECTION_NAME = "knowledge_base";
-const EMBEDDING_MODEL = "gemini-embedding-001";
 const CHUNK_SIZE_TOKENS = 512;
 const CHUNK_OVERLAP_TOKENS = 50;
-const EMBEDDING_BATCH_SIZE = 100;
 const NOTION_REQUEST_DELAY_MS = 350;
 
 function requireEnv(name: string): string {
@@ -150,43 +152,6 @@ function chunkText(text: string): string[] {
 	return chunks;
 }
 
-async function embedTexts(
-	texts: string[],
-	apiKey: string,
-): Promise<number[][]> {
-	const embeddings: number[][] = [];
-
-	for (let i = 0; i < texts.length; i += EMBEDDING_BATCH_SIZE) {
-		const batch = texts.slice(i, i + EMBEDDING_BATCH_SIZE);
-		const response = await fetch(
-			`https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:batchEmbedContents?key=${apiKey}`,
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					requests: batch.map((text) => ({
-						model: `models/${EMBEDDING_MODEL}`,
-						content: { parts: [{ text }] },
-					})),
-				}),
-			},
-		);
-
-		if (!response.ok) {
-			throw new Error(
-				`Embedding request failed (${response.status}): ${await response.text()}`,
-			);
-		}
-
-		const body = (await response.json()) as {
-			embeddings: Array<{ values: number[] }>;
-		};
-		embeddings.push(...body.embeddings.map((e) => e.values));
-	}
-
-	return embeddings;
-}
-
 async function run() {
 	const notionToken = requireEnv("NOTION_TOKEN");
 	const googleApiKey = requireEnv("GOOGLE_API_KEY_EMB");
@@ -200,7 +165,7 @@ async function run() {
 		apiKey: chromaApiKey,
 		tenant: chromaTenant,
 		database: chromaDatabase,
-		...(chromaHost ? { host: chromaHost } : {}),
+		...chromaCollectionOptions(chromaHost),
 	});
 	const collection = await chroma.getOrCreateCollection({
 		name: CHROMA_COLLECTION_NAME,
