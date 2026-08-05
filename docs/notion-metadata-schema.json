@@ -1,0 +1,107 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://interactive-portfolio/docs/notion-metadata-schema.json",
+	"title": "Knowledge Base Metadata",
+	"description": "Structure for the `Metadata` (JSON text) property on the Notion \"📚 Knowledge Base\" database. Applies to every Content Type (Professional Experience, Academic Experience, Personal Interest, Project, Skill); every field is optional — fill in only what's relevant to a given entry. Stored as a JSON string in Notion, parsed at ingestion/build time.",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"category": {
+			"type": "string",
+			"description": "Display grouping for CV/Portfolio UI, e.g. \"Web App\", \"Full-time Role\", \"Certification\", \"Hobby\".",
+			"examples": [
+				"Web App",
+				"Full-time Role",
+				"Certification",
+				"Open Source",
+				"Hobby"
+			]
+		},
+		"dates": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"start": {
+					"type": "string",
+					"format": "date",
+					"description": "ISO 8601 date, e.g. \"2024-03-01\"."
+				},
+				"end": {
+					"type": "string",
+					"format": "date",
+					"description": "ISO 8601 date. Omit if `ongoing` is true."
+				},
+				"ongoing": {
+					"type": "boolean",
+					"default": false,
+					"description": "True for \"Present\"/still active."
+				}
+			}
+		},
+		"location": {
+			"type": "string",
+			"description": "Free text, e.g. \"Remote\" or \"Mexico City, MX\"."
+		},
+		"links": {
+			"type": "array",
+			"description": "External links related to this entry.",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["label", "url"],
+				"properties": {
+					"label": {
+						"type": "string",
+						"description": "Human-readable link text, e.g. \"Live demo\"."
+					},
+					"url": { "type": "string", "format": "uri" },
+					"type": {
+						"type": "string",
+						"enum": [
+							"demo",
+							"repo",
+							"company",
+							"certificate",
+							"article",
+							"other"
+						],
+						"default": "other"
+					}
+				}
+			}
+		},
+		"media": {
+			"type": "array",
+			"description": "Images/video for the Portfolio card and detail page.",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["type", "url"],
+				"properties": {
+					"type": { "type": "string", "enum": ["image", "video"] },
+					"url": { "type": "string", "format": "uri" },
+					"alt": {
+						"type": "string",
+						"description": "Accessibility alt text (required in practice for images)."
+					},
+					"caption": { "type": "string" },
+					"cover": {
+						"type": "boolean",
+						"default": false,
+						"description": "Marks this item as the card/thumbnail image. At most one item per entry should be true."
+					}
+				}
+			}
+		},
+		"techStack": {
+			"type": "array",
+			"description": "Freeform technology list, kept separate from the fixed `Tags` multi-select.",
+			"items": { "type": "string" },
+			"examples": [["Astro", "TypeScript", "Cloudflare Workers"]]
+		},
+		"originalFile": {
+			"type": "string",
+			"description": "Legacy field — path/reference to a source document if this entry was migrated from a file rather than authored directly in Notion."
+		}
+	}
+}

@@ -14,7 +14,7 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 - [x] Google AI Studio account (for `gemma-4-31b-it` + Gemini 2.5 Flash Native Audio Dialog API keys)
 - [x] Chroma Cloud account + database `interactive-portfolio` created, MCP connected
 - [x] Notion workspace connected (MCP)
-- [x] Generate and store remaining API keys as Cloudflare Worker **secrets** (never client-side): Google AI Studio key, Notion internal integration token
+- [ ] Generate and store remaining API keys as Cloudflare Worker **secrets** (never client-side): Google AI Studio key, Notion internal integration token — **not actually done yet** (`wrangler secret list` confirmed empty on 2026-08-04); needed locally first for `pnpm ingest` (Phase 2.2, via `.env`), then as Worker secrets before Phase 3/4 (chat/voice) can use them from the deployed app
 
 ### 0.2 Claude Code tooling
 
@@ -65,27 +65,52 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 
 ---
 
-## Phase 2 — Content Architecture & RAG Pipeline
+## Phase 2 — Content Architecture & RAG Pipeline (Notion-backed)
 
-### 2.1 Content folders
+Source of truth for all avatar knowledge is a single Notion database, **"📚 Knowledge Base"** (under "Second Brain — Daniel Peraza"), confirmed live via the Notion MCP. No local `content/` folders — Notion is authored directly, ingestion pulls from there.
 
-- [ ] Create `content/professional/`, `content/academic/`, `content/personal/` folders (source of truth for RAG)
-- [ ] Agree on file format per folder (Markdown recommended — easy to chunk, diff, and version)
-- [ ] User populates folders with source material (bio, resume details, project write-ups, personal background, etc.)
+### 2.1 Knowledge Base schema (confirmed, already built in Notion)
+
+- [x] Single unified database, data source `collection://9014f42b-a380-4526-8521-a5d20f491f58`, one vector space across all categories
+- [x] `Content Type` (select): Professional Experience / Academic Experience / Personal Interest / Project / Skill
+- [x] `Status` (select): Draft / Reviewed / Published / Archived — **only `Published` rows are ingested**
+- [x] `Language` (select): EN / ES / FR
+- [x] `Priority` (number 1–5, 5 = highest) — persona weighting at retrieval time
+- [x] `Tags` (multi-select), `Summary` (1-2 sentence retrieval blurb), `Description` (short text — renamed from `Content`, a short description of the project/experience, not the full text), `Metadata` (JSON text, schema below), `Source` (select: Notion/GitHub/Google Drive/etc.)
+- [x] `Related To` (relation) → a separate **Projects** database (project-management tracker: P0–P3 priority, Active/On Hold/Completed/Cancelled, Progress %, Deadline) — useful for cross-linking status/timeline, but **not** the portfolio display schema; portfolio display fields (media, links, category) live in `Metadata` (schema defined in 2.1a below)
+- [x] Per-Content-Type templates exist (`TEMPLATE: Professional Experience`, etc.) with a consistent structured markdown skeleton (Overview, Key Responsibilities, Achievements, Tech/Skills, Results, Lessons, Related Links)
+- [x] **Confirmed by inspecting a template**: the long-form text lives in the **Notion page body** (the template's markdown blocks), not a property. Ingestion must treat the page body (via `notion-fetch`) as the primary embedding text; `Description`/`Summary` are supplementary metadata, not the source text.
+
+### 2.1a `Metadata` JSON schema (structured data preservation + portfolio display fields)
+
+Formal schema saved at [`docs/notion-metadata-schema.json`](docs/notion-metadata-schema.json) (JSON Schema draft-07). Applies to every `Content Type`; all fields optional, fill in only what's relevant to that entry.
+
+- `category` — display grouping (e.g. `"Web App"`, `"Full-time Role"`, `"Certification"`, `"Hobby"`)
+- `dates` — `{ start, end, ongoing }` (ISO `YYYY-MM-DD`, `end` omitted if `ongoing: true`)
+- `location` — free text, e.g. `"Remote"` / `"Mexico City, MX"`
+- `links` — array of `{ label, url, type }`, `type` one of `demo | repo | company | certificate | article | other`
+- `media` — array of `{ type, url, alt, caption, cover }`, `type` one of `image | video`, `cover` marks the card thumbnail
+- `techStack` — array of strings (kept separate from `Tags` since `Tags` is a fixed Notion multi-select and this can be freeform)
+- `originalFile` — legacy field, path to a source doc if this entry was migrated from a file
 
 ### 2.2 Ingestion pipeline
 
-- [ ] Write `scripts/ingest.ts`: reads content folders, chunks documents (sensible chunk size/overlap for chat-length answers), generates embeddings, upserts into Chroma Cloud collection
-- [ ] Decide embedding model (Google's `text-embedding-004`/Gemini embeddings to stay in the same free-tier ecosystem, or Chroma's default — confirm cost/limits)
-- [ ] Add metadata per chunk (source folder, doc title, language) to support filtered retrieval and multilingual answers
-- [ ] Run initial ingestion once folders have content, verify via Chroma MCP (`chroma_query_documents`) that retrieval returns sensible chunks
-- [ ] Document the re-ingestion workflow (how to update the KB when content changes)
+- [x] Write `scripts/ingest.ts`:
+  - Queries the Knowledge Base data source via `@notionhq/client` v5's `dataSources.query` (the `databases.query` method was removed in v5 — Notion's multi-source-database migration replaced it), paginated, no server-side status filter (see idempotency note below)
+  - For each row, fetches the full page body as markdown via `pages.retrieveMarkdown` (the v5 SDK renders blocks to markdown natively — no hand-rolled block converter needed), plus `Title`, `Summary`, `Description`, `Content Type`, `Tags`, `Priority`, `Language`, `Related To`, `Status`
+  - Chunks the page body: **512 tokens, 50-token overlap**, via `gpt-tokenizer` (encode → sliding window → decode); short entries under 512 tokens ship as a single chunk
+  - Generates embeddings per chunk — **resolved: Google `text-embedding-004`** via the Generative Language API's `batchEmbedContents` (batches of 100)
+  - Upserts into the Chroma Cloud collection **`knowledge_base`** (inside the existing `interactive-portfolio` Chroma database) with per-chunk metadata: `notion_page_id`, `title`, `content_type`, `tags` (comma-joined — Chroma metadata values are scalar, not arrays), `priority`, `language`, `related_to` (comma-joined page IDs), `summary`
+- [x] Idempotent re-ingestion: every run deletes existing chunks for a page (`collection.delete({ where: { notion_page_id } })`) before re-inserting, regardless of status — covers edits, re-publishes, and un-publishing in one pass. (Known gap: pages fully **deleted** from Notion won't be cleaned up automatically since they no longer appear in the query; acceptable for now given the KB is still empty, revisit if it matters later.)
+- [x] Manual trigger: `pnpm ingest` (`node --env-file=.env --import tsx scripts/ingest.ts`), reads credentials from a local `.env` (see `.env.example`); scheduled Worker Cron or Notion-webhook-triggered re-ingestion deferred to Phase 12
+- [ ] Run initial ingestion once the user has published a few real entries; verify via Chroma MCP (`chroma_query_documents`) that retrieval returns sensible, correctly-tagged chunks — **blocked on**: `NOTION_TOKEN` (create an Internal Integration, share the Knowledge Base database with it) and `GOOGLE_AI_STUDIO_API_KEY` (https://aistudio.google.com/apikey), neither of which exist yet despite Phase 0.1 previously claiming otherwise
+- [x] Authoring workflow (documented here): duplicate the right `TEMPLATE:` page → fill in the page body → set `Status = Reviewed` then `Published` when ready → run `pnpm ingest`
 
 ### 2.3 Retrieval + prompting
 
-- [ ] Design the RAG prompt template: system instructions (persona, tone, boundaries — what the avatar should/shouldn't answer), retrieved-context injection, conversation history handling
-- [ ] Decide top-k retrieval count and any re-ranking/filtering logic
-- [ ] Handle multilingual retrieval: query in visitor's language, retrieve across content (translate query or store multilingual chunks — decide during build)
+- [ ] Design the RAG prompt template: system instructions (persona, tone, boundaries — what the avatar should/shouldn't answer), retrieved-context injection ordered/weighted by `Priority`, conversation history handling
+- [ ] Top-k retrieval (start around k=5–8); use Chroma metadata filters on `content_type`/`language` to support scoped queries later (e.g. CV page pulling only Professional/Academic entries)
+- [ ] Multilingual retrieval: prefer chunks matching the visitor's `Language`; if too sparse, fall back to retrieving across all languages and let the model answer in the visitor's language regardless of source language
 
 ---
 
@@ -133,7 +158,7 @@ Per prior decision: stock Gemini Live API voice, not a cloned voice — keeps la
 - [ ] Quick-overview header section
 - [ ] Accordion component (glass-styled, consistent with design system)
 - [ ] Sections: Professional Experience, Projects (linking into Portfolio page detail routes), Academic Experience & Certifications, Other Experience, Personal Interests & Background
-- [ ] Populate content (from `content/professional`, `content/academic`, `content/personal` — reuse the same source docs as the RAG folders where it makes sense, single source of truth)
+- [ ] Populate content by querying the Notion Knowledge Base (`Status = Published`, `Content Type` in Professional Experience / Academic Experience / Skill / Personal Interest) — same source of truth as the RAG pipeline (Phase 2.2), fetched at build time and rendered directly (not just embedded)
 - [ ] Translate content for EN/ES/FR
 - [ ] Optional: downloadable PDF version of the CV
 
@@ -143,8 +168,10 @@ Per prior decision: stock Gemini Live API voice, not a cloned voice — keeps la
 
 ### 6.1 Content sourcing
 
-- [ ] Define project schema (title, category, date, description, media, links)
-- [ ] Pull project content from Notion via Notion MCP (`notion-search`, `notion-fetch`, `notion-query-database-view`) during a build-time or on-demand sync step
+- [ ] Source projects from the Knowledge Base entries where `Content Type = Project` and `Status = Published` (same database as RAG, not a separate Notion database)
+- [x] Portfolio-display schema resolved: `Title`/`Summary`/`Tags`/`Priority` map directly; category/date/location/links/media/tech stack come from `Metadata` (JSON Schema at `docs/notion-metadata-schema.json`, defined in Phase 2.1a)
+- [ ] Optionally enrich with the linked **Projects** tracker database (via `Related To`) for status/timeline (Active/Completed/Progress %/Deadline) if that's worth surfacing publicly
+- [ ] Pull via Notion MCP/API (`notion-query-data-sources` SQL mode, filtered) during a build-time or on-demand sync step
 - [ ] Decide sync mechanism: build-time fetch (simplest, content updates require redeploy) vs. runtime fetch via a Worker route (fresher, adds latency/complexity) — recommend **build-time** for a portfolio site
 - [ ] Store synced content as local Markdown/JSON in the repo (versioned, fast to render) rather than fetching Notion at request time
 - [ ] Handle project media (images/video) — download and optimize, or reference Notion-hosted URLs (check stability/expiry of Notion file URLs)
