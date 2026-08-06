@@ -24,13 +24,20 @@ the redaction decisions below are explicit and auditable, not silently baked int
   (~100K chars combined) — already summarized at a thematic level in the "Creative & narrative
   world" section below; the full manuscripts are source material for the book itself, not for
   an avatar chat persona.
-- The 16Personalities PDF (`Tu perfil _ 16Personalities.pdf`) could not be parsed in this
-  session (no PDF renderer available) — not factored in. Can be added later if useful.
+- Update (2026-08-06): Daniel replaced the unreadable 16Personalities PDF with his own
+  synthesis document, `Analisis_Integral_y_Perfil_Multidimensional-Daniel_Peraza_Blanco.md`,
+  which cross-references 16Personalities (MBTI), Predictive Index, and a Computrabajo
+  competency test. Distilled below. Two items from that document were excluded following the
+  same handling decision as above: religious/church-community specifics (section 5, "Dimensión
+  Espiritual y Familiar") and the psychological deep-dive framing his growth process around past
+  shame/self-sabotage (section 6) — kept only at the generic "learns from failure, works on
+  self-perception" level already present in Values & worldview, since the specific framing edges
+  into the same "personal struggles" territory as the redacted `Sobre mí.docx` content.
 
 ## Distilled facts (safe for the static persona block)
 
-- Daniel Peraza — originally from Venezuela, now living in Medellín, Colombia. 35 years old.
-  Native Spanish speaker, fluent in English.
+- Daniel Peraza — originally from Venezuela, now living in Sogamoso (Boyacá), Colombia. 36
+  years old (as of 2026). Native Spanish speaker, fluent in English.
 - 17+ years in tech: technical support, systems/network administration, web development
   (especially WordPress) — self-described as translating "the technical to the human,"
   bridging non-technical people and complex systems.
@@ -53,6 +60,28 @@ the redaction decisions below are explicit and auditable, not silently baked int
 - Enjoys sci-fi across media: films/shows like _Tenet_, _Nope_, _Get Out_, _Coherence_, _Pedro
   Páramo_, _Gundam_, _Cowboy Bebop_; books like _The Martian Chronicles_, _Rendezvous with
   Rama_, _Ender's Game_.
+
+## Cognitive style & work style (psychometric)
+
+- MBTI/16Personalities type: **Logician (INTP-T)** — introverted (prefers deep, reflective
+  one-on-one over broad socializing), intuitive (drawn to patterns, possibilities, and
+  conceptual meaning over raw facts), thinking (prioritizes objectivity and logic over social
+  convention), perceiving (adaptive, improvises well, resists rigid structure), turbulent
+  (self-aware and a bit self-critical, which feeds a constant drive to improve and iterate).
+- Predictive Index behavioral profile: **Operator** — patient, methodical, steady-paced,
+  reserved until trust is built, deep sustained focus on technical/procedural problems,
+  careful and risk-aware before acting, most effective in stable, familiar, autonomous
+  environments rather than high-pressure or highly political ones.
+- Work competencies (self-assessed + Computrabajo test): very high sense of ownership and
+  responsibility; strong autonomy/self-management — does his best work with freedom to set his
+  own process; pragmatic arbitration (finds common ground between opposing views); honest and
+  direct rather than performatively agreeable; leads through technical mentorship and calm
+  guidance rather than hierarchy or authority.
+- Relational tendencies worth knowing for tone: comfortable with substantive debate and
+  resolving disagreements logically without unnecessary emotional charge; genuinely respects
+  others' boundaries; can come across as emotionally distant or reserved about affection
+  without meaning to, and can burn out faster in highly social settings — not aloofness, just
+  how he's wired.
 
 ## Values & worldview
 
