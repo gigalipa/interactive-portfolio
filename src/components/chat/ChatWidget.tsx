@@ -1,0 +1,102 @@
+import { useEffect, useState } from "react";
+import { useChatSession } from "../../lib/chat/useChatSession";
+import { ChatMessages } from "./ChatMessages";
+import { ChatBox } from "./ChatBox";
+import { ConsentBanner } from "./ConsentBanner";
+import { HistorySidebar } from "./HistorySidebar";
+import { HistoryToggleButton } from "./HistoryToggleButton";
+import { getDictionary, type Locale } from "../../i18n";
+
+export interface ChatWidgetProps {
+	lang: Locale;
+}
+
+export function ChatWidget({ lang }: ChatWidgetProps) {
+	const t = getDictionary(lang).chat;
+	const [preferencesOpen, setPreferencesOpen] = useState(false);
+
+	const session = useChatSession({
+		language: lang.toUpperCase(),
+		errorGenericMessage: t.errorGeneric,
+		errorRateLimitedMessage: t.errorRateLimited,
+	});
+
+	useEffect(() => {
+		if (session.consent === null) setPreferencesOpen(true);
+	}, [session.consent]);
+
+	const showConsentBanner = session.consent === null || preferencesOpen;
+
+	return (
+		<>
+			<HistorySidebar
+				open={session.historyOpen}
+				conversations={session.conversations}
+				titleText={t.historyTitle}
+				newConversationLabel={t.newConversation}
+				deleteLabel={t.deleteConversation}
+				retentionNoticeText={t.retentionNotice}
+				onClose={session.closeHistory}
+				onSelect={session.selectConversation}
+				onDelete={session.deleteConversationById}
+				onNewConversation={session.startNewConversation}
+			/>
+
+			<div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3 px-4">
+				<div className="pointer-events-auto flex w-full max-w-xl flex-col gap-3">
+					{showConsentBanner ? (
+						<ConsentBanner
+							messageText={t.consent.message}
+							acceptLabel={t.consent.accept}
+							rejectLabel={t.consent.reject}
+							infoToggleLabel={t.consent.infoToggle}
+							infoBodyText={t.consent.infoBody}
+							showDeleteOption={session.consent === "accepted"}
+							deleteOptionLabel={t.consent.deleteOption}
+							onAccept={() => {
+								session.acceptConsent();
+								setPreferencesOpen(false);
+							}}
+							onReject={(alsoDelete) => {
+								session.rejectConsent(alsoDelete);
+								setPreferencesOpen(false);
+							}}
+						/>
+					) : (
+						<div className="flex items-center justify-between">
+							<HistoryToggleButton
+								visible={session.conversations.length > 0}
+								label={t.historyToggleLabel}
+								onClick={session.toggleHistory}
+							/>
+							<button
+								type="button"
+								onClick={() => setPreferencesOpen(true)}
+								className="text-ion/40 hover:text-ion/70 ml-auto text-xs underline"
+							>
+								{t.consent.preferencesLink}
+							</button>
+						</div>
+					)}
+
+					<ChatMessages
+						messages={session.messages}
+						status={session.status}
+						errorMessage={session.errorMessage}
+						thinkingLabel={t.thinking}
+						retryLabel={t.retry}
+						onRetry={session.retryLast}
+					/>
+
+					<ChatBox
+						inputPlaceholder={t.inputPlaceholder}
+						sendLabel={t.send}
+						voiceLabel={t.voiceComingSoon}
+						disabled={session.status === "sending" || session.status === "streaming"}
+						onSend={session.sendMessage}
+					/>
+				</div>
+			</div>
+		</>
+	);
+}

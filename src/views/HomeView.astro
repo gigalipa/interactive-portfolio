@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PresenceRing from "../components/ui/PresenceRing.astro";
+import { ChatWidget } from "../components/chat/ChatWidget";
 import { getDictionary, type Locale } from "../i18n";
 
 interface Props {
@@ -29,5 +30,6 @@ const t = getDictionary(lang);
 				{t.home.tagline}
 			</p>
 		</div>
+		<ChatWidget lang={lang} client:only="react" />
 	</main>
 </Layout>
