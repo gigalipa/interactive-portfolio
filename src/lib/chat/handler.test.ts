@@ -213,4 +213,28 @@ describe("handleChatRequest", () => {
 		expect(text).toContain("event: delta");
 		expect(text).toContain('event: error\ndata: {"message":"model exploded"}');
 	});
+
+	it("persists the user's message and partial reply when the model call fails mid-stream for a persist:true request", async () => {
+		vi.mocked(streamChatCompletion).mockImplementationOnce(async function* () {
+			yield "partial";
+			throw new Error("model exploded");
+		});
+		const kv = createMockKV();
+
+		const response = await handleChatRequest({
+			request: createRequest(
+				{ persist: true, conversationId: "conv-1", message: "Hi" },
+				"visitor_id=v-1",
+			),
+			...baseOptions(kv),
+		});
+		await readSse(response);
+
+		expect(kv.store.has("conv:v-1:conv-1")).toBe(true);
+		const conversation = JSON.parse(kv.store.get("conv:v-1:conv-1")!) as StoredConversation;
+		expect(conversation.messages).toEqual([
+			expect.objectContaining({ role: "user", text: "Hi" }),
+			expect.objectContaining({ role: "model", text: "partial" }),
+		]);
+	});
 });

@@ -106,6 +106,28 @@ export async function handleChatRequest(
 				send(formatSseEvent({ event: "meta", data: { conversationId } }));
 			}
 
+			// Persists the user's message (and, if any, the assistant's reply so far)
+			// for a persist:true request. Guarded the same way on both the success
+			// and failure paths so a mid-stream model failure never silently drops
+			// the turn the visitor just sent.
+			const persistTurn = async (assistantText: string) => {
+				if (!(body.persist && visitorId && conversationId)) return;
+				const messages: ChatMessage[] = [...priorMessages, userMessage];
+				if (assistantText) {
+					messages.push({ role: "model", text: assistantText, at: now() });
+				}
+				const updated: StoredConversation = {
+					messages,
+					updatedAt: now(),
+					title: existingTitle ?? buildTitle(body.message),
+				};
+				await putConversation(kv, visitorId, conversationId, updated).catch(
+					(error: unknown) => {
+						console.error("Failed to persist conversation", conversationId, error);
+					},
+				);
+			};
+
 			let fullReply = "";
 			try {
 				const chunks = await retrieveContext({
@@ -130,23 +152,7 @@ export async function handleChatRequest(
 
 				// Persist BEFORE closing: Cloudflare Workers may not guarantee code
 				// scheduled after controller.close() runs to completion.
-				if (body.persist && visitorId && conversationId && fullReply) {
-					const assistantMessage: ChatMessage = {
-						role: "model",
-						text: fullReply,
-						at: now(),
-					};
-					const updated: StoredConversation = {
-						messages: [...priorMessages, userMessage, assistantMessage],
-						updatedAt: now(),
-						title: existingTitle ?? buildTitle(body.message),
-					};
-					await putConversation(kv, visitorId, conversationId, updated).catch(
-						(error: unknown) => {
-							console.error("Failed to persist conversation", conversationId, error);
-						},
-					);
-				}
+				await persistTurn(fullReply);
 			} catch (error) {
 				send(
 					formatSseEvent({
@@ -154,6 +160,9 @@ export async function handleChatRequest(
 						data: { message: error instanceof Error ? error.message : "Unknown error" },
 					}),
 				);
+				// Even on a mid-stream failure, persist what was actually sent/received
+				// so the visitor's message isn't silently lost from their history.
+				await persistTurn(fullReply);
 			} finally {
 				controller.close();
 			}
