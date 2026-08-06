@@ -55,8 +55,8 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 				{t.consent.preferencesLink}
 			</button>
 
-			<div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3 px-4">
-				<div className="pointer-events-auto flex w-full max-w-xl flex-col gap-3">
+			<div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3 px-4 lg:inset-x-auto lg:top-36 lg:right-6 lg:items-stretch lg:px-0">
+				<div className="pointer-events-auto flex w-full max-w-xl flex-col gap-3 lg:h-full lg:w-[28rem] lg:max-w-none">
 					{showConsentBanner && (
 						<ConsentBanner
 							messageText={t.consent.message}
