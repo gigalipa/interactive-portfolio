@@ -1,4 +1,4 @@
-import type { ChatMessage, ConversationSummary, StoredConversation } from "./types";
+import type { ConversationSummary, StoredConversation } from "./types";
 
 const CONVERSATION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days, rolling from last write
 
@@ -91,4 +91,8 @@ export function buildTitle(firstUserMessage: string): string {
 }
 
 // Re-exported for convenience so callers don't need a separate import.
-export type { ChatMessage, StoredConversation, ConversationSummary } from "./types";
+export type {
+	ChatMessage,
+	StoredConversation,
+	ConversationSummary,
+} from "./types";

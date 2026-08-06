@@ -33,6 +33,21 @@ export interface HandleChatRequestOptions {
 }
 
 const RATE_LIMIT_IP_HEADER = "cf-connecting-ip";
+const MAX_MESSAGE_LENGTH = 4000;
+// Deliberate caps, not arbitrary: MAX_MODEL_MESSAGES bounds per-turn Gemini token
+// cost (which would otherwise grow linearly with conversation length), and
+// MAX_STORED_MESSAGES bounds the KV value size so a long conversation can't grow
+// past the namespace's per-value limit.
+const MAX_MODEL_MESSAGES = 20;
+const MAX_STORED_MESSAGES = 100;
+const MAX_CLIENT_HISTORY = 50;
+const UUID_PATTERN =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Upstream (Gemini/Chroma) error text can carry quota, billing, and internal
+// details, so the client only ever sees this. The real error is logged server-side.
+const GENERIC_ERROR_MESSAGE =
+	"The avatar couldn't reply just now. Please try again.";
 
 function jsonError(status: number, message: string): Response {
 	return new Response(JSON.stringify({ message }), {
@@ -41,12 +56,19 @@ function jsonError(status: number, message: string): Response {
 	});
 }
 
+function isValidHistoryEntry(entry: unknown): entry is ChatMessage {
+	if (!entry || typeof entry !== "object") return false;
+	const { role, text } = entry as Partial<ChatMessage>;
+	return (role === "user" || role === "model") && typeof text === "string";
+}
+
 const now = (): string => new Date().toISOString();
 
 export async function handleChatRequest(
 	options: HandleChatRequestOptions,
 ): Promise<Response> {
-	const { request, kv, rateLimiter, chroma, googleApiKeyEmb, googleApiKeyLlm } = options;
+	const { request, kv, rateLimiter, chroma, googleApiKeyEmb, googleApiKeyLlm } =
+		options;
 
 	let body: ChatRequestBody;
 	try {
@@ -57,6 +79,38 @@ export async function handleChatRequest(
 	if (!body.message || typeof body.message !== "string") {
 		return jsonError(400, "message is required");
 	}
+	if (body.message.length > MAX_MESSAGE_LENGTH) {
+		return jsonError(
+			400,
+			`message must be at most ${MAX_MESSAGE_LENGTH} characters`,
+		);
+	}
+	// A client-supplied conversationId becomes part of a KV key, so only accept the
+	// UUID shape we hand out via the meta event.
+	if (body.persist && body.conversationId !== undefined) {
+		if (
+			typeof body.conversationId !== "string" ||
+			!UUID_PATTERN.test(body.conversationId)
+		) {
+			return jsonError(400, "conversationId must be a UUID");
+		}
+	}
+
+	// The rate-limit key is always derived from the client IP. It must never be
+	// derived from a freshly-generated visitor id, or a client could evade the
+	// limiter entirely by sending no cookie (or a new random one) each request.
+	const rateLimitKey = request.headers.get(RATE_LIMIT_IP_HEADER) ?? "anonymous";
+	const { success } = await rateLimiter.limit({ key: rateLimitKey });
+	if (!success) {
+		return new Response(JSON.stringify({ message: "Rate limit exceeded" }), {
+			status: 429,
+			headers: {
+				"Content-Type": "application/json",
+				// Matches the rate limiter's 60-second period.
+				"Retry-After": "60",
+			},
+		});
+	}
 
 	let visitorId: string | undefined;
 	let setCookieHeader: string | undefined;
@@ -65,11 +119,6 @@ export async function handleChatRequest(
 		visitorId = resolved.visitorId;
 		if (resolved.isNew) setCookieHeader = buildVisitorIdCookie(visitorId);
 	}
-
-	const rateLimitKey =
-		visitorId ?? request.headers.get(RATE_LIMIT_IP_HEADER) ?? "anonymous";
-	const { success } = await rateLimiter.limit({ key: rateLimitKey });
-	if (!success) return jsonError(429, "Rate limit exceeded");
 
 	const conversationId = body.persist
 		? (body.conversationId ?? crypto.randomUUID())
@@ -82,18 +131,28 @@ export async function handleChatRequest(
 		priorMessages = existing?.messages ?? [];
 		existingTitle = existing?.title;
 	} else if (!body.persist) {
-		priorMessages = body.history ?? [];
+		// Client-supplied history is untrusted: keep only the most recent entries and
+		// drop anything malformed rather than letting it reach the model or crash.
+		priorMessages = (Array.isArray(body.history) ? body.history : [])
+			.slice(-MAX_CLIENT_HISTORY)
+			.filter(isValidHistoryEntry);
 	}
 
-	const userMessage: ChatMessage = { role: "user", text: body.message, at: now() };
-	const messagesForModel: ChatMessageForModel[] = [...priorMessages, userMessage].map(
-		({ role, text }) => ({ role, text }),
-	);
+	const userMessage: ChatMessage = {
+		role: "user",
+		text: body.message,
+		at: now(),
+	};
+	const messagesForModel: ChatMessageForModel[] = [
+		...priorMessages,
+		userMessage,
+	]
+		.slice(-MAX_MODEL_MESSAGES)
+		.map(({ role, text }) => ({ role, text }));
 
 	const responseHeaders = new Headers({
 		"Content-Type": "text/event-stream",
 		"Cache-Control": "no-cache",
-		Connection: "keep-alive",
 	});
 	if (setCookieHeader) responseHeaders.set("Set-Cookie", setCookieHeader);
 
@@ -117,13 +176,17 @@ export async function handleChatRequest(
 					messages.push({ role: "model", text: assistantText, at: now() });
 				}
 				const updated: StoredConversation = {
-					messages,
+					messages: messages.slice(-MAX_STORED_MESSAGES),
 					updatedAt: now(),
 					title: existingTitle ?? buildTitle(body.message),
 				};
 				await putConversation(kv, visitorId, conversationId, updated).catch(
 					(error: unknown) => {
-						console.error("Failed to persist conversation", conversationId, error);
+						console.error(
+							"Failed to persist conversation",
+							conversationId,
+							error,
+						);
 					},
 				);
 			};
@@ -137,7 +200,10 @@ export async function handleChatRequest(
 					language: body.language,
 				}).catch(() => []);
 
-				const systemPrompt = buildSystemPrompt({ chunks, visitorLanguage: body.language });
+				const systemPrompt = buildSystemPrompt({
+					chunks,
+					visitorLanguage: body.language,
+				});
 
 				for await (const delta of streamChatCompletion({
 					systemPrompt,
@@ -154,10 +220,13 @@ export async function handleChatRequest(
 				// scheduled after controller.close() runs to completion.
 				await persistTurn(fullReply);
 			} catch (error) {
+				// Log the real error server-side only; the client gets a generic message
+				// so upstream quota/billing/internal details never reach the browser.
+				console.error("Chat request failed", conversationId, error);
 				send(
 					formatSseEvent({
 						event: "error",
-						data: { message: error instanceof Error ? error.message : "Unknown error" },
+						data: { message: GENERIC_ERROR_MESSAGE },
 					}),
 				);
 				// Even on a mid-stream failure, persist what was actually sent/received

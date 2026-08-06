@@ -6,31 +6,9 @@ import {
 	getConversation,
 	listConversations,
 	putConversation,
-	type ConversationKV,
 } from "./kv";
 import type { StoredConversation } from "./types";
-
-function createMockKV(): ConversationKV & { store: Map<string, string> } {
-	const store = new Map<string, string>();
-	return {
-		store,
-		async get(key) {
-			return store.get(key) ?? null;
-		},
-		async put(key, value) {
-			store.set(key, value);
-		},
-		async delete(key) {
-			store.delete(key);
-		},
-		async list({ prefix }) {
-			const keys = [...store.keys()]
-				.filter((key) => key.startsWith(prefix))
-				.map((name) => ({ name }));
-			return { keys };
-		},
-	};
-}
+import { createMockKV } from "./testUtils";
 
 const sampleConversation: StoredConversation = {
 	messages: [{ role: "user", text: "Hi", at: "2026-08-06T00:00:00.000Z" }],
@@ -80,8 +58,16 @@ describe("conversation KV helpers", () => {
 		const result = await listConversations(kv, "visitor-1");
 
 		expect(result).toEqual([
-			{ conversationId: "conv-new", title: "New", updatedAt: "2026-08-05T00:00:00.000Z" },
-			{ conversationId: "conv-old", title: "Old", updatedAt: "2026-08-01T00:00:00.000Z" },
+			{
+				conversationId: "conv-new",
+				title: "New",
+				updatedAt: "2026-08-05T00:00:00.000Z",
+			},
+			{
+				conversationId: "conv-old",
+				title: "Old",
+				updatedAt: "2026-08-01T00:00:00.000Z",
+			},
 		]);
 	});
 

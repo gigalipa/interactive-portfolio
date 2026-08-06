@@ -3,11 +3,14 @@
 	"name": "interactive-portfolio",
 	"compatibility_date": "2026-08-06",
 	"compatibility_flags": ["nodejs_compat"],
+	// @astrojs/cloudflare also defaults to a binding named SESSION for its own session
+	// feature; this project reuses that same namespace for conversation history under a
+	// "conv:" key prefix, so the two coexist without colliding.
 	"kv_namespaces": [
 		{
 			"binding": "SESSION",
-			"id": "5d50ebf2b87d44b2b45eb962c56bae42"
-		}
+			"id": "5d50ebf2b87d44b2b45eb962c56bae42",
+		},
 	],
 	"ratelimits": [
 		{
@@ -15,8 +18,8 @@
 			"namespace_id": "1001",
 			"simple": {
 				"limit": 10,
-				"period": 60
-			}
-		}
-	]
+				"period": 60,
+			},
+		},
+	],
 }
