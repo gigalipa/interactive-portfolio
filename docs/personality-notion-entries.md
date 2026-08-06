@@ -2,16 +2,11 @@
 
 These are formatted for the "📚 Knowledge Base" Notion database, `Content Type = Personal
 Interest`. Paste each into a new page (title as the page title, body as the page content),
-fill in `Summary`/`Description`/`Tags`/`Priority`/`Language`/`Status` as noted, then run
-`pnpm ingest` as usual — no code changes needed, this reuses the existing Phase 2.2 pipeline.
+fill in `Summary`/`Description`/`Tags`/`Priority`/`Language`/`Status` as noted.
 
 Kept deliberately low `Priority` (2) relative to professional/project entries (4–5) so they
 surface on genuinely relevant queries (creative writing, personality, voice) rather than
 crowding out CV-relevant content.
-
-Excluded from this set: `Placeres mundanos` (thematically adjacent to a personal struggle that
-was deliberately kept out of every dataset — see `docs/personality-dataset.md`) and the
-`writings/utopos/*` book drafts (in-progress novel manuscript, not persona material).
 
 ---
 
@@ -25,7 +20,7 @@ was deliberately kept out of every dataset — see `docs/personality-dataset.md`
   the subconscious in decision-making.
 - **Description**: One of Daniel's personal reflections — on the ongoing tension between
   reason and feeling in how people think and decide.
-- **Status**: set to `Published` when ready
+- **Status**: Published
 
 **Body:**
 
@@ -52,7 +47,7 @@ Se librarán muchas batallas, pero no habrá fin para esa guerra. Pues siempre e
 - **Summary**: A short essay arguing that perfection only exists through accepting
   imperfection — that our flaws are what make us who we are.
 - **Description**: A personal reflection on perfection, imperfection, and identity.
-- **Status**: set to `Published` when ready
+- **Status**: Published
 
 **Body:**
 
@@ -76,7 +71,7 @@ De manera que, por más que uno busque, nunca conseguirá nada perfecto, hasta q
 - **Summary**: A reflection on the power and weight of words — how they carry feeling, and
   how they wound when used without sincerity.
 - **Description**: A personal reflection on language, meaning, and sincerity.
-- **Status**: set to `Published` when ready
+- **Status**: Published
 
 **Body:**
 
@@ -100,7 +95,7 @@ Los sentimientos detrás de una palabra deben ser verdaderos. Si se dice algo qu
 - **Language**: ES
 - **Summary**: A romantic reflection about patience, love, and devotion.
 - **Description**: A personal, poetic reflection about love and his wife.
-- **Status**: set to `Published` when ready
+- **Status**: Published
 
 **Body:**
 
@@ -127,7 +122,7 @@ Mi mente vuela, vuelvo a sentir esa inmensa alegría que me recorre de pies a ca
 - **Summary**: A short fiction piece (ghost-story twist ending) about a man trying to reach
   his grieving wife after his own death.
 - **Description**: A short fiction/creative-writing sample — supernatural/twist-ending genre.
-- **Status**: set to `Published` when ready
+- **Status**: Published
 
 **Body:**
 
@@ -173,7 +168,7 @@ Mi nombre es...
 - **Summary**: A short fiction piece (magical-realism twist ending) about a man who witnesses
   an accident no one else can see.
 - **Description**: A short fiction/creative-writing sample — magical-realism genre.
-- **Status**: set to `Published` when ready
+- **Status**: Published
 
 **Body:**
 
@@ -198,7 +193,7 @@ Veo los recuerdos que he atesorado durante toda mi vida, mis más valiosas poses
 - **Summary**: A short surreal fiction piece about a disoriented evening at home that ends in
   a twist.
 - **Description**: A short fiction/creative-writing sample — surreal genre.
-- **Status**: set to `Published` when ready
+- **Status**: Published
 
 **Body:**
 

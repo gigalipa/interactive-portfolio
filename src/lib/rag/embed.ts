@@ -1,6 +1,33 @@
 import { EMBEDDING_BATCH_SIZE, EMBEDDING_MODEL } from "./config";
 
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+const MAX_RETRIES = 5;
+const BASE_RETRY_DELAY_MS = 10_000;
+
+function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Free-tier embedding quotas are low (requests/minute); retry 429s with backoff. */
+async function fetchWithRetry(
+	url: string,
+	init: RequestInit,
+): Promise<Response> {
+	for (let attempt = 0; ; attempt++) {
+		const response = await fetch(url, init);
+		if (response.status !== 429 || attempt >= MAX_RETRIES) {
+			return response;
+		}
+		const retryAfterHeader = Number(response.headers.get("retry-after"));
+		const delayMs = Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
+			? retryAfterHeader * 1000
+			: BASE_RETRY_DELAY_MS * 2 ** attempt;
+		console.warn(
+			`  ! Rate limited (429), retrying in ${Math.round(delayMs / 1000)}s (attempt ${attempt + 1}/${MAX_RETRIES})…`,
+		);
+		await sleep(delayMs);
+	}
+}
 
 /** Embeds many texts (e.g. ingestion chunks), batched. */
 export async function embedTexts(
@@ -11,7 +38,7 @@ export async function embedTexts(
 
 	for (let i = 0; i < texts.length; i += EMBEDDING_BATCH_SIZE) {
 		const batch = texts.slice(i, i + EMBEDDING_BATCH_SIZE);
-		const response = await fetch(
+		const response = await fetchWithRetry(
 			`${API_BASE}/${EMBEDDING_MODEL}:batchEmbedContents?key=${apiKey}`,
 			{
 				method: "POST",
