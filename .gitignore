@@ -29,3 +29,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# raw personal source files for the avatar personality dataset (sensitive —
+# see docs/personality-dataset.md for the curated, reviewed version)
+docs/personality/

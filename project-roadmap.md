@@ -114,6 +114,19 @@ Formal schema saved at [`docs/notion-metadata-schema.json`](docs/notion-metadata
 - [x] Verified live end-to-end (retrieval → prompt assembly) against the real Chroma collection with a throwaway script; sensible, correctly-ranked results.
 - [ ] Wire `retrieveContext` + `buildSystemPrompt` into an actual chat request/response loop with the LLM (`gemma-4-31b-it`) and real conversation history — deferred to Phase 3, since that's where the chat endpoint itself gets built.
 
+### 2.3a Avatar personality dataset
+
+Source: personal files/writings the user provided in `docs/personality/` (gitignored — contains
+sensitive material). Curated, reviewed, and documented in `docs/personality-dataset.md`,
+including an explicit redaction decision (confirmed with Daniel, 2026-08-05): exact
+salary/schedule/religious-practice/personal-struggle specifics are excluded from every dataset,
+retrievable or not; only non-sensitive facts feed the avatar.
+
+- [x] Distilled a real identity/values/voice profile (background, worldview, cognitive style, voice patterns with quotes) into `docs/personality-dataset.md`
+- [x] Enriched `src/lib/rag/prompt.ts`'s static `PERSONA`/`TONE`/`BOUNDARIES` blocks with this real research (replacing the earlier generic placeholder) — always-on, not retrieved piecemeal
+- [x] Prepared 7 ready-to-paste Notion "Personal Interest" entries (`docs/personality-notion-entries.md`) from the shorter personal writings (philosophical reflections, a romantic reflection, 3 short fiction pieces) — low `Priority` (2) so they surface only on genuinely relevant queries, not crowding out CV content; excludes one piece thematically adjacent to a redacted personal struggle, and the long-form `writings/utopos/*` book drafts (separate project, not persona material)
+- [ ] Paste those 7 entries into Notion, set `Status = Published`, run `pnpm ingest` — pending the user doing the paste (not something to automate, since it's their personal writing going into their own Notion workspace)
+
 ---
 
 ## Phase 3 — Text Chat (Main Page, avatar-less first)
