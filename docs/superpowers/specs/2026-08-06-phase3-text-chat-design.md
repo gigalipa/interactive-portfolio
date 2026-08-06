@@ -14,6 +14,7 @@ Per an earlier decision, the interaction layer (chat) is built before the visual
 - Returning visitors (same browser) can see and resume past conversations from a history sidebar, and delete them.
 - The public chat endpoint is protected from abuse via Cloudflare's native rate limiting.
 - Conversations are retained for 30 days of inactivity, then automatically expire — visitors are told this and can delete manually at any time.
+- The `visitor_id` cookie (the only non-essential cookie this site sets) is never set without prior, explicit consent — GDPR/ePrivacy-compliant by default, not by afterthought.
 
 ## Non-goals (deferred)
 
@@ -27,25 +28,41 @@ Per an earlier decision, the interaction layer (chat) is built before the visual
 ```
 Browser                          Worker (Astro server routes)              External
 --------                          ---------------------------              --------
-ChatBox ── POST /api/chat ──────▶ resolve visitor_id cookie
-  (SSE)                           load conversation from KV (SESSION)
+ConsentBanner ── (localStorage only, no network call)
+
+ChatBox ── POST /api/chat ──────▶ if persist=true: resolve visitor_id cookie
+  (SSE)     { persist, ... }        load conversation from KV (SESSION)
                                   retrieveContext() ───────────────────▶ Chroma Cloud
                                   buildSystemPrompt()
                                   streamGenerateContent() ─────────────▶ Gemini API (gemma-4-31b-it)
                                   stream SSE tokens back ◀───────────────
 ◀── SSE tokens ───────────────────
-                                  append + persist turn to KV (30d TTL)
+                                  if persist=true: append + persist turn to KV (30d TTL)
 
 HistorySidebar ── GET /api/history/list ──▶ KV prefix-list conv:{visitorId}:*
                ── GET /api/history/:id ───▶ KV get
                ── DELETE /api/history/:id ▶ KV delete
+               ── DELETE /api/history ────▶ KV delete-all for visitorId
 ```
 
-Two Astro server routes: `src/pages/api/chat.ts` (POST, SSE) and `src/pages/api/history/[...].ts` (list/get/delete). Both run as Worker handlers per the existing `@astrojs/cloudflare` adapter setup.
+Two Astro server routes: `src/pages/api/chat.ts` (POST, SSE) and `src/pages/api/history/[...].ts` (list/get/delete/delete-all). Both run as Worker handlers per the existing `@astrojs/cloudflare` adapter setup.
+
+## Cookie consent (GDPR/ePrivacy)
+
+- **What needs consent**: the `visitor_id` cookie is the only non-essential cookie this site sets — it exists purely to let a visitor resume conversations across visits, not to make the chat itself work. Under GDPR/ePrivacy, a cookie that isn't strictly necessary for the requested service requires prior opt-in consent, not just disclosure.
+- **What doesn't**: Cloudflare's own edge cookies (e.g. `__cfruid`, only relevant if Cloudflare's legacy Rate Limiting Rules or bot-management features are ever enabled — the Workers Rate Limiting binding used here does not set any) are "strictly necessary" for security/traffic management and are exempt from consent, but are still disclosed in the cookie-info text for transparency. Same for the consent choice itself, stored client-side only (see below).
+- **Consent-gated persistence model** — this is the key design point: persistence, not the chat itself, is gated:
+  - **`persist: false` (no consent yet, or explicitly rejected)**: the client keeps the running message list in memory/`sessionStorage` for the current tab only, and sends the *entire* history in each `POST /api/chat` body (same shape the server already needs internally). The server never reads/sets a `visitor_id` cookie and never touches KV. Chat works fully; nothing survives a reload; no history sidebar (nothing to list).
+  - **`persist: true` (consent given)**: behaves exactly as described in "Identity & conversation storage" and "Chat API" below — `visitor_id` cookie, KV read/write, resumable cross-session history, sidebar.
+  - The client sends its current consent state as `persist: boolean` on every `/api/chat` call, read from the consent choice in `localStorage` (not a cookie — storing the choice itself doesn't require consent, but keeping it out of any cookie sidesteps the question entirely).
+- **Consent banner UI**: shown on first visit if no choice is recorded in `localStorage`. Copy: *"This site can remember your conversation with the avatar so you can pick it up later — that needs one small cookie. Without it, chat still works, it just won't be saved."* Two buttons: **Accept** / **Reject**. A short "What's this cookie?" link expands inline text naming the single functional cookie and noting Cloudflare's own strictly-necessary security cookies. A persistent footer link ("Cookie preferences") reopens the same banner at any time to change the choice.
+- **Changing the choice later**:
+  - Reject → Accept: starts persisting from the next message onward; no retroactive change.
+  - Accept → Reject: the banner offers to also delete all currently-stored conversations for this visitor (`DELETE /api/history`, added below) as a one-click right-to-erasure action; the visitor can decline and just stop future persistence instead.
 
 ## Identity & conversation storage (KV)
 
-- **Visitor identity**: an anonymous `visitor_id` cookie (UUID, HttpOnly, `Secure`, `SameSite=Lax`, ~1 year expiry). Set by `/api/chat` the first time a visitor without one sends a message. Never tied to any personal info.
+- **Visitor identity**: an anonymous `visitor_id` cookie (UUID, HttpOnly, `Secure`, `SameSite=Lax`, ~1 year expiry). Set by `/api/chat` the first time a *consenting* (`persist: true`) visitor without one sends a message. Never tied to any personal info.
 - **Conversation key**: `conv:{visitorId}:{conversationId}` in the existing `SESSION` KV namespace (already provisioned, currently unused — see roadmap 1.2). Value:
   ```ts
   interface StoredConversation {
@@ -60,30 +77,29 @@ Two Astro server routes: `src/pages/api/chat.ts` (POST, SSE) and `src/pages/api/
 
 ## Chat API (`src/pages/api/chat.ts`)
 
-`POST` body: `{ conversationId?: string, message: string, language?: string }`.
+`POST` body: `{ persist: boolean, conversationId?: string, history?: ChatMessage[], message: string, language?: string }`. `history` is required (and used verbatim) when `persist` is `false`; ignored when `persist` is `true` (the server loads history from KV instead).
 
 1. Check the rate-limit binding (see below); on exceeded, return `429` immediately (no SSE stream opened).
-2. Resolve `visitor_id` from the request cookie, or generate one and set it on the response.
-3. Resolve `conversationId`: use the one supplied, or generate a new UUID.
-4. Load the existing `StoredConversation` from KV if `conversationId` was supplied and exists; otherwise start empty.
-5. Append the incoming user message to the in-memory message list.
-6. Call `retrieveContext({ query: message, chromaCredentials, contentType: undefined, language })` (existing `src/lib/rag/retrieve.ts`).
-7. Call `buildSystemPrompt({ chunks, visitorLanguage: language })` (existing `src/lib/rag/prompt.ts`).
-8. Call the Gemini API's `streamGenerateContent` endpoint for `gemma-4-31b-it` with the system prompt + full message history, using `GOOGLE_API_KEY_LLM` (server-side secret, never sent to the client).
-9. Stream the response to the client as SSE:
-   - First event: `event: meta` — `data: {"conversationId": "..."}` (lets the client learn the ID for a brand-new conversation).
+2. If `persist` is `false`: skip all cookie/KV steps — use `history` from the request body as the message list, plus the incoming `message`.
+3. If `persist` is `true`: resolve `visitor_id` from the request cookie, or generate one and set it on the response. Resolve `conversationId` (supplied, or a new UUID). Load the existing `StoredConversation` from KV if `conversationId` was supplied and exists; otherwise start empty. Append the incoming user message to the loaded list.
+4. Call `retrieveContext({ query: message, chromaCredentials, contentType: undefined, language })` (existing `src/lib/rag/retrieve.ts`).
+5. Call `buildSystemPrompt({ chunks, visitorLanguage: language })` (existing `src/lib/rag/prompt.ts`).
+6. Call the Gemini API's `streamGenerateContent` endpoint for `gemma-4-31b-it` with the system prompt + full message history, using `GOOGLE_API_KEY_LLM` (server-side secret, never sent to the client).
+7. Stream the response to the client as SSE:
+   - First event: `event: meta` — `data: {"conversationId": "..."}` (only meaningful, and only sent, when `persist` is `true` — lets the client learn the ID for a brand-new conversation).
    - Subsequent events: `event: delta` — `data: {"text": "..."}` per token/chunk as Gemini streams them.
    - Final event: `event: done` — `data: {}`.
    - On any failure mid-stream: `event: error` — `data: {"message": "..."}`, then close.
-10. After the stream completes successfully, append the full assistant reply to the message list and `KV.put` the updated `StoredConversation` (refreshing the 30-day TTL). A KV write failure here is logged but does not fail the already-delivered response — history persistence degrades gracefully.
+8. After the stream completes successfully **and `persist` was `true`**: append the full assistant reply to the message list and `KV.put` the updated `StoredConversation` (refreshing the 30-day TTL). A KV write failure here is logged but does not fail the already-delivered response — history persistence degrades gracefully. When `persist` is `false`, this step is skipped entirely — the client already holds the updated history itself once the stream finishes.
 
 ## History API (`src/pages/api/history/`)
 
 - `GET /api/history/list` → `[{ conversationId, title, updatedAt }]` for the current `visitor_id`, sorted by `updatedAt` descending. Empty array (not 404) if no cookie/no conversations — this is also what the UI uses to decide whether to show the history icon at all.
 - `GET /api/history/:id` → the full `StoredConversation` (for loading into the chat view). `404` if missing/expired/not owned by this `visitor_id`.
 - `DELETE /api/history/:id` → deletes the KV key; `204` on success, `404` if not found.
+- `DELETE /api/history` (no id) → deletes every `conv:{visitorId}:*` key for the current `visitor_id` in one call — backs the "delete all my data" action offered when a visitor revokes consent. `204` on success (including when there was nothing to delete).
 
-All three scope strictly to the requesting `visitor_id` cookie — no cross-visitor access.
+All four scope strictly to the requesting `visitor_id` cookie — no cross-visitor access. If there's no `visitor_id` cookie at all (never consented), all history routes simply behave as if the visitor has zero conversations.
 
 ## Rate limiting
 
@@ -91,6 +107,7 @@ Cloudflare Workers' native **Rate Limiting binding**, declared in `wrangler.json
 
 ## Chat UI
 
+- **ConsentBanner**: glass-styled bottom banner, shown on first visit (no choice yet in `localStorage`) or when reopened via the "Cookie preferences" footer link. Accept/Reject buttons plus the expandable cookie-info text described above. Renders before/independent of the chat state — a visitor can reject and still use the chatbox immediately.
 - **ChatBox**: floating, bottom-center, glass-styled per the existing design system (dark electric-blue outline, black background, external glow). Text input, send button, and a "waves" button (Phase 4 voice toggle — rendered but disabled in this phase, so the affordance is visible ahead of time).
 - **ChatBubble**: avatar messages left-aligned (dark electric-blue outline / dark-blue fill), visitor messages right-aligned (light-cyan outline / blue-grey fill). Bubbles float over the placeholder hero area.
 - **Streaming rendering**: the client opens an `EventSource`/`fetch`-based SSE reader against `/api/chat`, appending each `delta` event's text to the in-progress assistant bubble as it arrives.
@@ -114,7 +131,7 @@ Cloudflare Workers' native **Rate Limiting binding**, declared in `wrangler.json
 | Gemini call/stream failure | SSE `error` event; UI shows an inline error bubble with retry (resends the same user message) |
 | KV read failure (loading history) | Conversation starts empty rather than failing the request; logged server-side |
 | KV write failure (persisting a turn) | Response already delivered to the visitor is unaffected; logged server-side, that turn just won't survive a reload |
-| `visitor_id` cookie missing/blocked | Chat still works for the current page load; history sidebar simply never appears (no conversations to list) |
+| `visitor_id` cookie missing/blocked, or consent rejected | Chat still works for the current page load (via `persist: false` + client-held history); history sidebar simply never appears (no conversations to list) |
 
 ## Testing
 
@@ -127,5 +144,5 @@ Cloudflare Workers' native **Rate Limiting binding**, declared in `wrangler.json
 
 Two separate implementation plans, backend first:
 
-1. **Backend**: `/api/chat` (SSE, Gemma streaming call, KV read/write), `/api/history/*` (list/get/delete), the rate-limiting binding, `wrangler.jsonc` changes, unit tests, and a live end-to-end verification. Reviewed/merged before UI work starts.
-2. **UI**: ChatBox, ChatBubble, SSE consumption, loading/error states, `PresenceRing`-based placeholder hero, HistorySidebar (list/select/delete, retention notice), Playwright coverage.
+1. **Backend**: `/api/chat` (SSE, `persist` branching, Gemma streaming call, KV read/write), `/api/history/*` (list/get/delete/delete-all), the rate-limiting binding, `wrangler.jsonc` changes, unit tests, and a live end-to-end verification of both the `persist: true` and `persist: false` paths. Reviewed/merged before UI work starts.
+2. **UI**: ConsentBanner (accept/reject, cookie-info text, footer reopen link, delete-all-on-reject prompt), ChatBox, ChatBubble, SSE consumption (including sending `persist`/`history` correctly per consent state), loading/error states, `PresenceRing`-based placeholder hero, HistorySidebar (list/select/delete, retention notice), Playwright coverage (including a reject-consent path test).
