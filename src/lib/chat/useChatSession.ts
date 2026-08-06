@@ -68,6 +68,9 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	const [conversations, setConversations] = useState<ConversationSummary[]>([]);
 	const [historyOpen, setHistoryOpen] = useState(false);
 	const lastUserTextRef = useRef<string | null>(null);
+	// Monotonic id for the in-flight stream. Sidebar actions (select/new/delete)
+	// bump it so a stream that is still iterating stops writing to state.
+	const runIdRef = useRef(0);
 
 	const refreshHistory = useCallback(() => {
 		// Best-effort background refresh; a failure here doesn't block the chat itself.
@@ -94,63 +97,98 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 
 	const runStream = useCallback(
 		async (text: string, persist: boolean, historyForRequest: DisplayMessage[]) => {
+			const runId = ++runIdRef.current;
+			const isCurrent = () => runId === runIdRef.current;
+
 			setStatus("sending");
 			setErrorMessage(null);
 			setPresenceState("listening");
 
 			let assistantMessageId: string | null = null;
 			let sawFirstDelta = false;
+			let sawDone = false;
 
-			for await (const event of streamChatResponse({
-				persist,
-				message: text,
-				conversationId: persist ? conversationId : undefined,
-				history: persist ? undefined : toWireMessages(historyForRequest),
-				language,
-			})) {
-				if (event.event === "meta") {
-					setConversationId(event.data.conversationId);
-				} else if (event.event === "delta") {
-					if (!sawFirstDelta) {
-						sawFirstDelta = true;
-						setStatus("streaming");
-						setPresenceState("speaking");
-						assistantMessageId = crypto.randomUUID();
-						const id = assistantMessageId;
-						setMessages((prev) => [...prev, { id, role: "model", text: event.data.text }]);
-					} else {
-						const id = assistantMessageId;
-						setMessages((prev) =>
-							prev.map((message) =>
-								message.id === id ? { ...message, text: message.text + event.data.text } : message,
-							),
+			/** Drops the partial assistant bubble of a failed attempt so `retryLast`
+			 * doesn't leave a stray half-written reply in the transcript. */
+			const dropPartialAssistantMessage = () => {
+				const id = assistantMessageId;
+				if (!id) return;
+				assistantMessageId = null;
+				sawFirstDelta = false;
+				setMessages((prev) => prev.filter((message) => message.id !== id));
+			};
+
+			const failWith = (message: string) => {
+				dropPartialAssistantMessage();
+				setStatus("error");
+				setPresenceState("idle");
+				setErrorMessage(message);
+			};
+
+			try {
+				for await (const event of streamChatResponse({
+					persist,
+					message: text,
+					conversationId: persist ? conversationId : undefined,
+					history: persist ? undefined : toWireMessages(historyForRequest),
+					language,
+				})) {
+					// A sidebar action superseded this stream: stop touching state.
+					if (!isCurrent()) return;
+
+					if (event.event === "meta") {
+						setConversationId(event.data.conversationId);
+					} else if (event.event === "delta") {
+						if (!sawFirstDelta) {
+							sawFirstDelta = true;
+							setStatus("streaming");
+							setPresenceState("speaking");
+							assistantMessageId = crypto.randomUUID();
+							const id = assistantMessageId;
+							setMessages((prev) => [...prev, { id, role: "model", text: event.data.text }]);
+						} else {
+							const id = assistantMessageId;
+							setMessages((prev) =>
+								prev.map((message) =>
+									message.id === id ? { ...message, text: message.text + event.data.text } : message,
+								),
+							);
+						}
+					} else if (event.event === "done") {
+						sawDone = true;
+						setStatus("idle");
+						setPresenceState("idle");
+						if (!persist) {
+							setMessages((current) => {
+								saveSessionMessages(
+									current.map((message) => ({
+										role: message.role,
+										text: message.text,
+										at: new Date().toISOString(),
+									})),
+								);
+								return current;
+							});
+						}
+					} else if (event.event === "error") {
+						failWith(
+							event.data.message === "rate_limited" ? errorRateLimitedMessage : errorGenericMessage,
 						);
 					}
-				} else if (event.event === "done") {
-					setStatus("idle");
-					setPresenceState("idle");
-					if (persist) {
-						refreshHistory();
-					} else {
-						setMessages((current) => {
-							saveSessionMessages(
-								current.map((message) => ({
-									role: message.role,
-									text: message.text,
-									at: new Date().toISOString(),
-								})),
-							);
-							return current;
-						});
-					}
-				} else if (event.event === "error") {
-					setStatus("error");
-					setPresenceState("idle");
-					setErrorMessage(
-						event.data.message === "rate_limited" ? errorRateLimitedMessage : errorGenericMessage,
-					);
 				}
+			} catch {
+				// Any escape hatch the stream didn't convert into an error event —
+				// without this the status would stay stuck at "sending"/"streaming".
+				if (!isCurrent()) return;
+				failWith(errorGenericMessage);
+				return;
 			}
+
+			if (!isCurrent()) return;
+			// The backend sends `done` and only then awaits its KV write before
+			// closing the stream, so the list is only guaranteed fresh once the
+			// whole stream has drained — not at the moment `done` was read.
+			if (persist && sawDone) refreshHistory();
 		},
 		[conversationId, language, errorGenericMessage, errorRateLimitedMessage, refreshHistory],
 	);
@@ -171,7 +209,13 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	const retryLast = useCallback(() => {
 		const text = lastUserTextRef.current;
 		if (!text) return;
-		runStream(text, consent === "accepted", messages.slice(0, -1));
+		// The failed attempt's partial assistant bubble was already dropped, but
+		// locate the user message explicitly rather than assuming it's last:
+		// resending it as both `history` and `message` would duplicate it.
+		const lastUserIndex = messages.map((message) => message.role).lastIndexOf("user");
+		const historyForRequest =
+			lastUserIndex === -1 ? messages : messages.filter((_, index) => index !== lastUserIndex);
+		runStream(text, consent === "accepted", historyForRequest);
 	}, [consent, messages, runStream]);
 
 	const toggleHistory = useCallback(() => {
@@ -184,6 +228,9 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	const closeHistory = useCallback(() => setHistoryOpen(false), []);
 
 	const selectConversation = useCallback(async (id: string) => {
+		// Supersede any in-flight stream so its late events can't bleed into the
+		// conversation we're about to open.
+		runIdRef.current++;
 		const conversation = await fetchConversation(id);
 		if (!conversation) return;
 		setMessages(toDisplayMessages(conversation.messages));
@@ -195,6 +242,7 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 
 	const deleteConversationById = useCallback(
 		async (id: string) => {
+			runIdRef.current++;
 			await deleteConversation(id);
 			setConversations((prev) => prev.filter((conversation) => conversation.conversationId !== id));
 			if (id === conversationId) {
@@ -206,6 +254,7 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	);
 
 	const startNewConversation = useCallback(() => {
+		runIdRef.current++;
 		setMessages([]);
 		setConversationId(undefined);
 		setStatus("idle");

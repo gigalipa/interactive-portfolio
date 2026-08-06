@@ -12,7 +12,7 @@ vi.mock("./historyApi", () => ({
 import { streamChatResponse } from "./sseClient";
 import { deleteAllHistory, deleteConversation, fetchConversation, fetchHistoryList } from "./historyApi";
 import { getConsent, setConsent } from "./consent";
-import { clearSessionMessages, loadSessionMessages } from "./sessionHistory";
+import { loadSessionMessages } from "./sessionHistory";
 import { useChatSession } from "./useChatSession";
 
 async function* eventsOf(events: unknown[]) {
@@ -131,6 +131,20 @@ describe("useChatSession — sending a message", () => {
 		expect(result.current.errorMessage).toBe("generic error");
 	});
 
+	it("surfaces an error instead of hanging when the stream itself throws", async () => {
+		vi.mocked(streamChatResponse).mockReturnValue(
+			(async function* () {
+				yield await Promise.reject<never>(new Error("network down"));
+			})(),
+		);
+		const { result } = renderHook(() => useChatSession(options));
+
+		await act(async () => result.current.sendMessage("Hi"));
+
+		expect(result.current.status).toBe("error");
+		expect(result.current.errorMessage).toBe("generic error");
+	});
+
 	it("retryLast resends the last user message", async () => {
 		vi.mocked(streamChatResponse).mockReturnValueOnce(
 			eventsOf([{ event: "error", data: { message: "request_failed" } }]),
@@ -145,6 +159,33 @@ describe("useChatSession — sending a message", () => {
 
 		expect(result.current.status).toBe("idle");
 		expect(result.current.messages.at(-1)).toEqual(expect.objectContaining({ text: "Now it works" }));
+	});
+
+	it("retryLast drops the failed attempt's partial reply and doesn't duplicate the user message", async () => {
+		vi.mocked(streamChatResponse).mockReturnValueOnce(
+			eventsOf([
+				{ event: "delta", data: { text: "Half an ans" } },
+				{ event: "error", data: { message: "request_failed" } },
+			]),
+		);
+		const { result } = renderHook(() => useChatSession(options));
+		await act(async () => result.current.sendMessage("Hi"));
+
+		// The half-written assistant bubble is gone; only the user message remains.
+		expect(result.current.messages).toEqual([expect.objectContaining({ role: "user", text: "Hi" })]);
+
+		vi.mocked(streamChatResponse).mockReturnValueOnce(
+			eventsOf([{ event: "delta", data: { text: "Full answer" } }, { event: "done", data: {} }]),
+		);
+		await act(async () => result.current.retryLast());
+
+		expect(result.current.messages).toEqual([
+			expect.objectContaining({ role: "user", text: "Hi" }),
+			expect.objectContaining({ role: "model", text: "Full answer" }),
+		]);
+		// The resent message must not also appear in the history payload.
+		const [retryPayload] = vi.mocked(streamChatResponse).mock.calls[1];
+		expect(retryPayload).toEqual(expect.objectContaining({ message: "Hi", history: [] }));
 	});
 });
 
@@ -175,6 +216,77 @@ describe("useChatSession — history", () => {
 
 		expect(deleteConversation).toHaveBeenCalledWith("conv-1");
 		expect(result.current.messages).toEqual([]);
+	});
+
+	it("selectConversation mid-stream discards the abandoned stream's later events", async () => {
+		let releaseStream!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			releaseStream = resolve;
+		});
+		vi.mocked(streamChatResponse).mockReturnValue(
+			(async function* () {
+				yield { event: "meta", data: { conversationId: "stale-conv" } } as never;
+				await gate;
+				yield { event: "delta", data: { text: "garbage" } } as never;
+				yield { event: "done", data: {} } as never;
+			})(),
+		);
+		vi.mocked(fetchConversation).mockResolvedValue({
+			messages: [{ role: "user", text: "Stored", at: "2026-08-01T00:00:00.000Z" }],
+			updatedAt: "2026-08-01T00:00:00.000Z",
+			title: "Stored",
+		});
+		const { result } = renderHook(() => useChatSession(options));
+
+		act(() => result.current.sendMessage("Hi"));
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+
+		await act(async () => result.current.selectConversation("conv-1"));
+		await act(async () => {
+			releaseStream();
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+
+		expect(result.current.messages).toEqual([
+			expect.objectContaining({ role: "user", text: "Stored" }),
+		]);
+	});
+
+	it("refreshes the conversation list only after the stream has fully closed", async () => {
+		let closeStream!: () => void;
+		// Stands in for the backend awaiting its KV write after emitting `done`.
+		const kvWrite = new Promise<void>((resolve) => {
+			closeStream = resolve;
+		});
+		vi.mocked(streamChatResponse).mockReturnValue(
+			(async function* () {
+				yield { event: "delta", data: { text: "Hi!" } } as never;
+				yield { event: "done", data: {} } as never;
+				await kvWrite;
+			})(),
+		);
+		const { result } = renderHook(() => useChatSession(options));
+		await act(async () => result.current.acceptConsent());
+		await waitFor(() => expect(fetchHistoryList).toHaveBeenCalled());
+		const callsBefore = vi.mocked(fetchHistoryList).mock.calls.length;
+
+		act(() => result.current.sendMessage("Hey"));
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+
+		// `done` has been read, but the stream is still open: refreshing now would
+		// race the backend's pending write.
+		expect(vi.mocked(fetchHistoryList).mock.calls.length).toBe(callsBefore);
+
+		await act(async () => {
+			closeStream();
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+
+		expect(vi.mocked(fetchHistoryList).mock.calls.length).toBe(callsBefore + 1);
 	});
 
 	it("startNewConversation clears messages and sessionStorage", async () => {

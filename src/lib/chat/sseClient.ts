@@ -27,11 +27,19 @@ export async function* streamChatResponse(
 	payload: ChatRequestPayload,
 	fetchImpl: FetchLike = fetch,
 ): AsyncGenerator<ChatSseEvent> {
-	const response = await fetchImpl("/api/chat", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(payload),
-	});
+	let response: Awaited<ReturnType<FetchLike>>;
+	try {
+		response = await fetchImpl("/api/chat", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload),
+		});
+	} catch {
+		// Network-level failure (offline, DNS, connection reset): surface it as an
+		// error event rather than letting the rejection escape the generator.
+		yield { event: "error", data: { message: "request_failed" } };
+		return;
+	}
 
 	if (!response.ok || !response.body) {
 		const code = response.status === 429 ? "rate_limited" : "request_failed";
@@ -74,7 +82,15 @@ function parseFrame(frame: string): ChatSseEvent | null {
 	if (!eventLine || !dataLine) return null;
 
 	const eventName = eventLine.slice("event:".length).trim();
-	const data = JSON.parse(dataLine.slice("data:".length).trim());
+
+	// A dropped connection can leave a truncated JSON fragment in the trailing
+	// buffer; treat an unparseable frame as "no event" instead of throwing.
+	let data: unknown;
+	try {
+		data = JSON.parse(dataLine.slice("data:".length).trim());
+	} catch {
+		return null;
+	}
 
 	if (eventName === "meta" || eventName === "delta" || eventName === "done" || eventName === "error") {
 		return { event: eventName, data } as ChatSseEvent;
