@@ -70,7 +70,8 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	const lastUserTextRef = useRef<string | null>(null);
 
 	const refreshHistory = useCallback(() => {
-		fetchHistoryList().then(setConversations);
+		// Best-effort background refresh; a failure here doesn't block the chat itself.
+		fetchHistoryList().then(setConversations).catch(() => {});
 	}, []);
 
 	useEffect(() => {
@@ -83,7 +84,8 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	}, []);
 
 	const rejectConsent = useCallback((alsoDeleteHistory: boolean) => {
-		if (alsoDeleteHistory) deleteAllHistory();
+		// Best-effort background cleanup; a failure here doesn't block the chat itself.
+		if (alsoDeleteHistory) deleteAllHistory().catch(() => {});
 		setConsent("rejected");
 		setConsentState("rejected");
 		setConversations([]);
