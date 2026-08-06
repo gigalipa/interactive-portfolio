@@ -30,6 +30,7 @@ const t = getDictionary(lang);
 				{t.home.tagline}
 			</p>
 		</div>
+		<!-- client:only (not client:load): consent lives in localStorage, so getConsent() always returns null during SSR and the server-rendered consent banner would mismatch the client's hydrated state. -->
 		<ChatWidget lang={lang} client:only="react" />
 	</main>
 </Layout>

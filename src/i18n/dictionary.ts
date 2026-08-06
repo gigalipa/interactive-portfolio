@@ -41,6 +41,7 @@ export interface Dictionary {
 		historyToggleLabel: string;
 		historyTitle: string;
 		deleteConversation: string;
+		closeHistory: string;
 		retentionNotice: string;
 		consent: {
 			message: string;

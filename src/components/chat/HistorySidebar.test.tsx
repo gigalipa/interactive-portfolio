@@ -13,6 +13,7 @@ const baseProps = {
 	titleText: "History",
 	newConversationLabel: "New conversation",
 	deleteLabel: "Delete conversation",
+	closeLabel: "Close history",
 	retentionNoticeText: "Kept for 30 days.",
 	onClose: vi.fn(),
 	onSelect: vi.fn(),

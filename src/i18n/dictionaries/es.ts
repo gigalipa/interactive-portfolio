@@ -45,6 +45,7 @@ export default {
 		historyToggleLabel: "Historial de conversaciones",
 		historyTitle: "Historial",
 		deleteConversation: "Eliminar conversación",
+		closeHistory: "Cerrar historial",
 		retentionNotice:
 			"Las conversaciones se conservan durante 30 días de inactividad y luego se eliminan automáticamente. Puedes eliminarlas cuando quieras.",
 		consent: {

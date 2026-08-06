@@ -32,11 +32,17 @@ export function ConsentBanner({
 			<button
 				type="button"
 				onClick={() => setInfoOpen((open) => !open)}
+				aria-expanded={infoOpen}
+				aria-controls="consent-info-body"
 				className="text-signal-cyan/80 self-start text-xs underline"
 			>
 				{infoToggleLabel}
 			</button>
-			{infoOpen && <p className="text-ion/70 text-xs">{infoBodyText}</p>}
+			{infoOpen && (
+				<p id="consent-info-body" className="text-ion/70 text-xs">
+					{infoBodyText}
+				</p>
+			)}
 			{showDeleteOption && (
 				<label className="text-ion/70 flex items-center gap-2 text-xs">
 					<input

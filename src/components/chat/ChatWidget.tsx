@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useChatSession } from "../../lib/chat/useChatSession";
 import { ChatMessages } from "./ChatMessages";
 import { ChatBox } from "./ChatBox";
@@ -21,10 +21,6 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 		errorRateLimitedMessage: t.errorRateLimited,
 	});
 
-	useEffect(() => {
-		if (session.consent === null) setPreferencesOpen(true);
-	}, [session.consent]);
-
 	const showConsentBanner = session.consent === null || preferencesOpen;
 
 	return (
@@ -35,6 +31,7 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 				titleText={t.historyTitle}
 				newConversationLabel={t.newConversation}
 				deleteLabel={t.deleteConversation}
+				closeLabel={t.closeHistory}
 				retentionNoticeText={t.retentionNotice}
 				onClose={session.closeHistory}
 				onSelect={session.selectConversation}

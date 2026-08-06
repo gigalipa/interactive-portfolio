@@ -19,7 +19,9 @@ export function ChatBox({ inputPlaceholder, sendLabel, voiceLabel, disabled, onS
 	};
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === "Enter") submit();
+		// `isComposing` guards IME input: the Enter that confirms a CJK composition
+		// must not also submit the message.
+		if (event.key === "Enter" && !event.nativeEvent.isComposing) submit();
 	};
 
 	return (
@@ -39,6 +41,7 @@ export function ChatBox({ inputPlaceholder, sendLabel, voiceLabel, disabled, onS
 				onChange={(event) => setValue(event.target.value)}
 				onKeyDown={handleKeyDown}
 				placeholder={inputPlaceholder}
+				aria-label={inputPlaceholder}
 				disabled={disabled}
 				className="text-ion placeholder:text-ion/40 flex-1 bg-transparent px-2 text-sm outline-none disabled:opacity-50"
 			/>

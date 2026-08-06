@@ -45,6 +45,7 @@ export default {
 		historyToggleLabel: "Conversation history",
 		historyTitle: "History",
 		deleteConversation: "Delete conversation",
+		closeHistory: "Close history",
 		retentionNotice:
 			"Conversations are kept for 30 days of inactivity, then deleted automatically. You can delete any of them anytime.",
 		consent: {

@@ -6,6 +6,7 @@ export interface HistorySidebarProps {
 	titleText: string;
 	newConversationLabel: string;
 	deleteLabel: string;
+	closeLabel: string;
 	retentionNoticeText: string;
 	onClose: () => void;
 	onSelect: (conversationId: string) => void;
@@ -19,6 +20,7 @@ export function HistorySidebar({
 	titleText,
 	newConversationLabel,
 	deleteLabel,
+	closeLabel,
 	retentionNoticeText,
 	onClose,
 	onSelect,
@@ -31,7 +33,12 @@ export function HistorySidebar({
 		<div className="border-slate-mist bg-deep-blue/70 text-ion fixed top-0 left-0 z-50 flex h-full w-72 flex-col gap-3 border-r p-4 backdrop-blur-2xl">
 			<div className="flex items-center justify-between">
 				<h2 className="font-display text-base font-semibold">{titleText}</h2>
-				<button type="button" onClick={onClose} aria-label="Close" className="text-ion/60 hover:text-ion">
+				<button
+					type="button"
+					onClick={onClose}
+					aria-label={closeLabel}
+					className="text-ion/60 hover:text-ion"
+				>
 					×
 				</button>
 			</div>
@@ -56,7 +63,7 @@ export function HistorySidebar({
 							type="button"
 							onClick={() => onDelete(conversation.conversationId)}
 							aria-label={deleteLabel}
-							className="text-ion/40 hover:text-ion/80 px-1 text-xs opacity-0 group-hover:opacity-100"
+							className="text-ion/40 hover:text-ion/80 px-1 text-xs opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100"
 						>
 							×
 						</button>

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { ChatBubble } from "./ChatBubble";
 import type { ChatStatus, DisplayMessage } from "../../lib/chat/useChatSession";
 
@@ -18,10 +19,35 @@ export function ChatMessages({
 	retryLabel,
 	onRetry,
 }: ChatMessagesProps) {
+	const containerRef = useRef<HTMLDivElement | null>(null);
+	// Whether the visitor was pinned to the bottom *before* this update. If they
+	// deliberately scrolled up to re-read something, don't yank them back down.
+	const wasNearBottomRef = useRef(true);
+
+	useEffect(() => {
+		const container = containerRef.current;
+		if (!container) return;
+		if (wasNearBottomRef.current) container.scrollTop = container.scrollHeight;
+	}, [messages, status]);
+
+	const handleScroll = () => {
+		const container = containerRef.current;
+		if (!container) return;
+		wasNearBottomRef.current =
+			container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+	};
+
 	if (messages.length === 0 && status === "idle") return null;
 
 	return (
-		<div className="flex max-h-[50vh] flex-col gap-2 overflow-y-auto px-1 py-2">
+		<div
+			ref={containerRef}
+			onScroll={handleScroll}
+			role="log"
+			aria-live="polite"
+			aria-relevant="additions"
+			className="flex max-h-[50vh] flex-col gap-2 overflow-y-auto px-1 py-2"
+		>
 			{messages.map((message) => (
 				<ChatBubble key={message.id} role={message.role} text={message.text} />
 			))}
@@ -34,7 +60,10 @@ export function ChatMessages({
 			)}
 			{status === "error" && errorMessage && (
 				<div className="flex justify-start">
-					<div className="border-electric-blue/60 bg-deep-blue/80 text-ion flex max-w-[80%] flex-col gap-2 rounded-2xl rounded-bl-sm border px-4 py-2.5 text-sm backdrop-blur-lg">
+					<div
+						role="alert"
+						className="border-electric-blue/60 bg-deep-blue/80 text-ion flex max-w-[80%] flex-col gap-2 rounded-2xl rounded-bl-sm border px-4 py-2.5 text-sm backdrop-blur-lg"
+					>
 						<p>{errorMessage}</p>
 						<button
 							type="button"
