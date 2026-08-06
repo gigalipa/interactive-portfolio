@@ -10,11 +10,26 @@ describe("ChatBubble", () => {
 
 	it("applies avatar styling for role='model'", () => {
 		render(<ChatBubble role="model" text="Hi!" />);
-		expect(screen.getByText("Hi!")).toHaveClass("border-electric-blue/60");
+		expect(screen.getByTestId("chat-bubble-model")).toHaveClass("border-electric-blue/60");
 	});
 
 	it("applies visitor styling for role='user'", () => {
 		render(<ChatBubble role="user" text="Hi!" />);
-		expect(screen.getByText("Hi!")).toHaveClass("border-signal-cyan/60");
+		expect(screen.getByTestId("chat-bubble-user")).toHaveClass("border-signal-cyan/60");
+	});
+
+	it("renders markdown formatting in the avatar's replies", () => {
+		render(<ChatBubble role="model" text="I've built **Asset Foundry** and other projects." />);
+		expect(screen.getByText("Asset Foundry").tagName).toBe("STRONG");
+	});
+
+	it("renders markdown lists in the avatar's replies", () => {
+		render(<ChatBubble role="model" text={"Projects:\n- Asset Foundry\n- Language Quest"} />);
+		expect(screen.getByText("Asset Foundry").closest("ul")).toBeInTheDocument();
+	});
+
+	it("renders the visitor's message as plain text, without markdown formatting", () => {
+		render(<ChatBubble role="user" text="I like **bold** text" />);
+		expect(screen.getByText("I like **bold** text")).toBeInTheDocument();
 	});
 });

@@ -50,13 +50,13 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 			<button
 				type="button"
 				onClick={() => setPreferencesOpen(true)}
-				className="text-ion/40 hover:text-ion/70 pointer-events-auto fixed right-5 bottom-6 z-40 text-xs underline sm:right-6"
+				className="text-ion/40 hover:text-ion/70 pointer-events-auto fixed bottom-6 left-5 z-40 text-xs underline sm:left-6"
 			>
 				{t.consent.preferencesLink}
 			</button>
 
 			<div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3 px-4 lg:inset-x-auto lg:top-36 lg:right-6 lg:items-stretch lg:px-0">
-				<div className="pointer-events-auto flex w-full max-w-xl flex-col gap-3 lg:h-full lg:w-[28rem] lg:max-w-none">
+				<div className="pointer-events-auto flex w-full max-w-xl flex-col gap-3 lg:h-full lg:w-[28rem] lg:max-w-none lg:justify-end">
 					{showConsentBanner && (
 						<ConsentBanner
 							messageText={t.consent.message}
