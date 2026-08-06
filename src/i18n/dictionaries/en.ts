@@ -32,4 +32,31 @@ export default {
 		body: "A contact form and Notion-backed meeting booking land here.",
 		cta: "Say hello",
 	},
+	chat: {
+		inputPlaceholder: "Ask me about my work, background, or projects...",
+		send: "Send",
+		voiceComingSoon: "Voice chat (coming soon)",
+		thinking: "Thinking...",
+		errorGeneric: "The avatar couldn't reply just now. Please try again.",
+		errorRateLimited:
+			"Too many messages — please slow down and try again in a moment.",
+		retry: "Retry",
+		newConversation: "New conversation",
+		historyToggleLabel: "Conversation history",
+		historyTitle: "History",
+		deleteConversation: "Delete conversation",
+		retentionNotice:
+			"Conversations are kept for 30 days of inactivity, then deleted automatically. You can delete any of them anytime.",
+		consent: {
+			message:
+				"This site can remember your conversation with the avatar so you can pick it up later — that needs one small cookie. Without it, chat still works, it just won't be saved.",
+			accept: "Accept",
+			reject: "Reject",
+			infoToggle: "What's this cookie?",
+			infoBody:
+				"We set a single cookie, visitor_id, only if you accept. It has no personal data — it just lets us find your saved conversations when you come back. Cloudflare, our hosting provider, also sets a small number of strictly necessary security cookies that don't require consent.",
+			preferencesLink: "Cookie preferences",
+			deleteOption: "Also delete my saved conversations",
+		},
+	},
 } satisfies Dictionary;

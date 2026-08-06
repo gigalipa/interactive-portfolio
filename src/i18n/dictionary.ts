@@ -29,4 +29,27 @@ export interface Dictionary {
 		body: string;
 		cta: string;
 	};
+	chat: {
+		inputPlaceholder: string;
+		send: string;
+		voiceComingSoon: string;
+		thinking: string;
+		errorGeneric: string;
+		errorRateLimited: string;
+		retry: string;
+		newConversation: string;
+		historyToggleLabel: string;
+		historyTitle: string;
+		deleteConversation: string;
+		retentionNotice: string;
+		consent: {
+			message: string;
+			accept: string;
+			reject: string;
+			infoToggle: string;
+			infoBody: string;
+			preferencesLink: string;
+			deleteOption: string;
+		};
+	};
 }
