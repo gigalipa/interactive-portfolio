@@ -17,6 +17,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"typecheck": "astro check",
+		"cf-typegen": "wrangler types",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:e2e": "playwright test",
