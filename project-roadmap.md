@@ -136,10 +136,13 @@ Per prior decision: build the interaction layer before the visual 3D avatar, sin
 
 ### 3.1 Backend proxy
 
-- [ ] Build an Astro server API route (`src/pages/api/chat.ts`, runs as a Worker handler) that: receives visitor message, queries Chroma for context, calls `gemma-4-31b-it` via Google AI Studio API with the RAG-augmented prompt, returns response
-- [ ] Keep the Google AI Studio API key server-side only (Cloudflare secret), never exposed to the client
-- [ ] Add basic rate limiting / abuse protection (Cloudflare's built-in tools) since this is a public-facing paid-API endpoint
-- [ ] Add conversation history handling (session-scoped, not persisted server-side unless desired)
+- [x] Built an Astro server API route (`src/pages/api/chat.ts`, SSE) that: receives visitor message, queries Chroma for context, calls `gemma-4-31b-it` via Google AI Studio API with the RAG-augmented prompt, streams the response back
+- [x] Google AI Studio / Chroma keys stay server-side only (`.dev.vars` locally, Cloudflare secrets in prod), never exposed to the client
+- [x] Rate limiting via Cloudflare Workers' native Rate Limiting binding (`CHAT_RATE_LIMITER`, 10 req/60s, `wrangler.jsonc`)
+- [x] Consent-gated conversation history: `persist: false` keeps history client-side only (nothing written server-side); `persist: true` stores it in the `SESSION` KV namespace (`src/lib/history/`), 30-day rolling TTL, with `/api/history/*` list/get/delete/delete-all routes (`src/lib/chat/historyHandlers.ts`)
+- [x] Verified live end-to-end against a running dev server (`astro dev`): a real `gemma-4-31b-it` reply streamed back for both `persist: true` and `persist: false`; the `persist: true` path set the `visitor_id` cookie, persisted to KV, and was listed/fetched/deleted correctly via `/api/history/*`
+- [x] Fix discovered during live verification: `astro dev` (Astro 6+/`@astrojs/cloudflare` runs dev through the real `workerd` runtime, not Node) failed to load `chromadb` with `Failed to load url node:process` — the `chromadb` package needs Node builtins. Fixed by adding `"compatibility_flags": ["nodejs_compat"]` to `wrangler.jsonc`. This is a required Cloudflare Workers setting for any Node-API-dependent dependency and will be needed for the deployed Worker too, not just local dev.
+- Note for the Phase 3 UI plan: a bare `curl -X DELETE`/`POST` without an `Origin` header gets `403 Cross-site ... forbidden` from Astro's built-in CSRF protection — not a bug, but worth knowing when writing manual verification scripts. A real browser `fetch()` call sends `Origin` automatically and is unaffected.
 
 ### 3.2 Chat UI
 
