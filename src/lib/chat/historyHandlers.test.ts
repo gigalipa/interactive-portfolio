@@ -122,11 +122,26 @@ describe("handleDeleteAllHistory", () => {
 		expect(kv.store.has(`conv:${VISITOR_B}:c-3`)).toBe(true);
 	});
 
-	it("is a no-op (still 204) when there is no visitor_id cookie", async () => {
+	it("clears the HttpOnly visitor_id cookie so the identifier isn't reused", async () => {
+		const kv = createMockKV();
+		await putConversation(kv, VISITOR_A, "c-1", sample);
+
+		const response = await handleDeleteAllHistory({
+			request: requestWithCookie(`visitor_id=${VISITOR_A}`),
+			kv,
+		});
+
+		expect(response.headers.get("Set-Cookie")).toBe(
+			"visitor_id=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax",
+		);
+	});
+
+	it("is a no-op (still 204, no Set-Cookie) when there is no visitor_id cookie", async () => {
 		const response = await handleDeleteAllHistory({
 			request: requestWithCookie(),
 			kv: createMockKV(),
 		});
 		expect(response.status).toBe(204);
+		expect(response.headers.get("Set-Cookie")).toBeNull();
 	});
 });

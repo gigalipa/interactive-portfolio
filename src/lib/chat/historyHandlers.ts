@@ -1,4 +1,4 @@
-import { readVisitorId } from "../history/cookies";
+import { clearVisitorIdCookie, readVisitorId } from "../history/cookies";
 import {
 	deleteAllConversations,
 	deleteConversation,
@@ -62,6 +62,12 @@ export async function handleDeleteAllHistory(
 	options: HistoryRequestOptions,
 ): Promise<Response> {
 	const visitorId = requireVisitorId(options.request);
-	if (visitorId) await deleteAllConversations(options.kv, visitorId);
-	return new Response(null, { status: 204 });
+	if (!visitorId) return new Response(null, { status: 204 });
+
+	await deleteAllConversations(options.kv, visitorId);
+	// Also drop the identifier itself, not just the data keyed by it.
+	return new Response(null, {
+		status: 204,
+		headers: { "Set-Cookie": clearVisitorIdCookie() },
+	});
 }
