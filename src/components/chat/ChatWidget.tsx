@@ -39,9 +39,25 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 				onNewConversation={session.startNewConversation}
 			/>
 
+			<div className="pointer-events-auto fixed top-20 right-5 z-40 sm:top-24 sm:right-6">
+				<HistoryToggleButton
+					visible={session.conversations.length > 0}
+					label={t.historyToggleLabel}
+					onClick={session.toggleHistory}
+				/>
+			</div>
+
+			<button
+				type="button"
+				onClick={() => setPreferencesOpen(true)}
+				className="text-ion/40 hover:text-ion/70 pointer-events-auto fixed right-5 bottom-6 z-40 text-xs underline sm:right-6"
+			>
+				{t.consent.preferencesLink}
+			</button>
+
 			<div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3 px-4">
 				<div className="pointer-events-auto flex w-full max-w-xl flex-col gap-3">
-					{showConsentBanner ? (
+					{showConsentBanner && (
 						<ConsentBanner
 							messageText={t.consent.message}
 							acceptLabel={t.consent.accept}
@@ -59,21 +75,6 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 								setPreferencesOpen(false);
 							}}
 						/>
-					) : (
-						<div className="flex items-center justify-between">
-							<HistoryToggleButton
-								visible={session.conversations.length > 0}
-								label={t.historyToggleLabel}
-								onClick={session.toggleHistory}
-							/>
-							<button
-								type="button"
-								onClick={() => setPreferencesOpen(true)}
-								className="text-ion/40 hover:text-ion/70 ml-auto text-xs underline"
-							>
-								{t.consent.preferencesLink}
-							</button>
-						</div>
 					)}
 
 					<ChatMessages

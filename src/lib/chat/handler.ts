@@ -49,6 +49,11 @@ const UUID_PATTERN =
 const GENERIC_ERROR_MESSAGE =
 	"The avatar couldn't reply just now. Please try again.";
 
+// Deeply personal writing (short stories, reflections) stays out of general chat
+// retrieval so it can't surface as unsolicited "context" for unrelated
+// professional questions, which conflicts with the persona's own boundaries.
+const EXCLUDED_GENERAL_CHAT_CONTENT_TYPES = ["Personal Interest"];
+
 function jsonError(status: number, message: string): Response {
 	return new Response(JSON.stringify({ message }), {
 		status,
@@ -198,20 +203,37 @@ export async function handleChatRequest(
 					googleApiKey: googleApiKeyEmb,
 					query: body.message,
 					language: body.language,
+					excludeContentTypes: EXCLUDED_GENERAL_CHAT_CONTENT_TYPES,
 				}).catch(() => []);
 
 				const systemPrompt = buildSystemPrompt({
 					chunks,
 					visitorLanguage: body.language,
 				});
-
-				for await (const delta of streamChatCompletion({
+				const streamOptions = {
 					systemPrompt,
 					messages: messagesForModel,
 					apiKey: googleApiKeyLlm,
-				})) {
+				};
+
+				for await (const delta of streamChatCompletion(streamOptions)) {
 					fullReply += delta;
 					send(formatSseEvent({ event: "delta", data: { text: delta } }));
+				}
+
+				// The chat model occasionally exhausts its internal reasoning budget
+				// without ever emitting a final answer (finishReason STOP, zero output
+				// text). Nothing has been sent to the client in that case — fullReply
+				// is still empty — so one retry is safe and typically succeeds.
+				if (!fullReply) {
+					for await (const delta of streamChatCompletion(streamOptions)) {
+						fullReply += delta;
+						send(formatSseEvent({ event: "delta", data: { text: delta } }));
+					}
+				}
+
+				if (!fullReply) {
+					throw new Error("Model returned an empty reply after retry");
 				}
 
 				send(formatSseEvent({ event: "done", data: {} }));

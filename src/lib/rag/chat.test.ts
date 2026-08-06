@@ -40,6 +40,15 @@ describe("parseGeminiSseStream", () => {
 		expect(await collect(parseGeminiSseStream(body))).toEqual(["Hello", " there"]);
 	});
 
+	it("handles events delimited by CRLF (\\r\\n\\r\\n), as preserved by the Workers runtime's fetch", async () => {
+		const body = streamFromChunks([
+			'data: {"candidates":[{"content":{"parts":[{"text":"Hello"}]}}]}\r\n\r\n',
+			'data: {"candidates":[{"content":{"parts":[{"text":" there"}]}}]}\r\n\r\n',
+		]);
+
+		expect(await collect(parseGeminiSseStream(body))).toEqual(["Hello", " there"]);
+	});
+
 	it("handles a chunk split across two reads", async () => {
 		const body = streamFromChunks([
 			'data: {"candidates":[{"content":{"parts":[{"text":"Hel',
@@ -56,6 +65,15 @@ describe("parseGeminiSseStream", () => {
 		]);
 
 		expect(await collect(parseGeminiSseStream(body))).toEqual(["Hi"]);
+	});
+
+	it("skips chain-of-thought parts (thought: true) and only yields the final answer", async () => {
+		const body = streamFromChunks([
+			'data: {"candidates":[{"content":{"parts":[{"text":"User asks who I am.","thought":true}]}}]}\n\n',
+			'data: {"candidates":[{"content":{"parts":[{"text":"Hello! I am Daniel\'s avatar."}]}}]}\n\n',
+		]);
+
+		expect(await collect(parseGeminiSseStream(body))).toEqual(["Hello! I am Daniel's avatar."]);
 	});
 });
 
@@ -79,7 +97,9 @@ describe("streamChatCompletion", () => {
 
 		expect(result).toEqual(["Hi!"]);
 		expect(fetchImpl).toHaveBeenCalledWith(
-			expect.stringContaining("gemma-4-31b-it:streamGenerateContent?alt=sse&key=test-key"),
+			expect.stringContaining(
+				"gemini-flash-lite-latest:streamGenerateContent?alt=sse&key=test-key",
+			),
 			expect.objectContaining({ method: "POST" }),
 		);
 		const [, init] = fetchImpl.mock.calls[0] as [string, RequestInit];

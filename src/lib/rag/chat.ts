@@ -1,5 +1,8 @@
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const CHAT_MODEL = "gemma-4-31b-it";
+// gemma-4-31b-it's "thinking" mode too often exhausted its reasoning budget
+// without ever emitting a final answer, even after trimming the prompt and
+// retrying — gemini-flash-lite-latest answers directly with no thinking step.
+const CHAT_MODEL = "gemini-flash-lite-latest";
 
 export interface ChatMessageForModel {
 	role: "user" | "model";
@@ -23,7 +26,7 @@ export interface StreamChatCompletionOptions {
 	fetchImpl?: FetchLike;
 }
 
-/** Calls Gemini's streamGenerateContent for gemma-4-31b-it and yields text deltas. */
+/** Calls Gemini's streamGenerateContent for the configured chat model and yields text deltas. */
 export async function* streamChatCompletion(
 	options: StreamChatCompletionOptions,
 ): AsyncGenerator<string> {
@@ -66,7 +69,12 @@ export async function* parseGeminiSseStream(
 		if (done) break;
 		buffer += decoder.decode(value, { stream: true });
 
-		const events = buffer.split("\n\n");
+		// Split on the blank line between SSE events. Split on \r?\n\r?\n, not a
+		// literal "\n\n": the Cloudflare Workers runtime's fetch() preserves the
+		// upstream's raw CRLF line endings (unlike Node/curl, which normalize them
+		// away), so a bare "\n\n" search silently never matches under Workers —
+		// the whole response then sits unsplit in `buffer` until the stream ends.
+		const events = buffer.split(/\r?\n\r?\n/);
 		buffer = events.pop() ?? "";
 
 		for (const event of events) {
@@ -87,7 +95,10 @@ function extractTextFromSseEvent(event: string): string | undefined {
 	if (!jsonText) return undefined;
 
 	const parsed = JSON.parse(jsonText) as {
-		candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+		candidates?: Array<{
+			content?: { parts?: Array<{ text?: string; thought?: boolean }> };
+		}>;
 	};
-	return parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+	const part = parsed.candidates?.[0]?.content?.parts?.find((p) => !p.thought);
+	return part?.text;
 }

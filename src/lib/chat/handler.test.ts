@@ -350,6 +350,64 @@ describe("handleChatRequest", () => {
 		expect(kv.store.has(`conv:${VISITOR_A}:${CONV_A}`)).toBe(true);
 	});
 
+	it("excludes Personal Interest content from general chat retrieval", async () => {
+		const kv = createMockKV();
+		const response = await handleChatRequest({
+			request: createRequest({ persist: false, message: "Hi", history: [] }),
+			...baseOptions(kv),
+		});
+		await readSse(response);
+
+		expect(retrieveContext).toHaveBeenCalledWith(
+			expect.objectContaining({ excludeContentTypes: ["Personal Interest"] }),
+		);
+	});
+
+	it("retries once and succeeds when the model returns an empty reply (thinking budget exhausted)", async () => {
+		vi.mocked(streamChatCompletion)
+			.mockImplementationOnce(async function* () {})
+			.mockImplementationOnce(async function* () {
+				yield "Real";
+				yield " answer";
+			});
+		const kv = createMockKV();
+
+		const response = await handleChatRequest({
+			request: createRequest({ persist: false, message: "Hi", history: [] }),
+			...baseOptions(kv),
+		});
+		const text = await readSse(response);
+
+		expect(text).toContain('event: delta\ndata: {"text":"Real"}');
+		expect(text).toContain('event: delta\ndata: {"text":" answer"}');
+		expect(text).toContain("event: done");
+		expect(text).not.toContain("event: error");
+		expect(streamChatCompletion).toHaveBeenCalledTimes(2);
+	});
+
+	it("emits a generic error when the model returns an empty reply twice in a row", async () => {
+		vi.mocked(streamChatCompletion)
+			.mockImplementationOnce(async function* () {})
+			.mockImplementationOnce(async function* () {});
+		const consoleError = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
+		const kv = createMockKV();
+
+		const response = await handleChatRequest({
+			request: createRequest({ persist: false, message: "Hi", history: [] }),
+			...baseOptions(kv),
+		});
+		const text = await readSse(response);
+
+		expect(text).not.toContain("event: delta");
+		expect(text).toContain(
+			'event: error\ndata: {"message":"The avatar couldn\'t reply just now. Please try again."}',
+		);
+		expect(streamChatCompletion).toHaveBeenCalledTimes(2);
+		consoleError.mockRestore();
+	});
+
 	it("returns 400 for a missing message", async () => {
 		const kv = createMockKV();
 		const response = await handleChatRequest({

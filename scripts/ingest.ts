@@ -17,6 +17,7 @@ import {
 	chromaCollectionOptions,
 } from "../src/lib/rag/config";
 import { embedTexts } from "../src/lib/rag/embed";
+import { stripFileEmbeds } from "../src/lib/rag/cleanMarkdown";
 
 const KNOWLEDGE_BASE_DATA_SOURCE_ID =
 	process.env.NOTION_KNOWLEDGE_BASE_DATA_SOURCE_ID ||
@@ -133,7 +134,7 @@ async function fetchPageBody(notion: Client, pageId: string): Promise<string> {
 	if (response.truncated) {
 		console.warn(`  ! page ${pageId} markdown was truncated by the Notion API`);
 	}
-	return response.markdown.trim();
+	return stripFileEmbeds(response.markdown);
 }
 
 function chunkText(text: string): string[] {

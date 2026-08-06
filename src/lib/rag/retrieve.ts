@@ -1,4 +1,4 @@
-import { CloudClient } from "chromadb";
+import { CloudClient, type Where } from "chromadb";
 import { CHROMA_COLLECTION_NAME, chromaCollectionOptions } from "./config";
 import { embedQuery } from "./embed";
 
@@ -18,6 +18,13 @@ export interface RetrieveContextOptions {
 	language?: string;
 	/** Restrict to one Content Type, e.g. for the CV page pulling only Professional/Academic entries. */
 	contentType?: string;
+	/**
+	 * Content Type values to exclude from results. Used so general chat doesn't
+	 * surface deeply personal writing (short stories, reflections) as "context"
+	 * for unrelated professional questions — it stays reachable only for callers
+	 * that explicitly scope retrieval to it via `contentType`.
+	 */
+	excludeContentTypes?: string[];
 	topK?: number;
 }
 
@@ -34,7 +41,9 @@ export interface RetrievedChunk {
 	summary: string;
 }
 
-const DEFAULT_TOP_K = 8;
+// Kept small to stay well under the chat model's free-tier input-token quota
+// (16k tokens/minute): each additional chunk adds meaningfully to prompt size.
+const DEFAULT_TOP_K = 4;
 // Distance is cosine distance (lower = more relevant); nudge higher-Priority
 // entries ahead of near-equally-relevant lower-priority ones without letting
 // priority override a genuinely better semantic match.
@@ -43,12 +52,16 @@ const PRIORITY_SCORE_WEIGHT = 0.02;
 // we broaden the search to every language.
 const MIN_RESULTS_BEFORE_LANGUAGE_FALLBACK = 3;
 
-function buildWhere(
+export function buildWhere(
 	contentType: string | undefined,
 	language: string | undefined,
-) {
-	const clauses: Record<string, string>[] = [];
+	excludeContentTypes: string[] | undefined,
+): Where | undefined {
+	const clauses: Where[] = [];
 	if (contentType) clauses.push({ content_type: contentType });
+	if (excludeContentTypes?.length) {
+		clauses.push({ content_type: { $nin: excludeContentTypes } });
+	}
 	if (language) clauses.push({ language });
 
 	if (clauses.length === 0) return undefined;
@@ -102,7 +115,8 @@ function rankByPriority(chunks: RetrievedChunk[]): RetrievedChunk[] {
 export async function retrieveContext(
 	options: RetrieveContextOptions,
 ): Promise<RetrievedChunk[]> {
-	const { chroma, googleApiKey, query, language, contentType } = options;
+	const { chroma, googleApiKey, query, language, contentType, excludeContentTypes } =
+		options;
 	const topK = options.topK ?? DEFAULT_TOP_K;
 
 	const client = new CloudClient({
@@ -121,7 +135,7 @@ export async function retrieveContext(
 	const scopedResult = await collection.query({
 		queryEmbeddings: [queryEmbedding],
 		nResults: topK,
-		where: buildWhere(contentType, language),
+		where: buildWhere(contentType, language, excludeContentTypes),
 		include: ["documents", "metadatas", "distances"],
 	});
 	const scopedChunks = toChunks(scopedResult);
@@ -136,7 +150,7 @@ export async function retrieveContext(
 	const broadResult = await collection.query({
 		queryEmbeddings: [queryEmbedding],
 		nResults: topK,
-		where: buildWhere(contentType, undefined),
+		where: buildWhere(contentType, undefined, excludeContentTypes),
 		include: ["documents", "metadatas", "distances"],
 	});
 	return rankByPriority(toChunks(broadResult));
