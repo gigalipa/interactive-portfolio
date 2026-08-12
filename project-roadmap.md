@@ -147,16 +147,16 @@ Per prior decision: build the interaction layer before the visual 3D avatar, sin
 
 ### 3.2 Chat UI
 
-- [ ] Build floating bottom-center chatbox: text input + send button + waves button (voice toggle, wired up in Phase 4)
-- [ ] Style per spec: dark electric-blue outline, black background, glass/blur, external glow
-- [ ] Build chat bubble components: avatar messages (left, dark electric-blue outline/dark-blue fill), visitor messages (right, light-cyan outline/blue-grey fill)
-- [ ] Bubbles float over the (placeholder, pre-3D-avatar) hero area
-- [ ] Streaming response rendering (token-by-token) for perceived responsiveness
-- [ ] Loading/thinking state, error state (API failure, rate limit hit)
+- [x] Build floating bottom-center chatbox: text input + send button + waves button (voice toggle, wired up in Phase 4)
+- [x] Style per spec: dark electric-blue outline, black background, glass/blur, external glow
+- [x] Build chat bubble components: avatar messages (left, dark electric-blue outline/dark-blue fill), visitor messages (right, light-cyan outline/blue-grey fill)
+- [x] Bubbles float over the (placeholder, pre-3D-avatar) hero area
+- [x] Streaming response rendering (token-by-token) for perceived responsiveness
+- [x] Loading/thinking state, error state (API failure, rate limit hit)
 
 ### 3.3 Placeholder hero
 
-- [ ] Static/lightly-animated placeholder in the avatar's eventual position (e.g. glowing orb or silhouette) so Phase 3 ships a complete, good-looking page without blocking on the 3D avatar work
+- [x] Static/lightly-animated placeholder in the avatar's eventual position (e.g. glowing orb or silhouette) so Phase 3 ships a complete, good-looking page without blocking on the 3D avatar work — `PresenceRing` glowing orb, live and verified
 
 ---
 
