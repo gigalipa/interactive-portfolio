@@ -14,8 +14,8 @@ services:
       - MCP_SERVER_HOST=0.0.0.0
       - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN:-}
     volumes:
-      # Mount your local certificates folder into the container
-      - ./certs:/app/certs:ro
+      # Mounts docs/certificates directly — no need to keep a separate copy in sync
+      - ../docs/certificates:/app/certs:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]

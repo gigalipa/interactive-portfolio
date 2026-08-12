@@ -66,44 +66,40 @@ flyctl deploy
 ```
 
 **Option C: Docker + zrok (Recommended Free Solution)**
+
+Easiest: run `./start-docker-zrok.ps1` (Windows PowerShell). It builds the image, starts the
+container mounting `docs/certificates` directly (no copying needed), waits for it to become
+healthy, starts the zrok tunnel, and prints the connector URL for Mistral Studio.
+
+Manual steps, if you'd rather run it yourself:
 ```bash
 # 1. Build the Docker image
 docker build -t cert-to-kb .
 
-# 2. Create certs folder and copy PDFs
-mkdir certs
-cp C:/Users/peraz/Projects/Misc/interactive-portfolio/docs/certificates/*.pdf certs/
-
-# 3. Run container with environment variables
+# 2. Run container — mounts docs/certificates directly; reads Notion/auth config from .env
 docker run -d --name cert-to-kb \
   -p 3000:3000 \
-  -e NOTION_API_KEY=your_key \
-  -e NOTION_DATABASE_ID=5ddd97f8-4124-4581-9fbe-8eef41d10d71 \
-  -e CERTIFICATES_FOLDER=/app/certs \
+  --env-file .env \
   -e MCP_SERVER_HOST=0.0.0.0 \
-  -v %cd%/certs:/app/certs:ro \
+  -e CERTIFICATES_FOLDER=/app/certs \
+  -v C:/Users/peraz/Projects/Misc/interactive-portfolio/docs/certificates:/app/certs:ro \
   cert-to-kb
 
-# 4. Expose with zrok (install from https://zrok.io)
-zrok share http 3000
+# 3. Expose with zrok (install from https://zrok.io — note this project pins zrok v2,
+#    whose CLI syntax differs from v1's `zrok share http <port>`)
+zrok share public http://localhost:3000 --headless
 ```
-Copy the zrok URL (e.g., `https://abc123.zrok.io`)
+The tunnel hostname appears in zrok's log output as `<random>.shares.zrok.io` — prefix it
+with `https://` to get the connector URL (e.g., `https://abc123.shares.zrok.io`).
 
 **Using docker-compose:**
 ```bash
-# 1. Set environment variables
-echo NOTION_API_KEY=your_key > .env
-echo NOTION_DATABASE_ID=5ddd97f8-4124-4581-9fbe-8eef41d10d71 >> .env
-
-# 2. Create certs folder and copy PDFs
-mkdir certs
-cp C:/Users/peraz/Projects/Misc/interactive-portfolio/docs/certificates/*.pdf certs/
-
-# 3. Start with docker-compose
+# 1. Fill in NOTION_API_KEY / NOTION_DATABASE_ID / MCP_AUTH_TOKEN in .env (docker-compose
+#    reads it automatically), then:
 docker-compose up -d
 
-# 4. Expose with zrok
-zrok share http 3000
+# 2. Expose with zrok
+zrok share public http://localhost:3000 --headless
 ```
 
 ### 6. Register in Mistral Studio
