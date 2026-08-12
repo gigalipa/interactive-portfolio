@@ -36,3 +36,7 @@ pnpm-debug.log*
 # raw personal source files for the avatar personality dataset (sensitive —
 # see docs/personality-dataset.md for the curated, reviewed version)
 docs/personality/
+
+# raw certificate PDFs (personal documents — full legal name, institutions, sometimes ID
+# numbers; consumed locally by cert-to-kb, never needs to be in the repo)
+docs/certificates/

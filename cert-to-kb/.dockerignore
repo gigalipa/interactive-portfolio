@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Documentation
+README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test
+coverage
+
+# Temporary files
+tmp
+*.tmp
+
+# Certificates (will be mounted as volume)
+certs
+
+# zrok binary (host-side tunnel tool, irrelevant inside the container)
+zrok2.exe
+zrok

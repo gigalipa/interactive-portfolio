@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  cert-to-kb:
+    build: .
+    container_name: cert-to-kb
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NOTION_API_KEY=${NOTION_API_KEY}
+      - NOTION_DATABASE_ID=${NOTION_DATABASE_ID}
+      - CERTIFICATES_FOLDER=/app/certs
+      - MCP_SERVER_HOST=0.0.0.0
+      - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN:-}
+    volumes:
+      # Mount your local certificates folder into the container
+      - ./certs:/app/certs:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
