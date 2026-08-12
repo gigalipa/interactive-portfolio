@@ -48,13 +48,21 @@ const DEFAULT_TOP_K = 4;
 // entries ahead of near-equally-relevant lower-priority ones without letting
 // priority override a genuinely better semantic match.
 const PRIORITY_SCORE_WEIGHT = 0.02;
-// Below this many hits, a language-scoped query is considered too sparse and
-// we broaden the search to every language.
-const MIN_RESULTS_BEFORE_LANGUAGE_FALLBACK = 3;
+// Same idea, but for matching the visitor's UI language: a small nudge on
+// near-ties, never enough to override a much better semantic match. This must
+// stay a *soft* ranking signal, not a hard `where` filter — the `language`
+// metadata on a chunk means "what language this entry is written in," which
+// is unrelated to what the entry is *about*. A hard filter would silently
+// exclude, say, an English-language-skill entry from an "ES"-language visitor's
+// results even though it's exactly what "what languages does he speak?" needs.
+const LANGUAGE_SCORE_WEIGHT = 0.03;
+// Over-fetch beyond topK so the language-preference nudge above has enough
+// candidates to actually re-rank, without ever hard-excluding anything.
+const CANDIDATE_POOL_MULTIPLIER = 3;
+const MIN_CANDIDATE_POOL = 8;
 
 export function buildWhere(
 	contentType: string | undefined,
-	language: string | undefined,
 	excludeContentTypes: string[] | undefined,
 ): Where | undefined {
 	const clauses: Where[] = [];
@@ -62,7 +70,6 @@ export function buildWhere(
 	if (excludeContentTypes?.length) {
 		clauses.push({ content_type: { $nin: excludeContentTypes } });
 	}
-	if (language) clauses.push({ language });
 
 	if (clauses.length === 0) return undefined;
 	if (clauses.length === 1) return clauses[0];
@@ -99,18 +106,24 @@ function toChunks(result: {
 		});
 }
 
-function rankByPriority(chunks: RetrievedChunk[]): RetrievedChunk[] {
-	return [...chunks].sort((a, b) => {
-		const scoreA = a.distance - a.priority * PRIORITY_SCORE_WEIGHT;
-		const scoreB = b.distance - b.priority * PRIORITY_SCORE_WEIGHT;
-		return scoreA - scoreB;
-	});
+export function rankChunks(
+	chunks: RetrievedChunk[],
+	preferredLanguage: string | undefined,
+): RetrievedChunk[] {
+	const score = (chunk: RetrievedChunk): number => {
+		const languageBonus =
+			preferredLanguage && chunk.language === preferredLanguage
+				? LANGUAGE_SCORE_WEIGHT
+				: 0;
+		return chunk.distance - chunk.priority * PRIORITY_SCORE_WEIGHT - languageBonus;
+	};
+	return [...chunks].sort((a, b) => score(a) - score(b));
 }
 
 /**
  * Retrieves the top-k most relevant Knowledge Base chunks for a query,
- * preferring the visitor's language but falling back to all languages
- * if the language-scoped search comes back too sparse.
+ * nudging results toward the visitor's UI language on near-ties without ever
+ * excluding a genuinely better semantic match just because of its language tag.
  */
 export async function retrieveContext(
 	options: RetrieveContextOptions,
@@ -131,27 +144,17 @@ export async function retrieveContext(
 	});
 
 	const queryEmbedding = await embedQuery(query, googleApiKey);
+	const candidatePoolSize = Math.max(
+		topK * CANDIDATE_POOL_MULTIPLIER,
+		topK + MIN_CANDIDATE_POOL,
+	);
 
-	const scopedResult = await collection.query({
+	const result = await collection.query({
 		queryEmbeddings: [queryEmbedding],
-		nResults: topK,
-		where: buildWhere(contentType, language, excludeContentTypes),
+		nResults: candidatePoolSize,
+		where: buildWhere(contentType, excludeContentTypes),
 		include: ["documents", "metadatas", "distances"],
 	});
-	const scopedChunks = toChunks(scopedResult);
 
-	if (
-		!language ||
-		scopedChunks.length >= MIN_RESULTS_BEFORE_LANGUAGE_FALLBACK
-	) {
-		return rankByPriority(scopedChunks);
-	}
-
-	const broadResult = await collection.query({
-		queryEmbeddings: [queryEmbedding],
-		nResults: topK,
-		where: buildWhere(contentType, undefined, excludeContentTypes),
-		include: ["documents", "metadatas", "distances"],
-	});
-	return rankByPriority(toChunks(broadResult));
+	return rankChunks(toChunks(result), language).slice(0, topK);
 }
