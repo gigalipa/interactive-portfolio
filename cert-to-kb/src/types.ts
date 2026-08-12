@@ -46,7 +46,6 @@ export interface NotionEntryBase {
   language: 'EN' | 'ES' | 'FR';
   source: 'Google Drive' | 'OneDrive' | 'Dropbox' | 'Notion' | 'GitHub' | 'Local' | 'Other';
   metadata: Record<string, unknown>;
-  relatedTo?: string[];
 }
 
 export interface NotionSkillEntry extends NotionEntryBase {

@@ -46,6 +46,27 @@ function mapLanguage(language: string): string {
   return mapping[language] || 'EN';
 }
 
+/**
+ * Splits text into Notion paragraph blocks. Notion caps each rich_text item at 2000
+ * characters, so long content can't go in a single block (or a property, which has the
+ * same cap) — it has to become page body blocks instead, split on paragraph breaks.
+ */
+function textToParagraphBlocks(text: string): Array<{ object: 'block'; type: 'paragraph'; paragraph: { rich_text: Array<{ text: { content: string } }> } }> {
+  const MAX_LEN = 2000;
+  const paragraphs = text.split(/\n{2,}/).filter((p) => p.trim().length > 0);
+  const blocks: Array<{ object: 'block'; type: 'paragraph'; paragraph: { rich_text: Array<{ text: { content: string } }> } }> = [];
+  for (const paragraph of paragraphs) {
+    for (let i = 0; i < paragraph.length; i += MAX_LEN) {
+      blocks.push({
+        object: 'block',
+        type: 'paragraph',
+        paragraph: { rich_text: [{ text: { content: paragraph.slice(i, i + MAX_LEN) } }] },
+      });
+    }
+  }
+  return blocks;
+}
+
 export async function createNotionEntry(entry: NotionEntry): Promise<CreateNotionEntryResult> {
   const config = getConfig();
   const notion = getNotionClient();
@@ -54,7 +75,7 @@ export async function createNotionEntry(entry: NotionEntry): Promise<CreateNotio
   const properties: PageProperties = {
     Title: { title: [{ text: { content: entry.title } }] },
     'Content Type': { select: { name: mapContentType(entry.contentType) } },
-    Content: { rich_text: [{ text: { content: entry.content.slice(0, 2000) } }] },
+    Description: { rich_text: [{ text: { content: entry.content.slice(0, 2000) } }] },
     Summary: { rich_text: [{ text: { content: entry.summary } }] },
     Tags: { multi_select: entry.tags.map(tag => ({ name: tag })) },
     Status: { select: { name: mapStatus(entry.status) } },
@@ -63,11 +84,16 @@ export async function createNotionEntry(entry: NotionEntry): Promise<CreateNotio
     Source: { select: { name: mapSource(entry.source) } },
     Metadata: { rich_text: [{ text: { content: JSON.stringify(entry.metadata).slice(0, 2000) } }] },
   };
-  if (entry.relatedTo && entry.relatedTo.length > 0) {
-    (properties as Record<string, unknown>)['Related To'] = { relation: entry.relatedTo.map(id => ({ id })) };
-  }
   const response = await notion.pages.create({ parent: { database_id: databaseId }, properties });
   const page = response as { id: string; url: string };
+
+  // The RAG ingestion pipeline (scripts/ingest.ts) reads the page BODY, not a database
+  // property — Description above is a redundant short fallback, this is the real content.
+  const blocks = textToParagraphBlocks(entry.content);
+  for (let i = 0; i < blocks.length; i += 100) {
+    await notion.blocks.children.append({ block_id: page.id, children: blocks.slice(i, i + 100) });
+  }
+
   return { pageId: page.id, pageUrl: page.url, title: entry.title, contentType: entry.contentType };
 }
 
