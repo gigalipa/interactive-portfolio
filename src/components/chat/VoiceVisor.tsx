@@ -19,21 +19,27 @@ export function VoiceVisor({ analyser, endCallLabel, onEndCall }: VoiceVisorProp
 			return;
 		}
 
+		let cancelled = false;
 		const data = new Uint8Array(analyser.frequencyBinCount);
 		const tick = () => {
+			if (cancelled) return;
 			analyser.getByteFrequencyData(data);
 			setHeights(computeBarHeights(data, BAR_COUNT));
 			// Deferred via microtask so a synchronous rAF stub (used in tests to
 			// render exactly one frame) can't recurse the call stack into overflow;
 			// real browsers already schedule rAF asynchronously so this is a no-op
-			// behavior change outside of tests.
+			// behavior change outside of tests. The `cancelled` check (set
+			// synchronously by cleanup) guards against this microtask firing after
+			// unmount, when its requestAnimationFrame call would be scheduled too
+			// late to be captured by rafRef and thus never cancelled.
 			queueMicrotask(() => {
-				rafRef.current = requestAnimationFrame(tick);
+				if (!cancelled) rafRef.current = requestAnimationFrame(tick);
 			});
 		};
 		rafRef.current = requestAnimationFrame(tick);
 
 		return () => {
+			cancelled = true;
 			if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
 			rafRef.current = null;
 		};
