@@ -5,5 +5,9 @@ import { handleVoiceTurnRequest } from "../../../lib/voice/turnHandler";
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
-	return handleVoiceTurnRequest({ request, kv: env.SESSION });
+	return handleVoiceTurnRequest({
+		request,
+		kv: env.SESSION,
+		rateLimiter: env.CHAT_RATE_LIMITER,
+	});
 };
