@@ -52,7 +52,7 @@ const GENERIC_ERROR_MESSAGE =
 // Deeply personal writing (short stories, reflections) stays out of general chat
 // retrieval so it can't surface as unsolicited "context" for unrelated
 // professional questions, which conflicts with the persona's own boundaries.
-const EXCLUDED_GENERAL_CHAT_CONTENT_TYPES = ["Personal Interest"];
+export const EXCLUDED_GENERAL_CHAT_CONTENT_TYPES = ["Personal Interest"];
 
 function jsonError(status: number, message: string): Response {
 	return new Response(JSON.stringify({ message }), {

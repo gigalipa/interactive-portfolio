@@ -9,7 +9,11 @@ import { GoogleGenAI } from "@google/genai";
 export const LIVE_MODEL = "gemini-2.5-flash-native-audio-latest";
 
 const TOKEN_TTL_MINUTES = 30;
-const SESSION_TTL_MINUTES = 60;
+// Per the SDK's field semantics, newSessionExpireTime is the deadline to
+// *start* a session with this token — the Google-documented pattern keeps
+// this short (a couple of minutes), not a wide window that would let a
+// leaked token be used to start a session long after mint time.
+const SESSION_TTL_MINUTES = 2;
 
 export interface MintEphemeralTokenOptions {
 	apiKey: string;
