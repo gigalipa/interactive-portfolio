@@ -166,11 +166,11 @@ Per prior decision: build the interaction layer before the visual 3D avatar, sin
 Per prior decision: stock Gemini Live API voice, not a cloned voice — keeps latency low and avoids extra hosting.
 
 - [x] Build a Cloudflare Worker that mints short-lived **ephemeral tokens** for the Gemini Live API (so the browser connects directly via WebSocket without exposing the long-lived API key)
-- [ ] Implement client-side Live API session: mic capture → stream to Gemini → stream audio response back
-- [ ] Wire the "waves" button to toggle voice mode; visually indicate listening/speaking states
-- [ ] Feed the same RAG context into the voice session (system instructions + retrieved chunks) so voice answers stay consistent with text answers
-- [ ] Handle multilingual voice (visitor speaks ES/FR/EN — confirm Live API auto language handling)
-- [ ] Graceful fallback to text mode if mic permission denied or WebSocket fails
+- [x] Implement client-side Live API session: mic capture → stream to Gemini → stream audio response back — live-verified (2026-08-13) against a real Gemini Live API session: soundwave visor reacting to real mic amplitude, real audio playback, `PresenceRing` voice-mode color + output-amplitude pulse
+- [x] Wire the "waves" button to toggle voice mode; visually indicate listening/speaking states
+- [x] Feed the same RAG context into the voice session (system instructions + retrieved chunks) so voice answers stay consistent with text answers
+- [ ] Handle multilingual voice (visitor speaks ES/FR/EN — confirm Live API auto language handling) — **resolved differently than originally scoped**: voice replies are locked to the visitor's site locale (EN/ES/FR) rather than auto-detected from speech, per the approved UI design spec (`docs/superpowers/specs/2026-08-13-phase4-voice-chat-ui-design.md`). Not planned to be revisited unless it proves limiting in practice.
+- [x] Graceful fallback to text mode if mic permission denied or WebSocket fails — live-verified via denying mic permission mid-checklist, confirmed clean fallback to text with no stuck state
 
 ---
 
