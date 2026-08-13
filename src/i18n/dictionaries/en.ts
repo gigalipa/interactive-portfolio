@@ -13,8 +13,7 @@ export default {
 	home: {
 		title: "Daniel Peraza — Interactive Portfolio",
 		status: "Signal: online",
-		tagline:
-			"Ask me anything about my work, background, or projects — the conversational interface lands here in Phase 3.",
+		tagline: "Ask me anything about my work, background, or projects.",
 	},
 	cv: {
 		phase: "Phase 5",
@@ -36,6 +35,11 @@ export default {
 		inputPlaceholder: "Ask me about my work, background, or projects...",
 		send: "Send",
 		voiceComingSoon: "Voice chat (coming soon)",
+		voiceStart: "Start voice chat",
+		voiceEndCall: "End call",
+		voiceConnecting: "Connecting...",
+		voiceErrorGeneric: "The voice session couldn't connect. Please try text chat instead.",
+		voiceMicDenied: "Microphone access was denied. You can still use text chat.",
 		thinking: "Thinking...",
 		errorGeneric: "The avatar couldn't reply just now. Please try again.",
 		errorRateLimited:
