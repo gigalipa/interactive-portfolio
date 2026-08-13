@@ -32,4 +32,14 @@ describe("ChatBubble", () => {
 		render(<ChatBubble role="user" text="I like **bold** text" />);
 		expect(screen.getByText("I like **bold** text")).toBeInTheDocument();
 	});
+
+	it("renders a mic indicator when mode is voice", () => {
+		render(<ChatBubble role="user" text="Hi!" mode="voice" />);
+		expect(screen.getByTestId("chat-bubble-voice-indicator")).toBeInTheDocument();
+	});
+
+	it("does not render a mic indicator for a text message", () => {
+		render(<ChatBubble role="user" text="Hi!" />);
+		expect(screen.queryByTestId("chat-bubble-voice-indicator")).not.toBeInTheDocument();
+	});
 });

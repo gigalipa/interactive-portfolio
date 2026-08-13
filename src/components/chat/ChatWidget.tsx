@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useChatSession } from "../../lib/chat/useChatSession";
+import { useVoiceSession } from "../../lib/voice/useVoiceSession";
 import { ChatMessages } from "./ChatMessages";
 import { ChatBox } from "./ChatBox";
+import { VoiceVisor } from "./VoiceVisor";
 import { ConsentBanner } from "./ConsentBanner";
 import { HistorySidebar } from "./HistorySidebar";
 import { HistoryToggleButton } from "./HistoryToggleButton";
@@ -20,6 +22,24 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 		errorGenericMessage: t.errorGeneric,
 		errorRateLimitedMessage: t.errorRateLimited,
 	});
+
+	const [voiceErrorKey, setVoiceErrorKey] = useState<"voice_connection_failed" | "voice_mic_denied" | null>(
+		null,
+	);
+	const voiceSession = useVoiceSession({
+		language: lang.toUpperCase(),
+		persist: session.consent === "accepted",
+		conversationId: undefined,
+		onTurnPersisted: (turn) => session.appendVoiceTurn(turn),
+		onError: (key) => setVoiceErrorKey(key),
+	});
+	const voiceActive = voiceSession.status !== "idle" && voiceSession.status !== "error";
+	const voiceErrorMessage =
+		voiceSession.status === "error" && voiceErrorKey
+			? voiceErrorKey === "voice_mic_denied"
+				? t.voiceMicDenied
+				: t.voiceErrorGeneric
+			: null;
 
 	const showConsentBanner = session.consent === null || preferencesOpen;
 
@@ -86,13 +106,29 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 						onRetry={session.retryLast}
 					/>
 
-					<ChatBox
-						inputPlaceholder={t.inputPlaceholder}
-						sendLabel={t.send}
-						voiceLabel={t.voiceComingSoon}
-						disabled={session.status === "sending" || session.status === "streaming"}
-						onSend={session.sendMessage}
-					/>
+					{voiceActive ? (
+						<VoiceVisor
+							analyser={voiceSession.micAnalyser}
+							endCallLabel={t.voiceEndCall}
+							onEndCall={voiceSession.end}
+						/>
+					) : (
+						<>
+							{voiceErrorMessage && (
+								<p className="text-ion/70 px-2 text-center text-xs" role="alert">
+									{voiceErrorMessage}
+								</p>
+							)}
+							<ChatBox
+								inputPlaceholder={t.inputPlaceholder}
+								sendLabel={t.send}
+								voiceLabel={t.voiceStart}
+								disabled={session.status === "sending" || session.status === "streaming"}
+								onSend={session.sendMessage}
+								onStartVoice={voiceSession.start}
+							/>
+						</>
+					)}
 				</div>
 			</div>
 		</>
