@@ -14,7 +14,8 @@ Source of truth for scope and sequencing. Check items off as they land. Anything
 - [x] Google AI Studio account (for `gemma-4-31b-it` + Gemini 2.5 Flash Native Audio Dialog API keys)
 - [x] Chroma Cloud account + database `interactive-portfolio` created, MCP connected
 - [x] Notion workspace connected (MCP)
-- [ ] Generate and store remaining API keys as Cloudflare Worker **secrets** (never client-side): Google AI Studio key, Notion internal integration token — **not actually done yet** (`wrangler secret list` confirmed empty on 2026-08-04); needed locally first for `pnpm ingest` (Phase 2.2, via `.env`), then as Worker secrets before Phase 3/4 (chat/voice) can use them from the deployed app
+- [x] Generate and store Google AI Studio keys as Cloudflare Worker **secrets** (never client-side) — `GOOGLE_API_KEY_EMB`, `GOOGLE_API_KEY_LLM`, `GOOGLE_API_KEY_LIVE`, plus the Chroma credentials, all confirmed present via `wrangler secret list` (2026-08-12)
+- [ ] Generate and store the Notion internal integration token as a Cloudflare Worker secret — still outstanding (`wrangler secret list` confirmed no `NOTION_TOKEN` secret on 2026-08-12); only needed locally today for `pnpm ingest` (Phase 2.2, via `.env`)
 
 ### 0.2 Claude Code tooling
 
@@ -164,7 +165,7 @@ Per prior decision: build the interaction layer before the visual 3D avatar, sin
 
 Per prior decision: stock Gemini Live API voice, not a cloned voice — keeps latency low and avoids extra hosting.
 
-- [ ] Build a Cloudflare Worker that mints short-lived **ephemeral tokens** for the Gemini Live API (so the browser connects directly via WebSocket without exposing the long-lived API key)
+- [x] Build a Cloudflare Worker that mints short-lived **ephemeral tokens** for the Gemini Live API (so the browser connects directly via WebSocket without exposing the long-lived API key)
 - [ ] Implement client-side Live API session: mic capture → stream to Gemini → stream audio response back
 - [ ] Wire the "waves" button to toggle voice mode; visually indicate listening/speaking states
 - [ ] Feed the same RAG context into the voice session (system instructions + retrieved chunks) so voice answers stay consistent with text answers
