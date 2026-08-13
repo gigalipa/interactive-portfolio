@@ -34,7 +34,7 @@ ChatBox "waves" click
                                       retrieveContext() (broad, topK~12) ─▶ Chroma Cloud
                                       buildVoiceSystemPrompt()
                                       mint ephemeral token ───────────────▶ Google AI (Live API auth)
-      ◀── { token, systemInstructions, expiresAt } ──
+      ◀── { token, expiresAt, model } ──
   → open WebSocket session ──────────────────────────────────────────────▶ Gemini Live API
       mic PCM stream ──────────────────────────────────────────────────▶
       ◀── audio + transcript deltas ──────────────────────────────────────
@@ -44,14 +44,14 @@ ChatBox "waves" click
 ```
 
 Two new pieces:
-- `src/pages/api/voice/token.ts` — POST, server-side only. Rate-limited (reuses `CHAT_RATE_LIMITER`). Runs `retrieveContext` + `buildVoiceSystemPrompt`, mints an ephemeral token via `GOOGLE_API_KEY_LIVE`, returns `{ token, systemInstructions, expiresAt }`. The key itself never leaves the server.
+- `src/pages/api/voice/token.ts` — POST, server-side only. Rate-limited (reuses `CHAT_RATE_LIMITER`). Runs `retrieveContext` + `buildVoiceSystemPrompt`, mints an ephemeral token via `GOOGLE_API_KEY_LIVE`, returns `{ token, expiresAt, model }`. System instructions are baked into the token's `liveConnectConstraints` server-side rather than echoed back to the browser; `model` is returned because the client needs it to call `live.connect`. The key itself never leaves the server.
 - `src/lib/voice/` (client-side): `liveSession.ts` (wraps the Live API WebSocket client: mic capture, audio streaming, playback) and `useVoiceSession.ts` (React hook, state machine, mirrors `useChatSession`'s shape).
 
 The browser connects **directly** to the Gemini Live API over WebSocket using the ephemeral token — audio never round-trips through our Worker, keeping latency low.
 
 ## Session context (RAG)
 
-Unlike text chat (fresh retrieval per message), the Live API sets system instructions once at connect time. `POST /api/voice/token` runs `retrieveContext` once per session with a wider net (`topK` ~12 vs. text's 4, no `contentType` filter) to build a broad-but-relevant context slice, passed through a new `buildVoiceSystemPrompt()`:
+Unlike text chat (fresh retrieval per message), the Live API sets system instructions once at connect time. `POST /api/voice/token` runs `retrieveContext` once per session with a wider net (`topK` ~12 vs. text's 4) to build a broad-but-relevant context slice, passed through a new `buildVoiceSystemPrompt()`. It applies the same `excludeContentTypes: ["Personal Interest"]` filter as text chat's `EXCLUDED_GENERAL_CHAT_CONTENT_TYPES` — this matters even more for voice than text, since the voice system prompt is locked in for the whole session rather than re-retrieved per message, so any personal fiction/reflections that slipped in would be stuck there unrecoverably:
 
 - Reuses `PERSONA` / `TONE` / `BOUNDARIES` from `src/lib/rag/prompt.ts` (same source of truth as text).
 - Adds a voice-specific note: replies should be spoken-conversational (short sentences, no markdown/lists/headers).
