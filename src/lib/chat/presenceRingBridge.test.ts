@@ -19,6 +19,10 @@ describe("setPresenceState", () => {
 		setPresenceState("listening");
 		expect(ring.dataset.state).toBe("listening");
 	});
+
+	it("does nothing if no ring is present", () => {
+		expect(() => setPresenceState("listening")).not.toThrow();
+	});
 });
 
 describe("setVoiceMode", () => {
