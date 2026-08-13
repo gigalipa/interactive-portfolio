@@ -24,6 +24,28 @@ describe("conversation KV helpers", () => {
 		expect(result).toEqual(sampleConversation);
 	});
 
+	it("round-trips a voice-tagged message through put/get", async () => {
+		const kv = createMockKV();
+		const conversation: StoredConversation = {
+			messages: [
+				{ role: "user", text: "Hi", at: "2026-08-12T00:00:00.000Z", mode: "voice" },
+				{ role: "model", text: "Hello!", at: "2026-08-12T00:00:00.000Z", mode: "voice" },
+			],
+			updatedAt: "2026-08-12T00:00:00.000Z",
+			title: "Hi",
+		};
+
+		await putConversation(kv, "visitor-1", "conv-1", conversation);
+		const loaded = await getConversation(kv, "visitor-1", "conv-1");
+
+		expect(loaded?.messages[0]).toEqual(
+			expect.objectContaining({ mode: "voice" }),
+		);
+		expect(loaded?.messages[1]).toEqual(
+			expect.objectContaining({ mode: "voice" }),
+		);
+	});
+
 	it("returns null for a missing conversation", async () => {
 		const kv = createMockKV();
 		const result = await getConversation(kv, "visitor-1", "does-not-exist");
