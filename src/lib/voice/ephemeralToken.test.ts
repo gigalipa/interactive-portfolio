@@ -44,4 +44,22 @@ describe("mintEphemeralToken", () => {
 			}),
 		).rejects.toThrow("Live API did not return a token name");
 	});
+
+	it("locks audio response modality and transcription into the token, not just system instructions", async () => {
+		const create = vi.fn().mockResolvedValue({ name: "t" });
+		const genAiFactory = vi.fn().mockReturnValue({ authTokens: { create } });
+
+		await mintEphemeralToken({
+			apiKey: "k",
+			systemInstructions: "Reply in ES.",
+			genAiFactory,
+		});
+
+		const [arg] = create.mock.calls[0];
+		const liveConfig = (arg as { config: { liveConnectConstraints: { config: Record<string, unknown> } } })
+			.config.liveConnectConstraints.config;
+		expect(liveConfig.responseModalities).toEqual(["AUDIO"]);
+		expect(liveConfig.inputAudioTranscription).toEqual({});
+		expect(liveConfig.outputAudioTranscription).toEqual({});
+	});
 });
