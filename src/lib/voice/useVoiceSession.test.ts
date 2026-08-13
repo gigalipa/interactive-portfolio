@@ -169,6 +169,35 @@ describe("useVoiceSession", () => {
 		});
 	});
 
+	it("seeds the first turn's conversationId from options.conversationId when starting mid-conversation (e.g. after prior text turns)", async () => {
+		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		vi.mocked(startLiveSession).mockImplementation((opts) => {
+			capturedCallbacks = opts.callbacks;
+			return Promise.resolve({
+				micAnalyser: fakeAnalyser(),
+				outputAnalyser: fakeAnalyser(),
+				close: vi.fn(),
+			});
+		});
+		vi.mocked(persistVoiceTurn).mockResolvedValueOnce({ conversationId: "already-active-conv" });
+		const options = { ...baseOptions(), persist: true, conversationId: "already-active-conv" };
+
+		const { result } = renderHook(() => useVoiceSession(options));
+		act(() => result.current.start());
+		await waitFor(() => expect(capturedCallbacks).not.toBeUndefined());
+
+		await act(async () => {
+			await capturedCallbacks?.onTurnComplete({ userText: "Hi", modelText: "Hello" });
+		});
+
+		expect(persistVoiceTurn).toHaveBeenCalledWith({
+			persist: true,
+			conversationId: "already-active-conv",
+			userText: "Hi",
+			modelText: "Hello",
+		});
+	});
+
 	it("goes to error and calls onError when the token mint fails", async () => {
 		vi.mocked(mintVoiceToken).mockRejectedValue(new Error("mint failed"));
 		const options = baseOptions();

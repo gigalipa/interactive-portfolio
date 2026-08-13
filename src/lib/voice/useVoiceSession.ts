@@ -36,19 +36,27 @@ export function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessio
 	const sessionRef = useRef<LiveSession | null>(null);
 	const rafRef = useRef<number | null>(null);
 	const persistRef = useRef(options.persist);
-	// Seeded from options.conversationId once; NOT re-synced on every render
-	// (unlike persistRef below) — after the first turn persists, this ref is
-	// the source of truth for the conversation the rest of the session's
-	// turns belong to. Re-syncing it from options.conversationId on every
-	// render would clobber that with the caller's still-undefined prop the
-	// moment onTurnPersisted's state update triggers a re-render, starting a
-	// new conversation on every single turn instead of one per session.
+	// The session-scoped id: seeded once per session (in start(), from
+	// latestConversationIdPropRef below) and then owned internally, updated
+	// only by a completed turn's response. NOT re-synced from the prop on
+	// every render — doing so would clobber a turn-persisted id with the
+	// caller's still-stale prop the moment onTurnPersisted's state update
+	// triggers a re-render, starting a new conversation on every single turn
+	// instead of one per session.
 	const conversationIdRef = useRef(options.conversationId);
+	// Always mirrors the latest options.conversationId (e.g. a conversation
+	// already active from prior text turns). start() reads this once, at the
+	// moment a session begins, to seed conversationIdRef correctly — so
+	// starting voice mid-conversation continues it instead of forking a new
+	// one, without reintroducing the per-render clobber the comment above
+	// guards against.
+	const latestConversationIdPropRef = useRef(options.conversationId);
 	// Distinguishes a close the visitor asked for (end()) from an unexpected
 	// server/network close, and caps reconnection to a single attempt.
 	const endingRef = useRef(false);
 	const reconnectedRef = useRef(false);
 	persistRef.current = options.persist;
+	latestConversationIdPropRef.current = options.conversationId;
 
 	const stopMetering = useCallback(() => {
 		if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
@@ -166,6 +174,12 @@ export function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessio
 	const start = useCallback(() => {
 		endingRef.current = false;
 		reconnectedRef.current = false;
+		// Seed from whatever conversation is currently active (e.g. one
+		// already started by prior text turns) so voice continues it rather
+		// than forking a new one — read fresh here, at session start, not
+		// wired as a continuous render-time sync (see conversationIdRef's
+		// own comment for why that would break mid-session turn continuity).
+		conversationIdRef.current = latestConversationIdPropRef.current;
 		connect();
 	}, [connect]);
 

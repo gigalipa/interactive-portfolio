@@ -29,7 +29,12 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 	const voiceSession = useVoiceSession({
 		language: lang.toUpperCase(),
 		persist: session.consent === "accepted",
-		conversationId: undefined,
+		// Lets a voice session started mid-conversation (after prior text
+		// turns) continue that same conversation instead of forking a new
+		// one — useVoiceSession only reads this at the moment start() is
+		// called, not continuously, so it can't clobber a conversation a
+		// voice turn already established either.
+		conversationId: session.conversationId,
 		onTurnPersisted: (turn) => session.appendVoiceTurn(turn),
 		onError: (key) => setVoiceErrorKey(key),
 	});

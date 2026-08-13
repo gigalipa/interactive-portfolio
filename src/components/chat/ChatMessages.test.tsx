@@ -26,6 +26,21 @@ describe("ChatMessages", () => {
 		expect(screen.getByText("Hello!")).toBeInTheDocument();
 	});
 
+	it("forwards a voice-tagged message's mode to its bubble, so it renders the mic indicator", () => {
+		render(
+			<ChatMessages
+				{...baseProps}
+				messages={[{ id: "1", role: "user", text: "Hi", mode: "voice" }]}
+			/>,
+		);
+		expect(screen.getByTestId("chat-bubble-voice-indicator")).toBeInTheDocument();
+	});
+
+	it("does not render a mic indicator for a message with no mode", () => {
+		render(<ChatMessages {...baseProps} messages={[{ id: "1", role: "user", text: "Hi" }]} />);
+		expect(screen.queryByTestId("chat-bubble-voice-indicator")).not.toBeInTheDocument();
+	});
+
 	it("shows the thinking indicator while status is 'sending'", () => {
 		render(<ChatMessages {...baseProps} status="sending" />);
 		expect(screen.getByText("Thinking...")).toBeInTheDocument();

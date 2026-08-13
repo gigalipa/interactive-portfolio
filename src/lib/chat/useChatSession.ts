@@ -33,6 +33,10 @@ export interface UseChatSessionResult {
 	messages: DisplayMessage[];
 	status: ChatStatus;
 	errorMessage: string | null;
+	/** The currently active conversation, whether it was started by a text or
+	 * a voice turn — so a caller (ChatWidget) can hand it to a voice session
+	 * that starts mid-conversation and needs to continue it, not fork a new one. */
+	conversationId: string | undefined;
 	sendMessage: (text: string) => void;
 	retryLast: () => void;
 	conversations: ConversationSummary[];
@@ -286,6 +290,7 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 		messages,
 		status,
 		errorMessage,
+		conversationId,
 		sendMessage,
 		retryLast,
 		conversations,
