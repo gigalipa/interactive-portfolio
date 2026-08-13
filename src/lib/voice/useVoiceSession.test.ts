@@ -122,6 +122,53 @@ describe("useVoiceSession", () => {
 		});
 	});
 
+	it("reuses the conversationId returned by the first turn for a second turn in the same session, even as the caller keeps passing conversationId: undefined", async () => {
+		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		vi.mocked(startLiveSession).mockImplementation((opts) => {
+			capturedCallbacks = opts.callbacks;
+			return Promise.resolve({
+				micAnalyser: fakeAnalyser(),
+				outputAnalyser: fakeAnalyser(),
+				close: vi.fn(),
+			});
+		});
+		vi.mocked(persistVoiceTurn).mockResolvedValueOnce({ conversationId: "new-conv-1" });
+		// options.conversationId stays undefined for the whole test, exactly as
+		// ChatWidget always passes it — this is the regression this test guards.
+		const options = { ...baseOptions(), persist: true };
+
+		// Re-rendering with a fresh options object on every turn (as React
+		// does when a parent component re-renders) must not reset the
+		// internally-tracked conversationId back to undefined.
+		const { result, rerender } = renderHook((props) => useVoiceSession(props), {
+			initialProps: options,
+		});
+		act(() => result.current.start());
+		await waitFor(() => expect(capturedCallbacks).not.toBeUndefined());
+
+		await act(async () => {
+			await capturedCallbacks?.onTurnComplete({ userText: "First", modelText: "Reply one" });
+		});
+		expect(persistVoiceTurn).toHaveBeenNthCalledWith(1, {
+			persist: true,
+			conversationId: undefined,
+			userText: "First",
+			modelText: "Reply one",
+		});
+
+		rerender({ ...options });
+
+		await act(async () => {
+			await capturedCallbacks?.onTurnComplete({ userText: "Second", modelText: "Reply two" });
+		});
+		expect(persistVoiceTurn).toHaveBeenNthCalledWith(2, {
+			persist: true,
+			conversationId: "new-conv-1",
+			userText: "Second",
+			modelText: "Reply two",
+		});
+	});
+
 	it("goes to error and calls onError when the token mint fails", async () => {
 		vi.mocked(mintVoiceToken).mockRejectedValue(new Error("mint failed"));
 		const options = baseOptions();

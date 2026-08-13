@@ -63,9 +63,13 @@ export function ChatBubble({ role, text, mode }: ChatBubbleProps) {
 			<div
 				data-testid={isModel ? "chat-bubble-model" : "chat-bubble-user"}
 				className={
-					isModel
-						? "border-electric-blue/60 bg-deep-blue/80 text-ion max-w-[80%] rounded-2xl rounded-bl-sm border px-4 py-2.5 text-left text-sm backdrop-blur-lg"
-						: "border-signal-cyan/60 bg-slate-mist text-ion max-w-[80%] rounded-2xl rounded-br-sm border px-4 py-2.5 text-right text-sm whitespace-pre-wrap backdrop-blur-lg"
+					mode === "voice"
+						? isModel
+							? "border-voice-violet/60 bg-deep-blue/80 text-ion max-w-[80%] rounded-2xl rounded-bl-sm border px-4 py-2.5 text-left text-sm backdrop-blur-lg"
+							: "border-voice-violet/60 bg-slate-mist text-ion max-w-[80%] rounded-2xl rounded-br-sm border px-4 py-2.5 text-right text-sm whitespace-pre-wrap backdrop-blur-lg"
+						: isModel
+							? "border-electric-blue/60 bg-deep-blue/80 text-ion max-w-[80%] rounded-2xl rounded-bl-sm border px-4 py-2.5 text-left text-sm backdrop-blur-lg"
+							: "border-signal-cyan/60 bg-slate-mist text-ion max-w-[80%] rounded-2xl rounded-br-sm border px-4 py-2.5 text-right text-sm whitespace-pre-wrap backdrop-blur-lg"
 				}
 			>
 				{isModel ? (
