@@ -99,6 +99,9 @@ export async function startLiveSession(
 		} catch (error) {
 			// Malformed/truncated audio chunk (e.g. odd byte length) — skip it
 			// rather than tearing down the whole session over one bad frame.
+			// Log unconditionally so this is never silent: onError is optional
+			// and no caller in this repo is guaranteed to wire it up yet.
+			console.error("liveSession: failed to decode audio chunk", error);
 			options.callbacks.onError?.(error);
 			return;
 		}
