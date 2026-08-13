@@ -55,5 +55,9 @@ export async function mintEphemeralToken(
 		},
 	});
 
+	if (!result.name) {
+		throw new Error("Live API did not return a token name");
+	}
+
 	return { token: result.name, expiresAt: expireTime };
 }

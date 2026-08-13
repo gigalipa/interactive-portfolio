@@ -31,4 +31,17 @@ describe("mintEphemeralToken", () => {
 		const [config] = create.mock.calls[0];
 		expect(JSON.stringify(config)).toContain("Reply in ES.");
 	});
+
+	it("throws if the Live API response has no token name", async () => {
+		const create = vi.fn().mockResolvedValue({ name: undefined });
+		const genAiFactory = vi.fn().mockReturnValue({ authTokens: { create } });
+
+		await expect(
+			mintEphemeralToken({
+				apiKey: "k",
+				systemInstructions: "Reply in ES.",
+				genAiFactory,
+			}),
+		).rejects.toThrow("Live API did not return a token name");
+	});
 });
