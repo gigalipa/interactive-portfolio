@@ -54,3 +54,35 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 		.filter(Boolean)
 		.join("\n\n");
 }
+
+const VOICE_STYLE_NOTE = `Voice mode: this reply will be spoken aloud, not read. Keep sentences short and natural for speech. Never use markdown, bullet lists, headers, or written-only formatting — say things the way you'd say them out loud in conversation.`;
+
+export interface BuildVoiceSystemPromptOptions {
+	chunks: RetrievedChunk[];
+	/** Voice replies are locked to the visitor's current site locale, not auto-detected from speech. */
+	visitorLanguage: string;
+}
+
+/**
+ * Assembles the system prompt for a Live API voice session. Unlike
+ * buildSystemPrompt (re-run per text message), this is built once at voice
+ * session start with a broader context slice (see retrieveContext's topK for
+ * the voice token handler) since the Live API doesn't support re-injecting
+ * context per turn in this phase.
+ */
+export function buildVoiceSystemPrompt(options: BuildVoiceSystemPromptOptions): string {
+	const { chunks, visitorLanguage } = options;
+
+	const context = chunks.length
+		? chunks.map(formatChunk).join("\n\n")
+		: "(No matching Knowledge Base entries were found for this session.)";
+
+	return [
+		PERSONA,
+		TONE,
+		BOUNDARIES,
+		VOICE_STYLE_NOTE,
+		`Always reply in ${visitorLanguage}, regardless of the source context's language.`,
+		`Context (ordered by relevance):\n${context}`,
+	].join("\n\n");
+}

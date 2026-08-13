@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSystemPrompt } from "./prompt";
+import { buildSystemPrompt, buildVoiceSystemPrompt } from "./prompt";
 import type { RetrievedChunk } from "./retrieve";
 
 const chunk: RetrievedChunk = {
@@ -35,5 +35,32 @@ describe("buildSystemPrompt", () => {
 		const prompt = buildSystemPrompt({ chunks: [chunk], visitorLanguage: "ES" });
 
 		expect(prompt).toContain("visitor's UI language is ES");
+	});
+});
+
+describe("buildVoiceSystemPrompt", () => {
+	it("includes persona, tone, boundaries, a spoken-style note, and a locked language instruction", () => {
+		const prompt = buildVoiceSystemPrompt({
+			chunks: [],
+			visitorLanguage: "ES",
+		});
+
+		expect(prompt).toContain("Daniel Peraza's AI avatar");
+		expect(prompt).toContain("Boundaries:");
+		expect(prompt).toContain("spoken");
+		expect(prompt).toContain("ES");
+	});
+
+	it("formats provided chunks the same way as buildSystemPrompt", () => {
+		const voiceChunk: RetrievedChunk = {
+			...chunk,
+			title: "AutoCAD",
+			document: "Certified in AutoCAD.",
+		};
+
+		const prompt = buildVoiceSystemPrompt({ chunks: [voiceChunk], visitorLanguage: "EN" });
+
+		expect(prompt).toContain("AutoCAD");
+		expect(prompt).toContain("Certified in AutoCAD.");
 	});
 });
