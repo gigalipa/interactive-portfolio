@@ -1,18 +1,57 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { setPresenceState } from "./presenceRingBridge";
+import { setPresenceState, setVoiceMode, setVoicePulseRate } from "./presenceRingBridge";
+
+function renderRing(): HTMLDivElement {
+	const div = document.createElement("div");
+	div.className = "presence-ring";
+	div.dataset.state = "idle";
+	document.body.appendChild(div);
+	return div;
+}
+
+afterEach(() => {
+	document.body.innerHTML = "";
+});
 
 describe("setPresenceState", () => {
-	afterEach(() => {
-		document.body.innerHTML = "";
+	it("sets data-state on the presence ring", () => {
+		const ring = renderRing();
+		setPresenceState("listening");
+		expect(ring.dataset.state).toBe("listening");
+	});
+});
+
+describe("setVoiceMode", () => {
+	it("sets data-voice to the given boolean, stringified", () => {
+		const ring = renderRing();
+		setVoiceMode(true);
+		expect(ring.dataset.voice).toBe("true");
+		setVoiceMode(false);
+		expect(ring.dataset.voice).toBe("false");
 	});
 
-	it("sets data-state on the .presence-ring element", () => {
-		document.body.innerHTML = '<div class="presence-ring" data-state="idle"></div>';
-		setPresenceState("speaking");
-		expect(document.querySelector(".presence-ring")?.getAttribute("data-state")).toBe("speaking");
+	it("does nothing if no ring is present", () => {
+		expect(() => setVoiceMode(true)).not.toThrow();
+	});
+});
+
+describe("setVoicePulseRate", () => {
+	it("sets --pulse-rate faster (lower seconds) for a higher level", () => {
+		const ring = renderRing();
+		setVoicePulseRate(0);
+		const quiet = ring.style.getPropertyValue("--pulse-rate");
+		setVoicePulseRate(1);
+		const loud = ring.style.getPropertyValue("--pulse-rate");
+		expect(parseFloat(loud)).toBeLessThan(parseFloat(quiet));
 	});
 
-	it("does nothing (no throw) when the element isn't on the page", () => {
-		expect(() => setPresenceState("listening")).not.toThrow();
+	it("never goes below the 0.5s floor", () => {
+		const ring = renderRing();
+		setVoicePulseRate(1);
+		expect(parseFloat(ring.style.getPropertyValue("--pulse-rate"))).toBeGreaterThanOrEqual(0.5);
+	});
+
+	it("does nothing if no ring is present", () => {
+		expect(() => setVoicePulseRate(0.5)).not.toThrow();
 	});
 });
