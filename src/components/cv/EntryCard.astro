@@ -1,0 +1,57 @@
+---
+import type { LocalizedEntry } from "../../lib/notion/translate";
+
+interface Props {
+	entry: LocalizedEntry;
+	chips: string[];
+	presentLabel: string;
+	viewProjectsLabel: string;
+	lang: string;
+}
+
+const { entry, chips, presentLabel, viewProjectsLabel, lang } = Astro.props;
+
+const dates = entry.metadata.dates;
+function formatYear(iso: string): string {
+	const year = new Date(iso).getFullYear();
+	return Number.isNaN(year) ? iso : String(year);
+}
+
+const dateRange = dates?.start
+	? `${formatYear(dates.start)} – ${dates.ongoing || !dates.end ? presentLabel : formatYear(dates.end)}`
+	: null;
+
+const metaLine = [entry.displayCategory, entry.displayLocation, dateRange].filter(Boolean).join(" · ");
+
+const techStack = entry.metadata.techStack ?? [];
+const allChips = [...chips, ...techStack];
+
+const isProject = entry.contentType === "Project";
+---
+
+<div class="border-slate-mist bg-deep-blue/30 rounded-xl border p-4">
+	<h3 class="font-display text-ion text-base font-semibold">{entry.displayTitle}</h3>
+	{metaLine && <p class="text-signal-cyan/70 mt-1 font-mono text-xs">{metaLine}</p>}
+	{entry.displayDescription && <p class="font-body text-ion/80 mt-2 text-sm">{entry.displayDescription}</p>}
+	{
+		allChips.length > 0 && (
+			<div class="mt-3 flex flex-wrap gap-1.5">
+				{allChips.map((chip) => (
+					<span class="border-slate-mist-strong text-ion/70 rounded-full border px-2 py-0.5 text-xs">
+						{chip}
+					</span>
+				))}
+			</div>
+		)
+	}
+	{
+		isProject && (
+			<a
+				href={`/${lang}/portfolio`}
+				class="text-signal-cyan mt-3 inline-block text-sm underline hover:text-signal-cyan/80"
+			>
+				{viewProjectsLabel}
+			</a>
+		)
+	}
+</div>
