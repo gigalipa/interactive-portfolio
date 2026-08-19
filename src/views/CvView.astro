@@ -1,48 +1,28 @@
 ---
-import { Client } from "@notionhq/client";
 import Layout from "../layouts/Layout.astro";
 import { Accordion } from "../components/cv/Accordion";
 import EntryCard from "../components/cv/EntryCard.astro";
 import { getDictionary, type Locale } from "../i18n";
-import { fetchKnowledgeBaseEntries } from "../lib/notion/knowledgeBase";
-import { translateForLocale } from "../lib/notion/translate";
-import { loadTranslationCache, saveTranslationCache } from "../lib/notion/translationCache";
-import {
-	CV_SECTIONS,
-	groupBySection,
-	selectCvEntries,
-	skillChipsFor,
-	type CvSection,
-} from "../lib/cv/groupEntries";
+import { CV_SECTIONS, groupBySection, skillChipsFor, type CvSection } from "../lib/cv/groupEntries";
+import type { LocalizedEntry } from "../lib/notion/translate";
+import cvContent from "../lib/cv/content.json";
 
 interface Props {
 	lang: Locale;
 }
 
-function requireEnv(name: "NOTION_TOKEN" | "GOOGLE_API_KEY_LLM"): string {
-	const value = import.meta.env[name];
-	if (!value) throw new Error(`Missing required build-time env var: ${name}`);
-	return value;
-}
-
 const { lang } = Astro.props;
 const t = getDictionary(lang);
 
-const notion = new Client({ auth: requireEnv("NOTION_TOKEN") });
-const allEntries = await fetchKnowledgeBaseEntries(notion);
-const cvEntries = selectCvEntries(allEntries);
-if (cvEntries.length === 0) {
+// Pre-fetched and pre-translated by `pnpm cv:sync` (scripts/sync-cv.ts) and
+// committed — the build never calls Notion/Gemini itself. Re-run that script
+// and commit the result whenever CV-relevant Notion content changes.
+const localizedEntries = (cvContent as Partial<Record<Locale, LocalizedEntry[]>>)[lang] ?? [];
+if (localizedEntries.length === 0) {
 	throw new Error(
-		"No CV-eligible Knowledge Base entries found (Status=Published, Content Type in the 5 relevant types). Check the Notion database, NOTION_KNOWLEDGE_BASE_DATA_SOURCE_ID, and Content Type/Status property values.",
+		`No CV content for locale "${lang}" in src/lib/cv/content.json. Run \`pnpm cv:sync\` and commit the result.`,
 	);
 }
-
-const cache = loadTranslationCache();
-const localizedEntries = await translateForLocale(cvEntries, lang, {
-	apiKey: requireEnv("GOOGLE_API_KEY_LLM"),
-	cache,
-});
-saveTranslationCache(cache);
 
 const sections = groupBySection(localizedEntries);
 

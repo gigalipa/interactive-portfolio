@@ -21,7 +21,8 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:e2e": "playwright test",
-		"ingest": "node --env-file=.env --import tsx scripts/ingest.ts"
+		"ingest": "node --env-file=.env --import tsx scripts/ingest.ts",
+		"cv:sync": "node --env-file=.env --import tsx scripts/sync-cv.ts"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^14.1.7",

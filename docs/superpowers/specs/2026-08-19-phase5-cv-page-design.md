@@ -84,3 +84,30 @@ One implementation plan:
 - i18n dictionary additions: CV header title/tagline/summary (EN/ES/FR), section labels, "no entries" empty-state copy if a section is ever empty.
 - Cloudflare Pages build-time env vars (`NOTION_TOKEN`, `NOTION_KNOWLEDGE_BASE_DATA_SOURCE_ID`, `GOOGLE_API_KEY_LLM`) set with Daniel's explicit go-ahead at that step.
 - Manual verification checklist (above) run against a real deploy before considered done.
+
+## Addendum (2026-08-19, post-launch): moved translation out of the build
+
+The build-time translation design above (Notion + Gemini calls inside the
+Astro prerender step) shipped, but broke production repeatedly on
+Cloudflare: `CLOUDFLARE_INCLUDE_PROCESS_ENV` was needed for env var
+visibility, Gemini's free-tier rate limits and transient 503s needed a
+model-fallback chain, a stalled connection needed a request timeout, and
+the translation cache's committed-file write always failed (Cloudflare's
+prerenderer runs inside the built Worker's own sandbox — rooted at a
+virtual `/bundle/`, with no access to the real `src/` checkout at all).
+
+The terminal failure: with 145 CV-eligible Knowledge Base entries, the
+full translation pass legitimately takes several minutes — long enough to
+exceed Astro's own prerenderer's internal HTTP timeout to its local
+render server, a ceiling with no application-level knob to tune.
+
+**Resolution:** moved the whole fetch+translate pipeline into a new local
+script, `scripts/sync-cv.ts` (`pnpm cv:sync`), mirroring `scripts/ingest.ts`'s
+existing pattern. It writes a committed `src/lib/cv/content.json`
+(pre-translated, per-locale). `CvView.astro` now just imports that JSON and
+renders it — zero Notion/Gemini calls, zero external I/O, at build time.
+The CV updates only when someone runs `pnpm cv:sync` and commits the
+result, not automatically on every deploy — an accepted, deliberate
+trade-off given the entry volume. All the translation/cache/fallback-chain
+code from the original design is unchanged and still used, just invoked
+from the sync script instead of from the page.

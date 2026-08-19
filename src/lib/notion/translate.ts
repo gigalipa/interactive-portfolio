@@ -4,12 +4,27 @@ import type { KnowledgeBaseEntry } from "./knowledgeBase";
 
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const TRANSLATE_MODEL = "gemini-flash-lite-latest";
-// The Gemini free tier's per-model RPM/TPM quota is shared per project, not
-// per call site — a modest Knowledge Base can still trip it during a single
-// build's worth of translation calls. Each model in this chain draws from a
-// separate quota bucket, so falling through it spreads the same work across
-// three independent limits before we ever need to wait one out.
-const MODEL_FALLBACK_CHAIN = [TRANSLATE_MODEL, "gemini-3.1-flash-lite", "gemini-3.5-flash-lite"];
+// The free tier's per-model request quota (both per-minute and, more
+// consequentially for a ~145-entry Knowledge Base, per-DAY) is tracked
+// separately per model — a translation pass across the whole KB can burn
+// through a single model's daily allowance outright, not just its per-minute
+// one, and no amount of same-day retrying gets that back. gemma-4-26b-a4b-it
+// has a substantially larger free-tier daily quota than the Gemini models
+// below it, so it's the primary; the Gemini models remain as fallback tiers
+// for whenever their own (independent, resetting daily) quota has room.
+//
+// gemma-4-26b-a4b-it is a thinking-enabled model — its response includes a
+// `thought: true` part before the real answer, handled in translateFields'
+// parsing below (same pattern src/lib/rag/chat.ts already uses for
+// gemma-4-31b-it's streaming case). thinkingConfig cannot disable this for
+// this model (confirmed live: "Thinking budget is not supported for this
+// model"), so the extra thinking tokens are an accepted cost.
+const MODEL_FALLBACK_CHAIN = [
+	"gemma-4-26b-a4b-it",
+	TRANSLATE_MODEL,
+	"gemini-3.1-flash-lite",
+	"gemini-3.5-flash-lite",
+];
 // If every model in the chain is rate-limited in the same pass, the whole
 // project's free-tier quota is exhausted, not just one model's — waiting
 // lets the per-minute window reset. One retry (two attempts total) after
@@ -194,9 +209,14 @@ export async function translateFields(
 	}
 
 	const body = (await response.json()) as {
-		candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+		candidates?: Array<{ content?: { parts?: Array<{ text?: string; thought?: boolean }> } }>;
 	};
-	const text = body.candidates?.[0]?.content?.parts?.[0]?.text;
+	// Thinking-enabled models (e.g. gemma-4-26b-a4b-it) emit a `thought: true`
+	// part before the real answer — same pattern already handled in
+	// src/lib/rag/chat.ts's SSE parsing, needed here too now that the model
+	// fallback chain includes one.
+	const part = body.candidates?.[0]?.content?.parts?.find((p) => !p.thought);
+	const text = part?.text;
 	if (!text) throw new Error("Translation response had no text content");
 
 	const parsed: unknown = JSON.parse(text);

@@ -68,6 +68,40 @@ describe("translateFields", () => {
 		});
 	});
 
+	it("skips a leading `thought: true` part and uses the real answer (thinking-enabled models)", async () => {
+		const fetchImpl = vi.fn().mockResolvedValue({
+			ok: true,
+			status: 200,
+			json: async () => ({
+				candidates: [
+					{
+						content: {
+							parts: [
+								{ text: "Let me work through this translation step by step...", thought: true },
+								{
+									text: JSON.stringify({
+										title: "Software Engineer",
+										category: "Full-time Role",
+										location: "Remote",
+										description: "Built AI systems.",
+									}),
+								},
+							],
+						},
+					},
+				],
+			}),
+			text: async () => "",
+		});
+
+		const result = await translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
+			apiKey: "key",
+			fetchImpl,
+		});
+
+		expect(result.title).toBe("Software Engineer");
+	});
+
 	it("throws if the response is not ok", async () => {
 		const fetchImpl = vi
 			.fn()
@@ -123,8 +157,8 @@ describe("translateFields", () => {
 		});
 
 		expect(fetchImpl).toHaveBeenCalledTimes(2);
-		expect(fetchImpl.mock.calls[0][0]).toContain("gemini-flash-lite-latest");
-		expect(fetchImpl.mock.calls[1][0]).toContain("gemini-3.1-flash-lite");
+		expect(fetchImpl.mock.calls[0][0]).toContain("gemma-4-26b-a4b-it");
+		expect(fetchImpl.mock.calls[1][0]).toContain("gemini-flash-lite-latest");
 		expect(result.title).toBe("Software Engineer");
 	});
 
@@ -191,7 +225,7 @@ describe("translateFields", () => {
 			await vi.runAllTimersAsync();
 			await assertion;
 
-			expect(fetchImpl).toHaveBeenCalledTimes(6);
+			expect(fetchImpl).toHaveBeenCalledTimes(8);
 		} finally {
 			vi.useRealTimers();
 		}
@@ -211,9 +245,10 @@ describe("translateFields", () => {
 				}),
 				text: async () => "",
 			};
-			// All 3 models 429 on the first pass, then the first model succeeds on the retry pass.
+			// All 4 models 429 on the first pass, then the first model succeeds on the retry pass.
 			const fetchImpl = vi
 				.fn()
+				.mockResolvedValueOnce(rateLimited)
 				.mockResolvedValueOnce(rateLimited)
 				.mockResolvedValueOnce(rateLimited)
 				.mockResolvedValueOnce(rateLimited)
@@ -226,7 +261,7 @@ describe("translateFields", () => {
 			await vi.runAllTimersAsync();
 			const result = await promise;
 
-			expect(fetchImpl).toHaveBeenCalledTimes(4);
+			expect(fetchImpl).toHaveBeenCalledTimes(5);
 			expect(result.title).toBe("B");
 		} finally {
 			vi.useRealTimers();
@@ -252,7 +287,7 @@ describe("translateFields", () => {
 			await vi.runAllTimersAsync();
 			await assertion;
 
-			expect(fetchImpl).toHaveBeenCalledTimes(6);
+			expect(fetchImpl).toHaveBeenCalledTimes(8);
 		} finally {
 			vi.useRealTimers();
 		}

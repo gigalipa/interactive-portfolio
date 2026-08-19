@@ -40,9 +40,6 @@ jobs:
 
       - name: Build
         run: pnpm build
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          GOOGLE_API_KEY_LLM: ${{ secrets.GOOGLE_API_KEY_LLM }}
 
   e2e:
     name: End-to-end tests
@@ -65,9 +62,6 @@ jobs:
 
       - name: Build
         run: pnpm build
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          GOOGLE_API_KEY_LLM: ${{ secrets.GOOGLE_API_KEY_LLM }}
 
       - name: Run Playwright (chromium only)
         run: pnpm exec playwright test --project=chromium

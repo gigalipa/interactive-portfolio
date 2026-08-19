@@ -1,1 +1,1742 @@
-{}
+{
+	"3ba1eda9-f282-8171-be33-c364b8ec8556:en:5565df7e1ad7265e": {
+		"title": "Python Project Development - Pylatino",
+		"category": "",
+		"location": "",
+		"description": "Recognized by Pylatino, a Spanish-language Python community, for the submission of a comprehensive Python project. This initiative emphasized practical, applied programming and end-to-end development, demonstrating the ability to design, build, and deploy functional applications beyond standard academic exercises."
+	},
+	"3ba1eda9-f282-8176-ae43-f6302d3245ef:en:310b3f6d99c0ade7": {
+		"title": "Artificial Intelligence - Netzun",
+		"category": "",
+		"location": "",
+		"description": "Completed 'Fundamentals and Applications of Artificial Intelligence' through Netzun (San Ignacio University), covering AI fundamentals and practical applications — core machine learning concepts and how AI is applied across industries."
+	},
+	"3ba1eda9-f282-817f-9e3f-ee11add4995f:en:4214c2dcc087997b": {
+		"title": "Artificial Intelligence Fundamentals and Applications - Netzun",
+		"category": "",
+		"location": "",
+		"description": "Netzun course covering AI fundamentals and applications."
+	},
+	"3ba1eda9-f282-818a-b522-d8afc269b7c2:en:af7ca8ad14e00e82": {
+		"title": "Code Editor Usage - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed the 'Code Editor Usage' module in Grasshopper — Google's free app for learning JavaScript through interactive coding games — covering how to navigate and use a code editor effectively (syntax, structure, debugging basics) as a foundation for writing JavaScript."
+	},
+	"3ba1eda9-f282-81a9-9bce-cdb1d2a40d61:en:9fb8cbb4dd84a20e": {
+		"title": "Use of a Code Editor - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper course on using code editors effectively."
+	},
+	"3ba1eda9-f282-81f7-8bf4-c8d34a7bb0f6:en:3a3d5554e3a5758a": {
+		"title": "Python Project Recognition - Pylatino",
+		"category": "",
+		"location": "",
+		"description": "Recognized by Pylatino for Python project development."
+	},
+	"3ba1eda9-f282-8103-b40b-d4fed98c0b69:en:25f475b5357fbb79": {
+		"title": "Web Development - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed Grasshopper's 'Introduction to web pages' module, covering the basics of building web pages with HTML, CSS, and JavaScript — part of my self-directed path into front-end web development alongside my WordPress and full-stack JavaScript/Bootstrap/PHP work."
+	},
+	"3ba1eda9-f282-8130-b50a-f0c4c2a3b341:en:b09cdc76d7e3a4fa": {
+		"title": "JavaScript Fundamentals - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed Grasshopper's 'Coding Fundamentals' module — core JavaScript fundamentals: variables, functions, loops, and conditional logic. This marked the beginning of my JavaScript learning path through Grasshopper, which continues through Fundamentals II, array methods, animations, and automation."
+	},
+	"3ba1eda9-f282-8158-8e98-d1a8c4240433:en:3309737dd7cef3e8": {
+		"title": "Coding Fundamentals II - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper course on coding fundamentals part II."
+	},
+	"3ba1eda9-f282-815a-8f8a-fe8b725e9544:en:8e0492621eeccd18": {
+		"title": "Introduction to Interviewing - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper course on interview preparation and techniques."
+	},
+	"3ba1eda9-f282-819a-a5d6-d9548b0e4de3:en:3a9fd300a19a29b6": {
+		"title": "Array Methods - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed Grasshopper's 'Array Methods' module, covering JavaScript array methods (map, filter, reduce, and similar) for manipulating and transforming data — a practical skill I use in both front-end scripting and automation work."
+	},
+	"3ba1eda9-f282-819c-bb25-e77880bb00ef:en:5ec58e0aa06faac2": {
+		"title": "Interview Preparation - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed Grasshopper's 'Introduction to Interviews' module, covering how to talk through JavaScript code and problem-solving approaches in a technical interview setting — communication and clear explanation, not just coding ability."
+	},
+	"3ba1eda9-f282-81a6-b7b5-e7c5aca3c7aa:en:07c0fc3d343ed3a2": {
+		"title": "Array Methods - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper course on array methods in JavaScript."
+	},
+	"3ba1eda9-f282-81b9-8246-f063c4f6b83c:en:7e74823d544216e2": {
+		"title": "Introduction to Web Development - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper course introducing web page development."
+	},
+	"3ba1eda9-f282-81cd-8ffa-f8643bf70890:en:a7f0826aef399d40": {
+		"title": "Coding Fundamentals - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper course on the fundamentals of coding."
+	},
+	"3ba1eda9-f282-81fe-a5aa-f298ab7209f6:en:13d248ee049286b3": {
+		"title": "JavaScript Fundamentals II - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed Grasshopper's 'Coding Fundamentals II' module, building on core JavaScript fundamentals with more advanced concepts — deeper control flow and code structure — continuing the JavaScript path I started with Grasshopper's introductory module."
+	},
+	"3ba1eda9-f282-8136-9585-c218ff26d0f8:en:7ea27881f5d58bb7": {
+		"title": "JavaScript Automation - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed Grasshopper's 'Automation' module, covering the use of JavaScript to automate repetitive tasks—directly relevant to my process automation work with tools such as n8n and Python scripting."
+	},
+	"3ba1eda9-f282-8147-9724-dae3f1cfa9eb:en:618c6c13172e58bb": {
+		"title": "Automation - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper course on automation using JavaScript."
+	},
+	"3ba1eda9-f282-8185-bd9a-d71fb0828ccf:en:f766a443053187e5": {
+		"title": "Personal Productivity - Google Actívate",
+		"category": "",
+		"location": "",
+		"description": "Google Actívate course on personal productivity tools and techniques."
+	},
+	"3ba1eda9-f282-818c-9eec-e1dc7681d861:en:e1f8ed2972649814": {
+		"title": "Advanced JavaScript Animations - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed Grasshopper's 'Animations II' module, covering advanced JavaScript animation techniques—building upon introductory animation modules with complex motion and interaction logic for the web."
+	},
+	"3ba1eda9-f282-81a5-928a-da9ccfc3a664:en:057d5403dc311504": {
+		"title": "JavaScript Animations - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Completed Grasshopper's 'Animations' module, covering the creation of animations with JavaScript, including timing, transitions, and interactive visual effects on web pages."
+	},
+	"3ba1eda9-f282-81af-a54f-f9a3b71405da:en:0e4e9cf675d61baa": {
+		"title": "Animations II - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper advanced animations course."
+	},
+	"3ba1eda9-f282-81c0-a041-d3c76d36b77b:en:da079430fb07fd48": {
+		"title": "Animations - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Grasshopper course on animations using JavaScript."
+	},
+	"3ba1eda9-f282-81fa-a50d-c9ea9029ab24:en:dc0ecb44be505050": {
+		"title": "Productivity - Google Actívate",
+		"category": "",
+		"location": "",
+		"description": "Completed Google Actívate's 'Personal Productivity' course, covering personal organization, time management, and efficiency techniques for work."
+	},
+	"3ba1eda9-f282-812a-8925-f8c883b7cbbb:en:d817672db19db44e": {
+		"title": "Game Design - Domestika Pixel Art",
+		"category": "",
+		"location": "",
+		"description": "Completed the Domestika course 'Pixel Art Scenario Creation for Video Games,' mastering level and environmental design using pixel art techniques, which directly supported my development of the Animalia project in Godot."
+	},
+	"3ba1eda9-f282-8135-934c-f49a2b213d71:en:041fc19890b49a21": {
+		"title": "Pixel Art - Domestika",
+		"category": "",
+		"location": "",
+		"description": "Completed Domestika's 'Creation of pixel art environments for video games' course, covering pixel art design and creation for video game scenarios — directly relevant to my Animalia game project in Godot, complementing my other design and CAD skills."
+	},
+	"3ba1eda9-f282-814b-9646-d0dee5b51d1c:en:d1aba1a29a2e4851": {
+		"title": "Pixel Art Environment Design for Video Games - Domestika",
+		"category": "",
+		"location": "",
+		"description": "Domestika course on creating pixel art environments for video games."
+	},
+	"3ba1eda9-f282-8170-a30d-cb2add45373c:en:873b886d825d4051": {
+		"title": "Spanish as a Foreign Language Teacher - ELEI",
+		"category": "",
+		"location": "",
+		"description": "ELEI certification for teaching Spanish as a foreign language."
+	},
+	"3ba1eda9-f282-819d-9550-ceefe9ef3157:en:3e99f100faf1c481": {
+		"title": "Spanish Language Instruction - ELEI",
+		"category": "",
+		"location": "",
+		"description": "Certified by ELEI (Latin American School of International Spanish) as a teacher of Spanish as a Foreign Language, with comprehensive training in methodologies for teaching Spanish grammar, vocabulary, and conversation to non-native speakers. This certification complements my practical experience in providing Spanish language instruction to English-speaking students."
+	},
+	"3ba1eda9-f282-815a-b8ae-d89c350e1fb4:en:168c948efcc546d9": {
+		"title": "Human Resources - Cursa",
+		"category": "",
+		"location": "",
+		"description": "Cursa course covering human resources management and practices."
+	},
+	"3ba1eda9-f282-81e9-9edd-fd0710fcc606:en:30ae37e7241f1b03": {
+		"title": "Human Resources - Cursa",
+		"category": "",
+		"location": "",
+		"description": "Completed Cursa's Human Resources course, covering core HR management practices — recruitment, team management, and workplace policy fundamentals."
+	},
+	"3ba1eda9-f282-8147-a78d-c6d083f1c99d:en:15e6fed72791f71c": {
+		"title": "Python - Coursera: Learn to Program",
+		"category": "",
+		"location": "",
+		"description": "Completed Coursera's 'Learn to Program' course, covering foundational Python programming—syntax, logic, and problem-solving—as part of a self-directed learning path focused on Python for data analysis, automation, and AI/ML."
+	},
+	"3ba1eda9-f282-8199-bb52-e3be1a1ef605:en:3b3df8a07874947e": {
+		"title": "Learning to Program - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Universidad ORT Uruguay course introducing programming fundamentals."
+	},
+	"3ba1eda9-f282-81f4-8f39-d605930616ef:en:f60ee4de79702a28": {
+		"title": "Programming - Coursera: Introduction to Programming",
+		"category": "",
+		"location": "",
+		"description": "Completed Coursera's 'Introduction to Programming' course, covering programming fundamentals through Python—including variables, control flow, and basic problem-solving—as a foundation for further programming and automation work."
+	},
+	"3ba1eda9-f282-8123-b3c5-f4dc1bcbdf54:en:f9eb6c2ec85b7c07": {
+		"title": "French Language A2 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Completed the Busuu A2 French course, developing fundamental conversational proficiency. Capable of discussing daily routines, personal preferences, and simple past or future events. This represents a segment of my continuous French language development, complemented by the completion of the A1 and ongoing B1 Busuu courses."
+	},
+	"3ba1eda9-f282-8126-b6f9-ee8ee21059d3:en:79930059109d8fe9": {
+		"title": "French A2 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Busuu French language course at A2 level."
+	},
+	"3ba1eda9-f282-8175-b845-fbc924b0d422:en:8499f86bd5b40587": {
+		"title": "French Language B1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Completed Busuu's B1 French course, reaching upper-intermediate French proficiency — handling more complex sentence structures, opinions, and everyday professional topics. My most advanced completed level in French so far, building on the A1 and A2 Busuu courses."
+	},
+	"3ba1eda9-f282-8177-8710-d12071c63af7:en:b2fff516f7ccefde": {
+		"title": "French B1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Busuu French language course at B1 level."
+	},
+	"3ba1eda9-f282-8124-8d68-d44f8b045886:en:3b8aea2f21ea1031": {
+		"title": "AI 2026 - BIG School",
+		"category": "",
+		"location": "",
+		"description": "BIG School AI 2026 Certification Program."
+	},
+	"3ba1eda9-f282-815b-b26c-ebea6957c089:en:ea5c6d5f37501320": {
+		"title": "CAD Design - ARTS Instituto AutoCAD",
+		"category": "",
+		"location": "",
+		"description": "Completed ARTS Instituto's 'AutoCAD 2012 2D' course, covering 2D computer-aided design and technical drafting in AutoCAD — precise technical drawings, dimensioning, and drafting conventions used in engineering and architecture."
+	},
+	"3ba1eda9-f282-8189-8bd7-ecb2926aedb9:en:685a1fa8be8e135a": {
+		"title": "French A1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Busuu French language course at A1 level."
+	},
+	"3ba1eda9-f282-818a-8f5c-fb0d3584ff7b:en:7496431dd63fbc40": {
+		"title": "AutoCAD 2012 2D - ARTS Institute",
+		"category": "",
+		"location": "",
+		"description": "AutoCAD 2012 2D course at the ARTS Institute Authorized Training Center."
+	},
+	"3ba1eda9-f282-81a7-8708-cc484d4db592:en:1e7bbc9865231533": {
+		"title": "French Language A1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "I have successfully completed the Busuu A1 French course, establishing a foundational proficiency in conversational French. This includes mastery of fundamental greetings, essential vocabulary, and basic sentence construction. This certification marks the initial phase of my structured language learning path, which is currently progressing through the Busuu A2 and B1 curriculum."
+	},
+	"3ba1eda9-f282-81f5-a1ce-d62bc45ccc4e:en:0be3518747acaaae": {
+		"title": "Artificial Intelligence - BIG School IA 2026",
+		"category": "",
+		"location": "",
+		"description": "Completed BIG School's 'IA 2026' program ('AI, Vibe Coding & Automation'), covering advanced, current AI and machine learning capabilities, including AI-assisted coding workflows and automation."
+	},
+	"3ba1eda9-f282-8105-9176-fd9da4aea2a6:en:786bc49bec64e266": {
+		"title": "AI Immersion - Alura",
+		"category": "",
+		"location": "",
+		"description": "Alura's AI immersion course covering artificial intelligence fundamentals."
+	},
+	"3ba1eda9-f282-816b-a1df-cc96a15b1281:en:9a6fdffbd61f3804": {
+		"title": "Artificial Intelligence - Alura AI Immersion",
+		"category": "",
+		"location": "",
+		"description": "Completed Alura's 'AI Immersion' program, covering fundamental concepts of artificial intelligence and machine learning through an intensive, hands-on curriculum."
+	},
+	"3ba1eda9-f282-81f1-9025-d8714be1752f:en:a91ad46fd69648a7": {
+		"title": "Diploma in French Language Studies - Alison",
+		"category": "",
+		"location": "",
+		"description": "Comprehensive French language course covering pronunciation, grammar, and conversational skills."
+	},
+	"3ba1eda9-f282-81ff-a0b8-d8e1994d36cd:en:99f67d1f1534176b": {
+		"title": "French Language - Alison",
+		"category": "",
+		"location": "",
+		"description": "Completed Alison's 'Diploma in French Language Studies', covering French grammar, pronunciation, and vocabulary at a structured diploma level — distinct from, and complementary to, my Busuu A1-B1 French courses, giving broader written and grammatical grounding in French.\n\n### 🏆 Projects Where I Used This Skill\n- [French CV - IT Teacher](https://drive.google.com) - Created comprehensive French-language CV for IT teaching positions"
+	},
+	"3ba1eda9-f282-8152-a096-ee9585ece089:en:f9825034aa4735b6": {
+		"title": "Machine Learning - Aesabana AI Implementation",
+		"category": "",
+		"location": "",
+		"description": "Completed 'AI Solutions Implementation' through Aesabana and SENA (Colombia's national vocational training service), covering practical machine learning implementation and the application of AI models to solve real-world business problems."
+	},
+	"3ba1eda9-f282-8169-a9d6-e9c24e0278a6:en:5e6567ecb01d65a0": {
+		"title": "AI SOLUTIONS IMPLEMENTATION - Aesabana",
+		"category": "",
+		"location": "",
+		"description": "Certificate for AI solutions implementation from SENA and the Association of Entrepreneurs of the Sabana."
+	},
+	"3ba1eda9-f282-81b1-91b1-fc79171e8906:en:2b50e6df001ad71f": {
+		"title": "Artificial Intelligence - Aesabana AI Implementation",
+		"category": "",
+		"location": "",
+		"description": "Completed the SENA and Aesabana AI Solutions Implementation program, focusing on practical and applied artificial intelligence through the implementation of AI-based solutions for real-world scenarios rather than purely theoretical concepts."
+	},
+	"3b41eda9-f282-8134-894c-cfa54d891703:en:88c37ede40836a62": {
+		"title": "Reflection: The Internal Struggle",
+		"category": "",
+		"location": "",
+		"description": "One of Daniel's personal reflections — on the ongoing tension between reason and feeling in how people think and decide."
+	},
+	"3b41eda9-f282-815f-a00b-cac2cf4d5b5c:en:c5f1d82974b67b00": {
+		"title": "Reflection: Words",
+		"category": "",
+		"location": "",
+		"description": "A personal reflection on language, meaning, and sincerity."
+	},
+	"3b41eda9-f282-817c-b57b-e3a26b56b1f7:en:5bdb80007a9ca845": {
+		"title": "Short Story: The Light",
+		"category": "",
+		"location": "",
+		"description": "A short fiction/creative-writing sample — supernatural/twist-ending genre."
+	},
+	"3b41eda9-f282-8180-b63c-f11ec9c5e5a2:en:bd0e11150a5f81d5": {
+		"title": "Short Story: Path Home",
+		"category": "",
+		"location": "",
+		"description": "A short fiction/creative-writing sample — magical-realism genre."
+	},
+	"3b41eda9-f282-81a0-acdb-d8a2e8a74c01:en:c70e396736e47c41": {
+		"title": "Short Story: I Was at Home",
+		"category": "",
+		"location": "",
+		"description": "A short fiction/creative-writing sample — surreal genre."
+	},
+	"3b41eda9-f282-81bf-9cac-d0749a7e1876:en:0e5650c22e24dcdf": {
+		"title": "Reflection: She",
+		"category": "",
+		"location": "",
+		"description": "A personal, poetic reflection about love and his wife."
+	},
+	"3b41eda9-f282-81df-b020-d97af387fdf8:en:2b5fb1cd745643c5": {
+		"title": "Reflection: Perfection",
+		"category": "",
+		"location": "",
+		"description": "A personal reflection on perfection, imperfection, and identity."
+	},
+	"3ba1eda9-f282-8107-b139-fa399c48e83d:es:4ec70abb3a97ffb4": {
+		"title": "Dibujo Técnico",
+		"category": "",
+		"location": "",
+		"description": "Habilidades avanzadas de dibujo técnico con más de 15 años de experiencia en el uso de AutoCAD y otros softwares CAD para aplicaciones de ingeniería, arquitectura y manufactura."
+	},
+	"3ba1eda9-f282-81f2-8c6b-d30d302fede6:es:6740a53ea1ec16ce": {
+		"title": "Diseño Gráfico",
+		"category": "",
+		"location": "",
+		"description": "Habilidades avanzadas de diseño gráfico con más de 15 años de experiencia en el uso de Adobe Creative Suite, CorelDRAW y otras herramientas de diseño para marketing, branding y aplicaciones técnicas."
+	},
+	"3ba1eda9-f282-8101-a3e0-e8b6273f08b3:es:113c6fc345cbaa62": {
+		"title": "3D Studio Max",
+		"category": "",
+		"location": "",
+		"description": "Conocimientos básicos de 3D Studio Max para modelado y renderizado 3D, con experiencia en proyectos de ingeniería y visualización arquitectónica."
+	},
+	"3ba1eda9-f282-813f-a3ac-e2e7282e3297:es:ebc8b07dba92d0b3": {
+		"title": "Blender",
+		"category": "",
+		"location": "",
+		"description": "Conocimientos intermedios en Blender para modelado 3D, renderizado y animación, con más de 10 años de experiencia en proyectos de ingeniería y diseño."
+	},
+	"3ba1eda9-f282-8136-8044-ee8550255068:es:45e74321ef5020a9": {
+		"title": "Adobe Animate (Flash)",
+		"category": "",
+		"location": "",
+		"description": "Habilidades avanzadas en Adobe Animate (anteriormente Flash) para la creación de animaciones, presentaciones interactivas y contenido de video, con más de 15 años de experiencia."
+	},
+	"3ba1eda9-f282-8136-adc8-e95d2cccfe5b:es:ba16f2c97da2e7c0": {
+		"title": "Modelado 3D",
+		"category": "",
+		"location": "",
+		"description": "Dominio avanzado de modelado 3D mediante el uso de diversas plataformas de software (SketchUp, 3D Studio Max, Blender) aplicadas al diseño arquitectónico, de ingeniería y de producto."
+	},
+	"3ba1eda9-f282-81e6-8cc3-e7c52930f033:es:9606aaae542065d7": {
+		"title": "SketchUp",
+		"category": "",
+		"location": "",
+		"description": "Dominio avanzado de SketchUp para modelado 3D, diseño arquitectónico y diseño de piezas para CNC e impresión 3D, con más de 15 años de experiencia."
+	},
+	"3ba1eda9-f282-81eb-9d05-ebfb7745ed9f:es:3fa27d8b5d2a682b": {
+		"title": "AutoCAD",
+		"category": "",
+		"location": "",
+		"description": "Conocimientos intermedios de AutoCAD para dibujo técnico y diseño en 2D, con más de 10 años de experiencia en proyectos de ingeniería y arquitectura."
+	},
+	"3ba1eda9-f282-815d-9467-d3702a3cd24e:es:4e03be2e52dcb887": {
+		"title": "CorelDRAW",
+		"category": "",
+		"location": "",
+		"description": "Conocimientos intermedios en CorelDRAW para diseño gráfico, creación de logotipos y materiales de marketing, con más de 15 años de experiencia."
+	},
+	"3ba1eda9-f282-812b-a936-fd480a51cd62:es:21008da2c7f33d94": {
+		"title": "Adobe Illustrator",
+		"category": "",
+		"location": "",
+		"description": "Conocimientos intermedios de Adobe Illustrator para el diseño de gráficos vectoriales, creación de logotipos e ilustraciones técnicas, con más de 15 años de experiencia."
+	},
+	"3ba1eda9-f282-8109-8ea4-f399c638cc37:es:2f5b353028093bec": {
+		"title": "Adobe Photoshop",
+		"category": "",
+		"location": "",
+		"description": "Conocimientos de nivel intermedio a avanzado en Adobe Photoshop para la edición de imágenes, diseño gráfico y visualización de proyectos, con más de 15 años de experiencia."
+	},
+	"3ba1eda9-f282-8117-a1d3-de7391931621:es:868fc05528ea1e31": {
+		"title": "Ayudante de Electricista en GMP Proyectos, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Ayudante de Electricista en GMP Proyectos, C.A., brindando apoyo en instalaciones y mantenimiento eléctrico en edificios, viviendas y oficinas bajo la supervisión del Electricista Jefe."
+	},
+	"3ba1eda9-f282-8121-96fd-c683d56c7fb8:es:c3db490b4e5fffab": {
+		"title": "Gerente de Almacén en GMP Proyectos, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Gerente de Almacén en GMP Proyectos, C.A., responsable del control de entradas y salidas de materiales, herramientas y equipos, así como de la gestión de inventarios y órdenes de compra."
+	},
+	"3ba1eda9-f282-8107-bc55-d0a72cd26bce:es:ec0a513fbdfe07be": {
+		"title": "Soporte de TI en Faceboxes Express SAC",
+		"category": "",
+		"location": "",
+		"description": "Técnico de Soporte de TI en Faceboxes Express SAC, brindando servicios de diagnóstico, reparación y mantenimiento de dispositivos informáticos de clientes y de la empresa, incluyendo el mantenimiento de sitios web."
+	},
+	"3ba1eda9-f282-817a-aa51-edea66f834af:es:3e7f12a4fc2abe4b": {
+		"title": "Técnico de TI Freelance (Independiente)",
+		"category": "",
+		"location": "",
+		"description": "Técnico de TI independiente con modalidad freelance, especializado en mantenimiento de equipos, reparaciones y diseño de configuraciones especializadas, incluyendo estaciones de trabajo, gaming y minería de criptomonedas."
+	},
+	"3ba1eda9-f282-8170-89b3-db3118467d44:es:0e79dd2e4b2f6fec": {
+		"title": "Dibujante Técnico (CAD) en GMP Proyectos, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Dibujante técnico y especialista en CAD en GMP Proyectos, C.A., representando proyectos en 2D y 3D, y creando animaciones y presentaciones para propuestas de proyectos."
+	},
+	"3ba1eda9-f282-8145-82f1-d0be015f08d8:es:716234acd68c75ea": {
+		"title": "Dibujante Técnico y Diseñador en Ingeniería 2M, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Dibujante Técnico y Diseñador en Ingeniería 2M, C.A., encargado de la creación de diseños de proyectos en 2D y 3D, piezas para CNC, animaciones y material gráfico para proyectos de ingeniería."
+	},
+	"3ba1eda9-f282-8154-80f0-f7c413008139:es:bbe8e95f4688a854": {
+		"title": "Ciberseguridad",
+		"category": "",
+		"location": "",
+		"description": "Competencias intermedias en ciberseguridad con conocimientos de principios, protección de datos, estándares de cumplimiento (SOC2, ISO27001) y despliegue seguro de software."
+	},
+	"3ba1eda9-f282-81cf-bc5b-f592a510c490:es:a53083683bda3d1c": {
+		"title": "Automatización de procesos con n8n",
+		"category": "",
+		"location": "",
+		"description": "Habilidades intermedias en automatización de procesos mediante el uso de n8n para la automatización de flujos de trabajo, integración de herramientas de IA y mejora de la eficiencia operativa."
+	},
+	"3ba1eda9-f282-818d-b53e-cd5fc9fa32ff:es:23e026de42f572bd": {
+		"title": "Redacción Técnica",
+		"category": "",
+		"location": "",
+		"description": "Habilidades avanzadas de redacción técnica con experiencia en la creación de documentación, procedimientos y materiales de capacitación para sistemas de TI e IA."
+	},
+	"3ba1eda9-f282-81b8-b975-dcdd85a10fb2:es:1d95ec7e13304ab0": {
+		"title": "Metodologías de enseñanza",
+		"category": "",
+		"location": "",
+		"description": "Metodologías de enseñanza avanzadas con más de 5 años de experiencia en diseño curricular, aprendizaje centrado en el estudiante y plataformas de educación digital."
+	},
+	"3ba1eda9-f282-81eb-b2a3-d9d1782679e2:es:d2c4fc23676f5074": {
+		"title": "Desarrollo de WordPress",
+		"category": "",
+		"location": "",
+		"description": "Habilidades avanzadas en desarrollo y administración de WordPress con más de 5 años de experiencia en personalización de temas, gestión de plugins y optimización de rendimiento."
+	},
+	"3ba1eda9-f282-8101-a6a1-f8bbdedfbc7f:es:d2bff2538735fc75": {
+		"title": "Administración de Sistemas",
+		"category": "",
+		"location": "",
+		"description": "Competencias avanzadas en administración de sistemas con experiencia en Windows, Linux, gestión de endpoints e infraestructura en la nube."
+	},
+	"3ba1eda9-f282-8104-a5e6-c2afa916924c:es:e570c29b88ddfa83": {
+		"title": "Programación en JavaScript",
+		"category": "",
+		"location": "",
+		"description": "Conocimientos intermedios de programación en JavaScript, con experiencia en desarrollo web, personalización de WordPress y desarrollo front-end."
+	},
+	"3ba1eda9-f282-814d-85fd-c7de40167367:es:a3ed8b0dcd9c40a3": {
+		"title": "IA y Machine Learning",
+		"category": "",
+		"location": "",
+		"description": "Competencias avanzadas en IA y Machine Learning con experiencia en prompting de LLM, IA generativa, evaluación de modelos y despliegue de flujos de trabajo de IA."
+	},
+	"3ba1eda9-f282-818c-9b62-da30f42bcd7e:es:720825a1bfa0295e": {
+		"title": "Programación en Python",
+		"category": "",
+		"location": "",
+		"description": "Conocimientos intermedios de programación en Python con experiencia en Scikit-Learn, Pandas, automatización y aplicaciones de IA/ML."
+	},
+	"3ba1eda9-f282-81a9-9081-c20dcf7a392b:es:8fc1ae7729d234e1": {
+		"title": "Francés",
+		"category": "",
+		"location": "",
+		"description": "Nivel intermedio de francés (nivel B1-B2) con capacidad para leer, escribir y mantener conversaciones en contextos profesionales y técnicos."
+	},
+	"3ba1eda9-f282-817e-89c6-fa53d01c9f1f:es:f89ab3beabf4cf39": {
+		"title": "Inglés",
+		"category": "",
+		"location": "",
+		"description": "Dominio avanzado del inglés (nivel C1) con amplia experiencia en el uso del idioma para la comunicación profesional, la docencia y la documentación técnica."
+	},
+	"3ba1eda9-f282-8143-8a5e-e597a0bde189:es:7eff4f958656f761": {
+		"title": "Español",
+		"category": "",
+		"location": "",
+		"description": "Dominio nativo del español con amplia experiencia en la enseñanza del idioma como segunda lengua a estudiantes angloparlantes en todo el mundo."
+	},
+	"3ba1eda9-f282-818f-9063-d75bd26db0e6:es:ca41c3c973416863": {
+		"title": "Secretaria y Mecanógrafa en Consultores Armas & Asociados, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Secretaria y Mecanógrafa en Consultores Armas & Asociados, C.A., brindando apoyo administrativo y gestión de documentos legales."
+	},
+	"3ba1eda9-f282-8173-8a4b-cc4498350c88:es:b750e16242b3578d": {
+		"title": "Especialista en Soporte Electrónico en Aduacargo Express SAC",
+		"category": "",
+		"location": "",
+		"description": "Especialista en Soporte Electrónico en Aduacargo Express SAC, implementando soluciones de automatización y optimizando sistemas logísticos para importantes empresas de mensajería."
+	},
+	"3ba1eda9-f282-819b-b819-cadd6b50a4ea:es:c24b1ac1bd59006b": {
+		"title": "Gerente de Servicios de TI en Ingenieria 2M, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Gerente de Servicios de TI en Ingenieria 2M, C.A., liderando el mantenimiento y la optimización de la infraestructura de TI con la implementación de estaciones de trabajo para diseño 3D."
+	},
+	"3ba1eda9-f282-8163-81d8-ff6a8d9150e5:es:fc94d410b7b7f017": {
+		"title": "Webmaster y Administrador en Ormiga Services SAS",
+		"category": "",
+		"location": "",
+		"description": "Webmaster y Administrador en Ormiga Services SAS, encargado del diseño, despliegue y mantenimiento de sitios web basados en WordPress, con un enfoque en el rendimiento y la seguridad."
+	},
+	"3ba1eda9-f282-8144-94c4-fc7710cb4486:es:e2e2fc13f3bf073c": {
+		"title": "Profesor Bilingüe (Español/Inglés) en Baselang Inc. e Independiente",
+		"category": "",
+		"location": "",
+		"description": "Profesor bilingüe especializado en la enseñanza del español para estudiantes angloparlantes, utilizando plataformas digitales y métodos de enseñanza personalizados."
+	},
+	"3ba1eda9-f282-8138-a248-f8333de7547a:es:caa198400a85d306": {
+		"title": "Coordinador Senior y Soporte de Operaciones en Baselang Inc.",
+		"category": "",
+		"location": "",
+		"description": "Coordinador Senior y Soporte de Operaciones en Baselang Inc., coordinando flujos de trabajo, gestionando la administración de software y brindando soporte técnico."
+	},
+	"3ba1eda9-f282-81b1-bb78-ccda82aefd71:es:abaa78d4ca2b5882": {
+		"title": "Entrenador Avanzado de Datos para IA y Operador Técnico en Invisible Technologies",
+		"category": "",
+		"location": "",
+		"description": "Entrenador Avanzado de Datos para IA y Operador Técnico en Invisible Technologies, encargado de evaluar modelos de IA, generar datos de entrenamiento y colaborar con equipos técnicos."
+	},
+	"3ba1eda9-f282-8100-81ff-d2b215c68d0b:es:4114842fb63a0469": {
+		"title": "Code in Place - Python - Universidad de Stanford",
+		"category": "",
+		"location": "",
+		"description": "Programa Code in Place de la Universidad de Stanford, enfocado en la programación con Python."
+	},
+	"3ba1eda9-f282-8110-b826-f4f9fe5f862a:es:1ab99199d6425d85": {
+		"title": "JavaScript - Desarrollo Web en Udemy",
+		"category": "",
+		"location": "",
+		"description": "Finalización del módulo de JavaScript del curso de certificación de Udemy 'JavaScript, Bootstrap, PHP - Certification course for beginners', que cubrió los fundamentos de programación en JavaScript para el desarrollo web como parte de un curso full-stack que también incluyó Bootstrap y PHP."
+	},
+	"3ba1eda9-f282-813d-835f-e2b89f93bc94:es:85fd18c61c203033": {
+		"title": "Habilidades no técnicas esenciales para científicos de datos eficaces - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Curso de Udemy que aborda las habilidades blandas esenciales para científicos de datos."
+	},
+	"3ba1eda9-f282-8185-b31d-f260a0190d3a:es:4768e9bcfdb548e1": {
+		"title": "Desarrollo Web - Full Stack Udemy",
+		"category": "",
+		"location": "",
+		"description": "Certificación Full Stack de Udemy, que integra JavaScript, Bootstrap y PHP para el desarrollo de aplicaciones web integrales. Experiencia en el ciclo completo de desarrollo: desde el diseño responsivo (Bootstrap) e interactividad (JavaScript) hasta la lógica del lado del servidor (PHP)."
+	},
+	"3ba1eda9-f282-81a4-8f4f-ca4de60d89a4:es:4799309aea2947a9": {
+		"title": "Habilidades blandas para Ciencia de Datos - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Completado el curso de Udemy 'Essential Non-Technical Skills of Effective Data Scientists', el cual aborda competencias de comunicación, gestión de stakeholders y colaboración para asegurar que los resultados de la ciencia de datos generen un impacto real en audiencias de negocio, complementando el modelado técnico con habilidades transversales."
+	},
+	"3ba1eda9-f282-81aa-afe2-f97853371d48:es:2123a0e5a6505155": {
+		"title": "PHP - Udemy Web Dev",
+		"category": "",
+		"location": "",
+		"description": "Finalización del módulo de PHP del curso de certificación 'JavaScript, Bootstrap, PHP' de Udemy, cubriendo el scripting del lado del servidor con PHP: gestión de formularios, lógica de backend básica y generación de páginas dinámicas para aplicaciones web."
+	},
+	"3ba1eda9-f282-81ad-b653-f53c37b0f9dd:es:4c98c72794a26c4c": {
+		"title": "Bootstrap - Desarrollo Web en Udemy",
+		"category": "",
+		"location": "",
+		"description": "Finalización del módulo de Bootstrap del curso de certificación 'JavaScript, Bootstrap, PHP' de Udemy, cubriendo el uso del framework CSS Bootstrap para la creación rápida de diseños web responsivos y optimizados para dispositivos móviles."
+	},
+	"3ba1eda9-f282-81b0-98e1-d113c75d7c70:es:6fedb1088c8332e0": {
+		"title": "JavaScript, Bootstrap, PHP - Principiantes - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Curso de certificación de Udemy que cubre JavaScript, Bootstrap y PHP para principiantes."
+	},
+	"3ba1eda9-f282-81bc-8aad-ca49cdca3701:es:f902b336269f703a": {
+		"title": "Python Avanzado - Stanford Code in Place",
+		"category": "",
+		"location": "",
+		"description": "Completé el programa 'Code in Place' de la Universidad de Stanford, un curso riguroso de Python basado en el curso de programación introductoria CS106A de Stanford, que abarca la programación avanzada en Python y la resolución de problemas algorítmicos, impartido por profesores de Stanford y líderes de sección voluntarios."
+	},
+	"3ba1eda9-f282-81e0-b068-fa6e6a66f19c:es:63ce0fdd70c60bfd": {
+		"title": "Google AI Studio - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Completado el curso 'Google AI Studio' de Udemy, que abarca el uso práctico de la plataforma Google AI Studio para la creación y prueba de aplicaciones de IA generativa, incluyendo el diseño de prompts y la configuración de modelos."
+	},
+	"3ba1eda9-f282-81f3-94d4-d93987d24cd6:es:222bcb8e97717169": {
+		"title": "IA Generativa - Udemy Google AI Studio",
+		"category": "",
+		"location": "",
+		"description": "Finalización del curso de IA generativa de Udemy basado en Google AI Studio, que abarca la ingeniería de prompts y el desarrollo de aplicaciones de IA generativa: diseño de prompts efectivos y creación de funcionalidades operativas impulsadas por IA."
+	},
+	"3ba1eda9-f282-81ff-b9d0-f6fd91384de3:es:8be5ab176c40103e": {
+		"title": "Google AI Studio - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Curso de Udemy sobre Google AI Studio para el desarrollo de inteligencia artificial generativa."
+	},
+	"3ba1eda9-f282-8125-8a5c-e286112eb579:es:08c6cb566cc919ec": {
+		"title": "Diseño CAD - OnShape",
+		"category": "",
+		"location": "",
+		"description": "Completé el 'Hands-On Test Drive' de OnShape, el cual abarca el diseño asistido por computadora (CAD) utilizando OnShape, una plataforma CAD basada en la nube y nativa del navegador, que permite el modelado 3D y el diseño paramétrico sin necesidad de software instalado localmente."
+	},
+	"3ba1eda9-f282-81c5-971a-e47f58c6b499:es:8daca94fad6381e3": {
+		"title": "Prueba Práctica - OnShape",
+		"category": "",
+		"location": "",
+		"description": "Certificación de capacitación práctica en OnShape para el diseño CAD."
+	},
+	"3ba1eda9-f282-81b2-a970-dd788ed5089b:es:5ba0a9ab78a69f3b": {
+		"title": "Enseñanza de Español como Lengua Extranjera - ELEI",
+		"category": "",
+		"location": "",
+		"description": "Programa de certificación ELEI para la enseñanza de español como lengua extranjera."
+	},
+	"3ba1eda9-f282-81bb-82fc-e386832058ea:es:e565edff8741c90c": {
+		"title": "Enseñanza de la Lengua Española - ELEI Inglés",
+		"category": "",
+		"location": "",
+		"description": "Versión en inglés de mi certificación ELEI en Enseñanza de Español como Lengua Extranjera. Incluye la misma formación metodológica (planificación de clases, instrucción gramatical y práctica de conversación), certificada en inglés en lugar de español, lo que demuestra mi capacidad para la enseñanza y la evaluación bilingüe."
+	},
+	"3ba1eda9-f282-814a-a615-d09866635c82:es:608792c5be2316ce": {
+		"title": "Certificado EF SET 90",
+		"category": "",
+		"location": "",
+		"description": "Certificado EF Standard English Test con una puntuación de 90."
+	},
+	"3ba1eda9-f282-81ab-8ad0-efceb4468694:es:a906e64992acb772": {
+		"title": "Idioma Inglés - EF SET 90",
+		"category": "",
+		"location": "",
+		"description": "Obtuve una puntuación de 90/100 en el examen de inglés EF SET, el examen de competencia lingüística estandarizado y gratuito de EF Education First, correspondiente al nivel C1/C2 (avanzado/casi nativo). Esto confirma mi uso profesional diario del inglés y complementa mi certificación de inglés C1 de Busuu."
+	},
+	"3ba1eda9-f282-8142-8887-e61bd3f84051:es:fd761bd4f45365fc": {
+		"title": "Python - Ingeniero de ML en Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Completé el componente de Python de la certificación 'ML Engineer Junior' de Cymetria, el cual abarca la programación en Python orientada específicamente a machine learning: manipulación de datos, librerías de construcción de modelos y scripting de flujos de trabajo de ML."
+	},
+	"3ba1eda9-f282-8146-bf04-c5c9089a36f4:es:382db25bd5441a2e": {
+		"title": "Inteligencia Artificial - Ingeniero de ML en Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Completé el componente enfocado en IA de la certificación 'ML Engineer Junior' de Cymetria, cubriendo los conceptos fundamentales de inteligencia artificial que sustentan el trabajo de ingeniería de aprendizaje automático (machine learning).\n\n### 🏆 Proyectos donde apliqué esta habilidad\n- [Invisible Technologies - Entrenador avanzado de datos para IA](https://app.notion.com/p/3ba1eda9f28281b1bb78ccda82aefd71) - Apliqué habilidades de ingeniería de ML para evaluar y perfeccionar modelos de IA"
+	},
+	"3ba1eda9-f282-816f-baf1-ebba2ae999e0:es:bc0ea711c17301fb": {
+		"title": "Ingeniería de Machine Learning - Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Certificado como ML Engineer Junior a través de Cymetria, cubriendo el flujo de trabajo práctico de la ingeniería de machine learning: construcción, entrenamiento y evaluación de modelos de ML, así como las prácticas de ingeniería para su despliegue."
+	},
+	"3ba1eda9-f282-81a7-8c93-dd4f5674aa62:es:3fa7a6f1591f3f19": {
+		"title": "Ingeniero de ML Junior - Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Contenido del programa de certificación para Ingeniero de Machine Learning Junior de Cymetria."
+	},
+	"3ba1eda9-f282-81c3-b7ca-e565629dfcae:es:f2ec6fa66fdd3f77": {
+		"title": "Certificación de ML Engineer Junior - Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Certificación oficial de Machine Learning Engineer Junior de Cymetria para Daniel Peraza."
+	},
+	"3ba1eda9-f282-812b-a08f-e15ed9efb98d:es:08a24b9f6c358cc2": {
+		"title": "Sistemas Embebidos - Coursera IoT",
+		"category": "",
+		"location": "",
+		"description": "Completado el curso de Coursera 'Introducción al Internet de las Cosas y Sistemas Embebidos', que abarca los fundamentos del diseño de sistemas embebidos: microcontroladores, sensores y la interconexión de dispositivos físicos con el software."
+	},
+	"3ba1eda9-f282-8150-8765-d0be898ec2b8:es:7e575fa8c55d1a76": {
+		"title": "Introducción al IoT - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Finalización del curso introductorio de IoT (Internet de las Cosas) de Coursera, que aborda el funcionamiento conjunto de dispositivos conectados, sensores y sistemas embebidos, así como la arquitectura detrás de los dispositivos inteligentes y los sistemas de hardware automatizados."
+	},
+	"3ba1eda9-f282-816c-b9a3-e61a0a433bcf:es:a0af78082dc7605b": {
+		"title": "Introducción al Internet de las Cosas y Sistemas Embebidos - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Curso de la Universidad de California sobre los fundamentos de IoT y sistemas embebidos."
+	},
+	"3ba1eda9-f282-8187-8e36-f4c1ab0ec458:es:aad5ec049549cdc5": {
+		"title": "La plataforma Arduino y programación en C - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Curso de la Universidad de California sobre la plataforma Arduino y programación en C."
+	},
+	"3ba1eda9-f282-81b4-aae2-cf3ea908ab5e:es:7e72d30922a13e37": {
+		"title": "Programación en C - Coursera Arduino",
+		"category": "",
+		"location": "",
+		"description": "Finalización del curso 'The Arduino Platform and C Programming' de Coursera, que abarca el lenguaje de programación C orientado específicamente a sistemas embebidos y la programación de microcontroladores en la plataforma Arduino."
+	},
+	"3ba1eda9-f282-811b-a25e-c57770aa09bb:es:eabebfb765730a04": {
+		"title": "Interfaz con Arduino - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Curso de la Universidad de California sobre interfaz con Arduino y sistemas embebidos."
+	},
+	"3ba1eda9-f282-81d7-9e88-cd30f13872a9:es:e70e639fad5097bf": {
+		"title": "Arduino - Interfaz con Coursera",
+		"category": "",
+		"location": "",
+		"description": "Finalización del curso 'Interfacing with the Arduino' de Coursera, que abarca la conexión y programación de sensores, actuadores y otros componentes de hardware utilizando un microcontrolador Arduino."
+	},
+	"3ba1eda9-f282-8123-b3c5-f4dc1bcbdf54:es:f9eb6c2ec85b7c07": {
+		"title": "Idioma Francés A2 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Completé el curso de francés nivel A2 de Busuu, desarrollando competencias básicas para la conversación cotidiana en francés, abordando temas como rutinas, preferencias y eventos sencillos en pasado o futuro. Forma parte de mi proceso de aprendizaje continuo del idioma francés, complementado con los cursos A1 y B1 de Busuu."
+	},
+	"3ba1eda9-f282-8126-b6f9-ee8ee21059d3:es:79930059109d8fe9": {
+		"title": "Francés A2 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Curso de lengua francesa de Busuu, nivel A2."
+	},
+	"3ba1eda9-f282-8128-b7d9-fafd5bee8703:es:fda7d106f0a6b4d2": {
+		"title": "Inglés Nivel C1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Nivel de competencia de inglés C1 (avanzado/fluido) alcanzado mediante el curso interactivo de inglés de Busuu, con énfasis en expresión matizada, vocabulario avanzado y gramática compleja. Valida mi fluidez profesional diaria en inglés, complementando mis certificaciones EF SET 90 y Alison English."
+	},
+	"3ba1eda9-f282-8175-b845-fbc924b0d422:es:8499f86bd5b40587": {
+		"title": "Francés Nivel B1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Finalización del curso de francés B1 de Busuu, alcanzando un nivel de competencia intermedio-alto. Capacidad para manejar estructuras gramaticales complejas, expresar opiniones y tratar temas profesionales cotidianos. Es el nivel de francés más avanzado completado hasta la fecha, tras haber superado los niveles A1 y A2 en Busuu."
+	},
+	"3ba1eda9-f282-8177-8710-d12071c63af7:es:b2fff516f7ccefde": {
+		"title": "Francés B1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Curso de idioma francés de Busuu, nivel B1."
+	},
+	"3ba1eda9-f282-81b2-85ce-ebb394914402:es:d580d1e683ea5277": {
+		"title": "Inglés C1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Curso de idioma inglés de Busuu, nivel C1."
+	},
+	"3ba1eda9-f282-8189-8bd7-ecb2926aedb9:es:685a1fa8be8e135a": {
+		"title": "Francés A1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Curso de francés nivel A1 en Busuu."
+	},
+	"3ba1eda9-f282-81a7-8708-cc484d4db592:es:1e7bbc9865231533": {
+		"title": "Francés A1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Actualmente estoy aprendiendo francés y he completado el curso de nivel A1 de Busuu, lo que me ha proporcionado una capacidad conversacional de nivel inicial, incluyendo saludos, vocabulario cotidiano y estructuras gramaticales básicas. Este es el primer paso en mi proceso de aprendizaje de francés, el cual continúa a través de los cursos de nivel A2 y B1 de Busuu."
+	},
+	"3ba1eda9-f282-8103-befe-f8610eaeb173:es:da117d7333ad360f": {
+		"title": "Guía esencial de TEFL - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso de Alison que proporciona una guía exhaustiva para la enseñanza de TEFL."
+	},
+	"3ba1eda9-f282-8143-bf06-d008f852ed89:es:b98305f4f5318bb6": {
+		"title": "Introducción al proceso de aprendizaje para docentes y formadores - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso de Alison que aborda las teorías del aprendizaje y las metodologías de enseñanza."
+	},
+	"3ba1eda9-f282-8192-8c1d-ceea58cce45d:es:c5f44b6df4226032": {
+		"title": "Estrategias de enseñanza TEFL - Alison",
+		"category": "",
+		"location": "",
+		"description": "Certificación en 'The Crucial TEFL Guide' de Alison, que abarca estrategias prácticas de aula para la enseñanza del inglés como lengua extranjera, incluyendo la atención a diversos estilos de aprendizaje, la gestión de aulas con niveles mixtos y la estructuración de lecciones para estudiantes de segunda lengua."
+	},
+	"3ba1eda9-f282-81ff-9a0f-e272a3e42bf5:es:7339b3102bd078aa": {
+		"title": "Metodologías de enseñanza - Proceso de aprendizaje de Alison",
+		"category": "",
+		"location": "",
+		"description": "Completé el curso 'Introducción al proceso de aprendizaje para docentes y capacitadores' de Alison, el cual aborda los mecanismos reales del aprendizaje —estilos de aprendizaje, motivación y diseño instruccional— y la aplicación de estos conocimientos en la enseñanza de idiomas o materias técnicas."
+	},
+	"3ba1eda9-f282-8111-97db-c1ba0ad0d67f:es:c573865fb223db83": {
+		"title": "Docencia - Habilidades de Enseñanza de Alison",
+		"category": "",
+		"location": "",
+		"description": "Completé el 'Diploma en Habilidades de Enseñanza para Educadores' de Alison, el cual abarca métodos pedagógicos y técnicas de aula y capacitación aplicables tanto a la enseñanza de idiomas como a la instrucción técnica."
+	},
+	"3ba1eda9-f282-8165-b9d2-fff3aa3d4528:es:351566fdf8b5fa4c": {
+		"title": "TEFL - Alison",
+		"category": "",
+		"location": "",
+		"description": "Finalización del curso 'Introducción a la enseñanza del inglés como segunda lengua' de Alison, que abarca los fundamentos de TEFL (enseñanza del inglés como lengua extranjera): planificación de lecciones, gestión del aula y técnicas esenciales de enseñanza de ESL. Directamente relacionado con mi experiencia práctica en la enseñanza de inglés y español a hablantes no nativos."
+	},
+	"3ba1eda9-f282-8167-b730-d525b3098500:es:b003b7972110245e": {
+		"title": "Diploma en Habilidades Docentes para Educadores - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso de Alison que aborda habilidades y metodologías de enseñanza esenciales para educadores."
+	},
+	"3ba1eda9-f282-816b-b0ce-f6df23d725b6:es:cb697e24069109e5": {
+		"title": "Introducción a la enseñanza del inglés como segunda lengua - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso de Alison que abarca los fundamentos de TEFL (Enseñanza del Inglés como Lengua Extranjera)."
+	},
+	"3ba1eda9-f282-816e-9903-da0f7e4bd1c8:es:67de38fcf0fa6ae1": {
+		"title": "Idioma inglés - Alison Avanzado",
+		"category": "",
+		"location": "",
+		"description": "Completé el curso 'Gramática y vocabulario en inglés: Discusión laboral (nivel avanzado)' de Alison, el cual abarca gramática avanzada del idioma inglés y vocabulario técnico enfocado en contextos profesionales y de negocios."
+	},
+	"3ba1eda9-f282-81c9-bade-de358b5b33b4:es:264f39da291e7f0c": {
+		"title": "Gramática y vocabulario en inglés - Discusión sobre el trabajo (Avanzado) - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso avanzado de Alison centrado en la gramática inglesa y el vocabulario relacionado con el entorno laboral."
+	},
+	"3ba1eda9-f282-8109-a5d3-d63c550e23d2:es:1accc0ce0c6f25e7": {
+		"title": "Introducción a la corrección de textos - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso de Alison que abarca los fundamentos de la corrección de textos y la edición."
+	},
+	"3ba1eda9-f282-81a5-8d88-efcb8cc6a19f:es:9ed5c7d1064e4808": {
+		"title": "Diploma en Gramática Básica del Inglés - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso de Alison que abarca las reglas y estructuras fundamentales de la gramática inglesa."
+	},
+	"3ba1eda9-f282-81ad-bfbb-f9313ae5c635:es:a67cd8cf0596c38b": {
+		"title": "Gramática inglesa - Alison",
+		"category": "",
+		"location": "",
+		"description": "Completé el 'Diploma en Gramática Inglesa Básica' de Alison, el cual profundiza en las reglas gramaticales y la estructura de las oraciones, incluyendo categorías gramaticales, tiempos verbales y normas de uso común. Útil tanto para perfeccionar mi fluidez avanzada como para la enseñanza de la gramática inglesa."
+	},
+	"3ba1eda9-f282-81e1-9788-e7f5b89e9b92:es:c99e983a1b276342": {
+		"title": "Corrección de textos - Alison",
+		"category": "",
+		"location": "",
+		"description": "Completé el curso 'An Introduction to Proofreading' de Alison, que abarca la revisión y corrección de textos en inglés, centrándose en la gramática, ortografía, puntuación y claridad; una competencia que aplico tanto en mi redacción técnica como en la revisión de trabajos académicos de estudiantes."
+	},
+	"3ba1eda9-f282-81f1-9025-d8714be1752f:es:a91ad46fd69648a7": {
+		"title": "Diploma en Estudios de Lengua Francesa - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso integral de lengua francesa que abarca pronunciación, gramática y habilidades conversacionales."
+	},
+	"3ba1eda9-f282-81ff-a0b8-d8e1994d36cd:es:99f67d1f1534176b": {
+		"title": "Idioma francés - Alison",
+		"category": "",
+		"location": "",
+		"description": "Completé el 'Diploma en Estudios del Idioma Francés' de Alison, el cual abarca gramática, pronunciación y vocabulario francés con un nivel de diploma estructurado; esto es distinto de, y complementario a, mis cursos de francés A1-B1 de Busuu, proporcionando una base gramatical y escrita más sólida en el idioma.\n\n### 🏆 Proyectos en los que utilicé esta habilidad\n- [CV en francés - Professeur d'Informatique](https://drive.google.com) - Creación de un CV exhaustivo en francés para puestos de enseñanza en informática"
+	},
+	"3ba1eda9-f282-8173-9a4e-cfe7b7fc9f01:es:17382a0a56476924": {
+		"title": "Asistencia Administrativa - Alison",
+		"category": "",
+		"location": "",
+		"description": "Diploma de Alison en Asistencia Administrativa. Incluye gestión de oficinas y tareas administrativas."
+	},
+	"3ba1eda9-f282-81ad-b542-e1789b4de0dc:es:0d6ad4e7324f081b": {
+		"title": "Soporte Administrativo - Alison",
+		"category": "",
+		"location": "",
+		"description": "Completé el curso de 'Soporte Administrativo' de Alison, el cual abarca la gestión de oficina y capacidades para tareas administrativas, tales como: programación de agendas, correspondencia, gestión de registros y otras habilidades de apoyo operativo."
+	},
+	"3ba1eda9-f282-8165-b0f0-f6820dd921eb:es:fa439bc2901856aa": {
+		"title": "Soporte Administrativo - Alison",
+		"category": "",
+		"location": "",
+		"description": "Curso de Alison en Soporte Administrativo, que abarca la gestión de oficina y tareas administrativas."
+	},
+	"3b31eda9-f282-8101-a1ae-f02f86488a69:es:d3936c3c6bd40c18": {
+		"title": "Widget de IA de Language Quest",
+		"category": "",
+		"location": "",
+		"description": "Desarrollé un micro-widget integrable en Notion (\"Grimorio IA\" / AI Spellbook) para Language Quest, una plataforma de aprendizaje de idiomas gamificada con temática de RPG de fantasía diseñada por Yennifer Abreu. La herramienta permite a los usuarios consultar palabras o frases en un idioma objetivo para obtener explicaciones contextuales adaptadas a su lengua materna, además de corrección de texto y sugerencias de actividades. El sistema está impulsado por la API de Google AI Studio (Gemini) mediante un proxy serverless seguro que implementé para proteger la clave de la API del lado del cliente."
+	},
+	"3b31eda9-f282-80f4-80ac-dc99f9e15da7:es:317cb6365de84085": {
+		"title": "Asset Foundry",
+		"category": "Automatización de IA",
+		"location": "",
+		"description": "Editorial digital totalmente automatizada que genera, edita y comercializa libros de autoayuda mediante un pipeline de LLM multiagente en n8n, además de un chatbot RAG (Archie) que recomienda o genera libros ultra-personalizados bajo demanda."
+	},
+	"3ba1eda9-f282-8107-b139-fa399c48e83d:fr:4ec70abb3a97ffb4": {
+		"title": "Dessin technique",
+		"category": "",
+		"location": "",
+		"description": "Compétences avancées en dessin technique avec plus de 15 ans d'expérience sur AutoCAD et d'autres logiciels de CAO pour des applications d'ingénierie, d'architecture et de fabrication."
+	},
+	"3ba1eda9-f282-81f2-8c6b-d30d302fede6:fr:6740a53ea1ec16ce": {
+		"title": "Design Graphique",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise avancée du design graphique avec plus de 15 ans d'expérience sur la suite Adobe Creative, CorelDRAW et d'autres outils de conception destinés au marketing, au branding et aux applications techniques."
+	},
+	"3ba1eda9-f282-8101-a3e0-e8b6273f08b3:fr:113c6fc345cbaa62": {
+		"title": "3D Studio Max",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise des bases de 3D Studio Max pour la modélisation et le rendu 3D, avec une expérience en visualisation architecturale et technique."
+	},
+	"3ba1eda9-f282-813f-a3ac-e2e7282e3297:fr:ebc8b07dba92d0b3": {
+		"title": "Blender",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise intermédiaire de Blender pour la modélisation 3D, le rendu et l'animation, avec plus de 10 ans d'expérience dans des projets d'ingénierie et de conception."
+	},
+	"3ba1eda9-f282-8136-8044-ee8550255068:fr:45e74321ef5020a9": {
+		"title": "Adobe Animate (Flash)",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise avancée d'Adobe Animate (anciennement Flash) pour la création d'animations, de présentations interactives et de contenus vidéo, avec plus de 15 ans d'expérience."
+	},
+	"3ba1eda9-f282-8136-adc8-e95d2cccfe5b:fr:ba16f2c97da2e7c0": {
+		"title": "Modélisation 3D",
+		"category": "",
+		"location": "",
+		"description": "Compétences avancées en modélisation 3D via diverses plateformes logicielles (SketchUp, 3D Studio Max, Blender) pour des applications d'architecture, d'ingénierie et de conception de produits."
+	},
+	"3ba1eda9-f282-81e6-8cc3-e7c52930f033:fr:9606aaae542065d7": {
+		"title": "SketchUp",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise avancée de SketchUp pour la modélisation 3D, la conception architecturale et la conception de pièces pour l'usinage CNC et l'impression 3D, avec plus de 15 ans d'expérience."
+	},
+	"3ba1eda9-f282-81eb-9d05-ebfb7745ed9f:fr:3fa27d8b5d2a682b": {
+		"title": "AutoCAD",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise intermédiaire d'AutoCAD pour le dessin technique et la conception 2D, avec plus de 10 ans d'expérience dans des projets d'ingénierie et d'architecture."
+	},
+	"3ba1eda9-f282-815d-9467-d3702a3cd24e:fr:4e03be2e52dcb887": {
+		"title": "CorelDRAW",
+		"category": "",
+		"location": "",
+		"description": "Compétences intermédiaires sur CorelDRAW pour la conception graphique, la création de logos et les supports marketing, avec plus de 15 ans d'expérience."
+	},
+	"3ba1eda9-f282-812b-a936-fd480a51cd62:fr:21008da2c7f33d94": {
+		"title": "Adobe Illustrator",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise intermédiaire d'Adobe Illustrator pour la conception graphique vectorielle, la création de logos et les illustrations techniques, avec plus de 15 ans d'expérience."
+	},
+	"3ba1eda9-f282-8109-8ea4-f399c638cc37:fr:2f5b353028093bec": {
+		"title": "Adobe Photoshop",
+		"category": "",
+		"location": "",
+		"description": "Compétences intermédiaires à avancées sur Adobe Photoshop pour la retouche d'images, la conception graphique et la visualisation de projets, avec plus de 15 ans d'expérience."
+	},
+	"3ba1eda9-f282-8117-a1d3-de7391931621:fr:868fc05528ea1e31": {
+		"title": "Assistant électricien chez GMP Proyectos, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Assistant électricien chez GMP Proyectos, C.A., assurant le support pour les installations et la maintenance électrique dans des bâtiments, des résidences et des bureaux, sous la supervision de l'électricien principal."
+	},
+	"3ba1eda9-f282-8121-96fd-c683d56c7fb8:fr:c3db490b4e5fffab": {
+		"title": "Responsable d'entrepôt chez GMP Proyectos, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Responsable d'entrepôt chez GMP Proyectos, C.A., chargé du contrôle des entrées et sorties de matériels, d'outils et d'équipements, ainsi que de la gestion des stocks et des bons de commande."
+	},
+	"3ba1eda9-f282-8107-bc55-d0a72cd26bce:fr:ec0a513fbdfe07be": {
+		"title": "Support informatique chez Faceboxes Express SAC",
+		"category": "",
+		"location": "",
+		"description": "Technicien support informatique chez Faceboxes Express SAC, assurant le diagnostic, la réparation et la maintenance des équipements informatiques des clients et de l'entreprise, incluant la maintenance de sites web."
+	},
+	"3ba1eda9-f282-817a-aa51-edea66f834af:fr:3e7f12a4fc2abe4b": {
+		"title": "Technicien informatique indépendant",
+		"category": "",
+		"location": "",
+		"description": "Technicien informatique indépendant assurant la maintenance, la réparation et la conception de configurations spécialisées, incluant des stations de travail, de gaming et de minage de cryptomonnaies."
+	},
+	"3ba1eda9-f282-8170-89b3-db3118467d44:fr:0e79dd2e4b2f6fec": {
+		"title": "Dessinateur Projeteur (CAO) chez GMP Proyectos, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Dessinateur Projeteur et spécialiste CAO chez GMP Proyectos, C.A., assurant la représentation de projets en 2D et 3D, ainsi que la création d'animations et de présentations pour les propositions de projets."
+	},
+	"3ba1eda9-f282-8145-82f1-d0be015f08d8:fr:716234acd68c75ea": {
+		"title": "Dessinateur et Concepteur Technique chez Ingeniería 2M, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Dessinateur et Concepteur Technique chez Ingeniería 2M, C.A., spécialisé dans la conception de projets 2D et 3D, la création de pièces CNC, d'animations et de supports graphiques pour des projets d'ingénierie."
+	},
+	"3ba1eda9-f282-8154-80f0-f7c413008139:fr:bbe8e95f4688a854": {
+		"title": "Cybersécurité",
+		"category": "",
+		"location": "",
+		"description": "Compétences intermédiaires en cybersécurité, incluant la maîtrise des principes fondamentaux, de la protection des données, des normes de conformité (SOC2, ISO27001) et du déploiement de logiciels sécurisés."
+	},
+	"3ba1eda9-f282-81cf-bc5b-f592a510c490:fr:a53083683bda3d1c": {
+		"title": "Automatisation des processus avec n8n",
+		"category": "",
+		"location": "",
+		"description": "Compétences intermédiaires en automatisation de processus avec n8n pour l'automatisation des flux de travail, l'intégration d'outils d'IA et l'optimisation de l'efficacité opérationnelle."
+	},
+	"3ba1eda9-f282-818d-b53e-cd5fc9fa32ff:fr:23e026de42f572bd": {
+		"title": "Rédaction technique",
+		"category": "",
+		"location": "",
+		"description": "Compétences avancées en rédaction technique, avec une expérience dans la conception de documentation, de procédures et de supports de formation pour les systèmes informatiques et l'IA."
+	},
+	"3ba1eda9-f282-81b8-b975-dcdd85a10fb2:fr:1d95ec7e13304ab0": {
+		"title": "Méthodologies d'enseignement",
+		"category": "",
+		"location": "",
+		"description": "Méthodologies d'enseignement avancées avec plus de 5 ans d'expérience en conception de programmes, pédagogie centrée sur l'apprenant et plateformes d'éducation numérique."
+	},
+	"3ba1eda9-f282-81eb-b2a3-d9d1782679e2:fr:d2c4fc23676f5074": {
+		"title": "Développement WordPress",
+		"category": "",
+		"location": "",
+		"description": "Compétences avancées en développement et administration WordPress, avec plus de 5 ans d'expérience en personnalisation de thèmes, gestion d'extensions et optimisation des performances."
+	},
+	"3ba1eda9-f282-8101-a6a1-f8bbdedfbc7f:fr:d2bff2538735fc75": {
+		"title": "Administration Système",
+		"category": "",
+		"location": "",
+		"description": "Compétences avancées en administration système avec une expérience approfondie de Windows, Linux, de la gestion des terminaux et des infrastructures cloud."
+	},
+	"3ba1eda9-f282-8104-a5e6-c2afa916924c:fr:e570c29b88ddfa83": {
+		"title": "Programmation JavaScript",
+		"category": "",
+		"location": "",
+		"description": "Compétences intermédiaires en programmation JavaScript, avec une expérience en développement web, personnalisation de WordPress et développement front-end."
+	},
+	"3ba1eda9-f282-814d-85fd-c7de40167367:fr:a3ed8b0dcd9c40a3": {
+		"title": "IA et Machine Learning",
+		"category": "",
+		"location": "",
+		"description": "Compétences avancées en IA et Machine Learning, avec une expertise en prompting de LLM, IA générative, évaluation de modèles et déploiement de workflows d'IA."
+	},
+	"3ba1eda9-f282-818c-9b62-da30f42bcd7e:fr:720825a1bfa0295e": {
+		"title": "Programmation Python",
+		"category": "",
+		"location": "",
+		"description": "Compétences intermédiaires en programmation Python avec une expérience en Scikit-Learn, Pandas, automatisation et applications d'IA/ML."
+	},
+	"3ba1eda9-f282-81a9-9081-c20dcf7a392b:fr:8fc1ae7729d234e1": {
+		"title": "Français",
+		"category": "",
+		"location": "",
+		"description": "Niveau intermédiaire en français (B1-B2), avec une capacité à lire, écrire et communiquer dans des contextes professionnels et techniques."
+	},
+	"3ba1eda9-f282-817e-89c6-fa53d01c9f1f:fr:f89ab3beabf4cf39": {
+		"title": "Anglais",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise avancée de l'anglais (niveau C1) avec une solide expérience de l'utilisation de l'anglais pour la communication professionnelle, l'enseignement et la documentation technique."
+	},
+	"3ba1eda9-f282-8143-8a5e-e597a0bde189:fr:7eff4f958656f761": {
+		"title": "Langue espagnole",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise de l'espagnol langue maternelle avec une solide expérience dans l'enseignement de l'espagnol comme langue seconde auprès d'étudiants anglophones à l'échelle internationale."
+	},
+	"3ba1eda9-f282-818f-9063-d75bd26db0e6:fr:ca41c3c973416863": {
+		"title": "Secrétaire et dactylo chez Consultores Armas & Asociados, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Secrétaire et dactylo chez Consultores Armas & Asociados, C.A., assurant le soutien administratif et la gestion de documents juridiques."
+	},
+	"3ba1eda9-f282-8173-8a4b-cc4498350c88:fr:b750e16242b3578d": {
+		"title": "Spécialiste du support électronique chez Aduacargo Express SAC",
+		"category": "",
+		"location": "",
+		"description": "Spécialiste du support électronique chez Aduacargo Express SAC, chargé de la mise en œuvre de solutions d'automatisation et de l'optimisation des systèmes logistiques pour de grandes entreprises de messagerie."
+	},
+	"3ba1eda9-f282-819b-b819-cadd6b50a4ea:fr:c24b1ac1bd59006b": {
+		"title": "Responsable des Services Informatiques chez Ingenieria 2M, C.A.",
+		"category": "",
+		"location": "",
+		"description": "Responsable des Services Informatiques chez Ingenieria 2M, C.A., pilotant la maintenance et l'optimisation de l'infrastructure informatique ainsi que le déploiement de stations de travail de conception 3D."
+	},
+	"3ba1eda9-f282-8163-81d8-ff6a8d9150e5:fr:fc94d410b7b7f017": {
+		"title": "Webmaster et Administrateur chez Ormiga Services SAS",
+		"category": "",
+		"location": "",
+		"description": "Webmaster et Administrateur chez Ormiga Services SAS, chargé de la conception, du déploiement et de la maintenance de sites web sous WordPress, avec un accent particulier sur la performance et la sécurité."
+	},
+	"3ba1eda9-f282-8144-94c4-fc7710cb4486:fr:e2e2fc13f3bf073c": {
+		"title": "Enseignant bilingue (espagnol/anglais) chez Baselang Inc. & Indépendant",
+		"category": "",
+		"location": "",
+		"description": "Enseignant bilingue spécialisé dans l'enseignement de l'espagnol pour étudiants anglophones, utilisant des plateformes numériques et des méthodes pédagogiques personnalisées."
+	},
+	"3ba1eda9-f282-8138-a248-f8333de7547a:fr:caa198400a85d306": {
+		"title": "Coordonnateur Senior et Support Opérationnel chez Baselang Inc.",
+		"category": "",
+		"location": "",
+		"description": "Coordonnateur Senior et Support Opérationnel chez Baselang Inc., chargé de la coordination des flux de travail, de l'administration logicielle et du support technique."
+	},
+	"3ba1eda9-f282-81b1-bb78-ccda82aefd71:fr:abaa78d4ca2b5882": {
+		"title": "Formateur de données IA avancé et Opérateur technique chez Invisible Technologies",
+		"category": "",
+		"location": "",
+		"description": "Formateur de données IA avancé et Opérateur technique chez Invisible Technologies, chargé de l'évaluation des modèles d'IA, de la création de données d'entraînement et de la collaboration avec les équipes techniques."
+	},
+	"3ba1eda9-f282-8100-81ff-d2b215c68d0b:fr:4114842fb63a0469": {
+		"title": "Code in Place - Python - Université de Stanford",
+		"category": "",
+		"location": "",
+		"description": "Le programme Code in Place de l'Université de Stanford, axé sur la programmation en Python."
+	},
+	"3ba1eda9-f282-8110-b826-f4f9fe5f862a:fr:1ab99199d6425d85": {
+		"title": "JavaScript - Udemy Web Dev",
+		"category": "",
+		"location": "",
+		"description": "Validation du module JavaScript du cours de certification Udemy 'JavaScript, Bootstrap, PHP - Certification course for beginners', couvrant les bases de la programmation JavaScript pour le développement web dans le cadre d'une formation full-stack incluant également Bootstrap et PHP."
+	},
+	"3ba1eda9-f282-813d-835f-e2b89f93bc94:fr:85fd18c61c203033": {
+		"title": "Compétences non techniques essentielles pour des data scientists performants - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Formation Udemy portant sur les soft skills essentielles pour les data scientists."
+	},
+	"3ba1eda9-f282-8185-b31d-f260a0190d3a:fr:4768e9bcfdb548e1": {
+		"title": "Développement Web - Udemy Full Stack",
+		"category": "",
+		"location": "",
+		"description": "Obtention de la certification full-stack d'Udemy couvrant JavaScript, Bootstrap et PHP — conception de pages web et d'applications complètes de bout en bout, allant de la mise en page responsive (Bootstrap) à l'interactivité (JavaScript) jusqu'à la logique côté serveur (PHP)."
+	},
+	"3ba1eda9-f282-81a4-8f4f-ca4de60d89a4:fr:4799309aea2947a9": {
+		"title": "Soft Skills en Data Science - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Formation Udemy : 'Essential Non-Technical Skills of Effective Data Scientists'. Ce cursus couvre la communication, la gestion des parties prenantes et les compétences de collaboration nécessaires pour que les projets de data science soient pleinement compris et adoptés par les décideurs métier — mettant l'accent non pas sur la modélisation technique, mais sur les compétences transversales qui l'entourent."
+	},
+	"3ba1eda9-f282-81aa-afe2-f97853371d48:fr:2123a0e5a6505155": {
+		"title": "PHP - Udemy Web Dev",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du module PHP du cours de certification Udemy 'JavaScript, Bootstrap, PHP', couvrant le scripting côté serveur avec PHP — gestion de formulaires, logique backend fondamentale et génération de pages dynamiques pour les applications web."
+	},
+	"3ba1eda9-f282-81ad-b653-f53c37b0f9dd:fr:4c98c72794a26c4c": {
+		"title": "Bootstrap - Udemy Web Dev",
+		"category": "",
+		"location": "",
+		"description": "Validation de la partie Bootstrap du cours de certification 'JavaScript, Bootstrap, PHP' d'Udemy, portant sur l'utilisation du framework CSS Bootstrap pour la création rapide de mises en page web responsives et adaptées aux mobiles."
+	},
+	"3ba1eda9-f282-81b0-98e1-d113c75d7c70:fr:6fedb1088c8332e0": {
+		"title": "JavaScript, Bootstrap, PHP - Débutants - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Cours de certification Udemy couvrant JavaScript, Bootstrap et PHP pour débutants."
+	},
+	"3ba1eda9-f282-81bc-8aad-ca49cdca3701:fr:f902b336269f703a": {
+		"title": "Python Avancé - Stanford Code in Place",
+		"category": "",
+		"location": "",
+		"description": "Suivi du programme 'Code in Place' de l'Université de Stanford, un cours de Python rigoureux issu du cours d'introduction à la programmation CS106A de Stanford, couvrant la programmation Python avancée et la résolution de problèmes algorithmiques — enseigné par le corps professoral de Stanford et des responsables de section bénévoles."
+	},
+	"3ba1eda9-f282-81e0-b068-fa6e6a66f19c:fr:63ce0fdd70c60bfd": {
+		"title": "Google AI Studio - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Suivi de la formation « Google AI Studio » sur Udemy, portant sur l'utilisation pratique de la plateforme Google AI Studio pour la conception et le test d'applications d'IA générative, incluant l'ingénierie de prompts et la configuration de modèles."
+	},
+	"3ba1eda9-f282-81f3-94d4-d93987d24cd6:fr:222bcb8e97717169": {
+		"title": "IA générative - Udemy Google AI Studio",
+		"category": "",
+		"location": "",
+		"description": "Réalisation de la formation d'Udemy sur l'IA générative basée sur Google AI Studio, couvrant l'ingénierie de prompts et le développement d'applications d'IA générative — conception de prompts efficaces et création de fonctionnalités fonctionnelles basées sur l'IA."
+	},
+	"3ba1eda9-f282-81ff-b9d0-f6fd91384de3:fr:8be5ab176c40103e": {
+		"title": "Google AI Studio - Udemy",
+		"category": "",
+		"location": "",
+		"description": "Cours Udemy sur Google AI Studio pour le développement d'IA générative."
+	},
+	"3ba1eda9-f282-8125-8a5c-e286112eb579:fr:08c6cb566cc919ec": {
+		"title": "Conception CAO - OnShape",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du programme 'Hands-On Test Drive' d'OnShape, couvrant la conception assistée par ordinateur (CAO) via OnShape, une plateforme CAO basée sur le cloud et accessible via navigateur — modélisation 3D et conception paramétrique sans nécessiter d'installation de logiciel locale."
+	},
+	"3ba1eda9-f282-8171-be33-c364b8ec8556:fr:5565df7e1ad7265e": {
+		"title": "Développement de projet Python - Pylatino",
+		"category": "",
+		"location": "",
+		"description": "Reconnu par Pylatino (une communauté Python hispanophone) pour la soumission d'un projet Python, portant sur la programmation Python appliquée et le développement de projet — conception et déploiement d'un projet opérationnel au-delà de la simple résolution d'exercices."
+	},
+	"3ba1eda9-f282-8176-ae43-f6302d3245ef:fr:310b3f6d99c0ade7": {
+		"title": "Intelligence Artificielle - Netzun",
+		"category": "",
+		"location": "",
+		"description": "Certification 'Fundamentos y Aplicaciones de la Inteligencia Artificial' obtenue via Netzun (San Ignacio University), couvrant les fondamentaux de l'IA et ses applications pratiques — concepts clés de l'apprentissage automatique et l'application de l'IA dans divers secteurs industriels."
+	},
+	"3ba1eda9-f282-817f-9e3f-ee11add4995f:fr:4214c2dcc087997b": {
+		"title": "Fondamentaux et applications de l'intelligence artificielle - Netzun",
+		"category": "",
+		"location": "",
+		"description": "Cours Netzun portant sur les fondamentaux et les applications de l'intelligence artificielle."
+	},
+	"3ba1eda9-f282-818a-b522-d8afc269b7c2:fr:af7ca8ad14e00e82": {
+		"title": "Utilisation d'un éditeur de code - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Validation du module 'Uso de un editor de código' sur Grasshopper — l'application gratuite de Google pour l'apprentissage du JavaScript par le jeu — portant sur l'utilisation efficace d'un éditeur de code (syntaxe, structure, bases du débogage) comme fondement de la programmation en JavaScript."
+	},
+	"3ba1eda9-f282-81a9-9bce-cdb1d2a40d61:fr:9fb8cbb4dd84a20e": {
+		"title": "Utilisation d'un éditeur de code - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Formation Grasshopper sur l'utilisation efficace des éditeurs de code."
+	},
+	"3ba1eda9-f282-81c5-971a-e47f58c6b499:fr:8daca94fad6381e3": {
+		"title": "Mise en pratique - OnShape",
+		"category": "",
+		"location": "",
+		"description": "Certification de mise en pratique OnShape pour la conception CAO."
+	},
+	"3ba1eda9-f282-81f7-8bf4-c8d34a7bb0f6:fr:3a3d5554e3a5758a": {
+		"title": "Reconnaissance de projet Python - Pylatino",
+		"category": "",
+		"location": "",
+		"description": "Reconnaissance Pylatino pour le développement de projets Python."
+	},
+	"3ba1eda9-f282-8103-b40b-d4fed98c0b69:fr:25f475b5357fbb79": {
+		"title": "Développement Web - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du module « Introducción a páginas web » de Grasshopper, couvrant les bases de la création de pages web avec HTML, CSS et JavaScript — s'inscrivant dans mon parcours d'autoformation en développement front-end, parallèlement à mes compétences sur WordPress et en développement full-stack (JavaScript/Bootstrap/PHP)."
+	},
+	"3ba1eda9-f282-8130-b50a-f0c4c2a3b341:fr:b09cdc76d7e3a4fa": {
+		"title": "Fondamentaux du JavaScript - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Validation du module 'Fundamentos de la codificación' de Grasshopper — bases fondamentales du JavaScript : variables, fonctions, boucles et logique conditionnelle. Ce module marque le début de mon parcours d'apprentissage du JavaScript via Grasshopper, qui se poursuit avec Fundamentals II, les méthodes de tableaux, les animations et l'automatisation."
+	},
+	"3ba1eda9-f282-8158-8e98-d1a8c4240433:fr:3309737dd7cef3e8": {
+		"title": "Fondamentaux de la programmation II - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Cours Grasshopper sur les fondamentaux de la programmation, partie II."
+	},
+	"3ba1eda9-f282-815a-8f8a-fe8b725e9544:fr:8e0492621eeccd18": {
+		"title": "Introduction aux entretiens - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Cours Grasshopper portant sur la préparation et les techniques d'entretien."
+	},
+	"3ba1eda9-f282-819a-a5d6-d9548b0e4de3:fr:3a9fd300a19a29b6": {
+		"title": "Méthodes de tableau - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Validation du module 'Métodos de arreglo' de Grasshopper, portant sur les méthodes de tableau JavaScript (map, filter, reduce, etc.) pour la manipulation et la transformation de données — une compétence pratique appliquée au scripting front-end et à l'automatisation."
+	},
+	"3ba1eda9-f282-819c-bb25-e77880bb00ef:fr:5ec58e0aa06faac2": {
+		"title": "Préparation aux entretiens - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du module 'Introducción a las entrevistas' de Grasshopper, portant sur l'explication de code JavaScript et les approches de résolution de problèmes lors d'entretiens techniques — l'accent est mis sur la communication et la clarté de l'explication, au-delà de la simple capacité de codage."
+	},
+	"3ba1eda9-f282-81a6-b7b5-e7c5aca3c7aa:fr:07c0fc3d343ed3a2": {
+		"title": "Méthodes de tableaux - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Cours Grasshopper sur les méthodes de tableaux en JavaScript."
+	},
+	"3ba1eda9-f282-81b9-8246-f063c4f6b83c:fr:7e74823d544216e2": {
+		"title": "Introduction au développement web - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Formation Grasshopper introduisant le développement de pages web."
+	},
+	"3ba1eda9-f282-81cd-8ffa-f8643bf70890:fr:a7f0826aef399d40": {
+		"title": "Fondamentaux de la programmation - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Cours Grasshopper sur les fondamentaux de la programmation."
+	},
+	"3ba1eda9-f282-81fe-a5aa-f298ab7209f6:fr:13d248ee049286b3": {
+		"title": "Fondamentaux de JavaScript II - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Validation du module 'Fundamentos de codificación II' de Grasshopper, approfondissant les bases de JavaScript par des concepts plus avancés — structures de contrôle et organisation du code — pour poursuivre le parcours JavaScript initié avec le module d'introduction de Grasshopper."
+	},
+	"3ba1eda9-f282-8136-9585-c218ff26d0f8:fr:7ea27881f5d58bb7": {
+		"title": "Automatisation JavaScript - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Validation du module 'Automatización' de Grasshopper, portant sur l'utilisation de JavaScript pour l'automatisation de tâches répétitives — une compétence directement applicable à mes travaux d'automatisation de processus via des outils tels que n8n et le scripting Python."
+	},
+	"3ba1eda9-f282-8147-9724-dae3f1cfa9eb:fr:618c6c13172e58bb": {
+		"title": "Automatisation - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Cours Grasshopper sur l'automatisation utilisant JavaScript."
+	},
+	"3ba1eda9-f282-8185-bd9a-d71fb0828ccf:fr:f766a443053187e5": {
+		"title": "Productivité personnelle - Google Actívate",
+		"category": "",
+		"location": "",
+		"description": "Cours Google Actívate sur les outils et les techniques de productivité personnelle."
+	},
+	"3ba1eda9-f282-818c-9eec-e1dc7681d861:fr:e1f8ed2972649814": {
+		"title": "Animations JavaScript Avancées - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Validation du module 'Animaciones II' de Grasshopper, couvrant des techniques d'animation JavaScript plus avancées — approfondissement du module d'introduction aux animations avec une logique de mouvement et d'interaction plus complexe pour le web."
+	},
+	"3ba1eda9-f282-81a5-928a-da9ccfc3a664:fr:057d5403dc311504": {
+		"title": "Animations JavaScript - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du module « Animaciones » de Grasshopper, couvrant la création d'animations avec JavaScript : gestion du timing, des transitions et des effets visuels interactifs sur des pages web."
+	},
+	"3ba1eda9-f282-81af-a54f-f9a3b71405da:fr:0e4e9cf675d61baa": {
+		"title": "Animations II - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Cours d'animations avancées sur Grasshopper."
+	},
+	"3ba1eda9-f282-81b2-a970-dd788ed5089b:fr:5ba0a9ab78a69f3b": {
+		"title": "Enseignement de l'espagnol langue étrangère - ELEI",
+		"category": "",
+		"location": "",
+		"description": "Programme de certification ELEI pour l'enseignement de l'espagnol langue étrangère."
+	},
+	"3ba1eda9-f282-81bb-82fc-e386832058ea:fr:e565edff8741c90c": {
+		"title": "Enseignement de l'espagnol - ELEI English",
+		"category": "",
+		"location": "",
+		"description": "Version en anglais de ma certification ELEI en Enseignement de l'espagnol langue étrangère — comprenant le même programme de méthodologie (préparation de cours, enseignement de la grammaire, pratique conversationnelle), certifiée en anglais plutôt qu'en espagnol, témoignant de ma capacité à enseigner et à être évaluée de manière bilingue."
+	},
+	"3ba1eda9-f282-81c0-a041-d3c76d36b77b:fr:da079430fb07fd48": {
+		"title": "Animations - Grasshopper",
+		"category": "",
+		"location": "",
+		"description": "Cours Grasshopper sur les animations avec JavaScript."
+	},
+	"3ba1eda9-f282-81fa-a50d-c9ea9029ab24:fr:dc0ecb44be505050": {
+		"title": "Productivité - Google Actívate",
+		"category": "",
+		"location": "",
+		"description": "Validation de la formation 'Productividad personal' (Productivité personnelle) de Google Actívate, portant sur l'organisation personnelle, la gestion du temps et les techniques d'efficacité professionnelle."
+	},
+	"3ba1eda9-f282-812a-8925-f8c883b7cbbb:fr:d817672db19db44e": {
+		"title": "Game Design - Pixel Art Domestika",
+		"category": "",
+		"location": "",
+		"description": "Suivi du cours de Domestika 'Creación de escenarios pixelart para videojuegos' (Création de décors pixel art pour jeux vidéo), couvrant la conception de niveaux et de décors via le pixel art — des compétences directement applicables à mon projet de jeu Animalia sous Godot."
+	},
+	"3ba1eda9-f282-8135-934c-f49a2b213d71:fr:041fc19890b49a21": {
+		"title": "Pixel Art - Domestika",
+		"category": "",
+		"location": "",
+		"description": "Validation de la formation Domestika 'Creación de escenarios pixelart para videojuegos', couvrant la conception et la création de pixel art pour des environnements de jeux vidéo — compétence directement applicable à mon projet de jeu Animalia sous Godot, complétant mon expertise en design et en CAO."
+	},
+	"3ba1eda9-f282-814a-a615-d09866635c82:fr:608792c5be2316ce": {
+		"title": "Certification EF SET 90",
+		"category": "",
+		"location": "",
+		"description": "Certification EF Standard English Test avec un score de 90."
+	},
+	"3ba1eda9-f282-814b-9646-d0dee5b51d1c:fr:d1aba1a29a2e4851": {
+		"title": "Création de décors pixel art pour jeux vidéo - Domestika",
+		"category": "",
+		"location": "",
+		"description": "Cours Domestika sur la création de décors pixel art pour jeux vidéo."
+	},
+	"3ba1eda9-f282-8170-a30d-cb2add45373c:fr:873b886d825d4051": {
+		"title": "Professeur d'espagnol langue étrangère - ELEI",
+		"category": "",
+		"location": "",
+		"description": "Certification ELEI pour l'enseignement de l'espagnol langue étrangère."
+	},
+	"3ba1eda9-f282-819d-9550-ceefe9ef3157:fr:3e99f100faf1c481": {
+		"title": "Enseignement de la langue espagnole - ELEI",
+		"category": "",
+		"location": "",
+		"description": "Certifié par l'ELEI (Escuela Latinoamericana de Español Internacional) comme professeur d'espagnol langue étrangère ('Profesor de Español como Lengua Extranjera') — couvrant la méthodologie d'enseignement de la grammaire, du vocabulaire et de la conversation espagnoles auprès de locuteurs non natifs. Valide mon expérience pratique de l'enseignement de l'espagnol à des étudiants anglophones."
+	},
+	"3ba1eda9-f282-81ab-8ad0-efceb4468694:fr:a906e64992acb772": {
+		"title": "Anglais - EF SET 90",
+		"category": "",
+		"location": "",
+		"description": "Score de 90/100 au test d'anglais EF SET — l'examen de compétence linguistique gratuit et standardisé d'EF Education First, correspondant au niveau C1/C2 (avancé/expert). Confirme mon utilisation professionnelle quotidienne de l'anglais et complète ma certification d'anglais Busuu C1."
+	},
+	"3ba1eda9-f282-8142-8887-e61bd3f84051:fr:fd761bd4f45365fc": {
+		"title": "Python - Ingénieur ML Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Validation du module Python de la certification 'ML Engineer Junior' de Cymetria, couvrant la programmation Python dédiée au machine learning : manipulation de données, bibliothèques de construction de modèles et scripting de workflows ML."
+	},
+	"3ba1eda9-f282-8146-bf04-c5c9089a36f4:fr:382db25bd5441a2e": {
+		"title": "Intelligence Artificielle - Ingénieur ML Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Validation du volet dédié à l'IA dans le cadre de la certification « ML Engineer Junior » de Cymetria, couvrant les concepts fondamentaux d'intelligence artificielle qui sous-tendent l'ingénierie du machine learning.\n\n### 🏆 Projets ayant mobilisé cette compétence\n- [Invisible Technologies - Advanced AI Data Trainer](https://app.notion.com/p/3ba1eda9f28281b1bb78ccda82aefd71) - Application des compétences en ingénierie ML pour l'évaluation et l'optimisation de modèles d'IA"
+	},
+	"3ba1eda9-f282-815a-b8ae-d89c350e1fb4:fr:168c948efcc546d9": {
+		"title": "Ressources Humaines - Cursa",
+		"category": "",
+		"location": "",
+		"description": "Formation Cursa portant sur la gestion et les pratiques des ressources humaines."
+	},
+	"3ba1eda9-f282-816f-baf1-ebba2ae999e0:fr:bc0ea711c17301fb": {
+		"title": "Ingénierie du Machine Learning - Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Certifié en tant qu'Ingénieur Machine Learning Junior par Cymetria, couvrant le flux de travail pratique de l'ingénierie du machine learning — conception, entraînement et évaluation de modèles de ML, ainsi que les pratiques d'ingénierie liées à leur déploiement."
+	},
+	"3ba1eda9-f282-81a7-8c93-dd4f5674aa62:fr:3fa7a6f1591f3f19": {
+		"title": "Ingénieur Machine Learning Junior - Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Contenu du programme de certification d'Ingénieur Machine Learning Junior de Cymetria."
+	},
+	"3ba1eda9-f282-81c3-b7ca-e565629dfcae:fr:f2ec6fa66fdd3f77": {
+		"title": "Certification d'Ingénieur Machine Learning Junior - Cymetria",
+		"category": "",
+		"location": "",
+		"description": "Certification officielle d'Ingénieur Machine Learning Junior délivrée par Cymetria à Daniel Peraza."
+	},
+	"3ba1eda9-f282-81e9-9edd-fd0710fcc606:fr:30ae37e7241f1b03": {
+		"title": "Ressources Humaines - Cursa",
+		"category": "",
+		"location": "",
+		"description": "A suivi la formation 'Recursos Humanos' (Ressources Humaines) de Cursa, couvrant les pratiques fondamentales de la gestion des RH : recrutement, gestion d'équipe et principes de base des politiques en entreprise."
+	},
+	"3ba1eda9-f282-812b-a08f-e15ed9efb98d:fr:08a24b9f6c358cc2": {
+		"title": "Systèmes embarqués - Coursera IoT",
+		"category": "",
+		"location": "",
+		"description": "Réalisation de la formation Coursera 'Introduction to the Internet of Things and Embedded Systems', couvrant les principes fondamentaux de la conception de systèmes embarqués : microcontrôleurs, capteurs et l'interaction entre les dispositifs physiques et les logiciels."
+	},
+	"3ba1eda9-f282-8150-8765-d0be898ec2b8:fr:7e575fa8c55d1a76": {
+		"title": "IoT - Introduction Coursera",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du cours d'introduction à l'IoT (Internet des Objets) sur Coursera, couvrant l'interaction entre les appareils connectés, les capteurs et les systèmes embarqués — l'architecture des objets intelligents et des systèmes matériels automatisés."
+	},
+	"3ba1eda9-f282-816c-b9a3-e61a0a433bcf:fr:a0af78082dc7605b": {
+		"title": "Introduction à l'Internet des Objets et aux Systèmes Embarqués - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Cours de l'Université de Californie portant sur les fondamentaux de l'Internet des Objets (IoT) et des systèmes embarqués."
+	},
+	"3ba1eda9-f282-8187-8e36-f4c1ab0ec458:fr:aad5ec049549cdc5": {
+		"title": "La plateforme Arduino et la programmation en C - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Cours de l'Université de Californie sur la plateforme Arduino et la programmation en C."
+	},
+	"3ba1eda9-f282-81b4-aae2-cf3ea908ab5e:fr:7e72d30922a13e37": {
+		"title": "Programmation en C - Coursera Arduino",
+		"category": "",
+		"location": "",
+		"description": "Suivi de la formation Coursera 'The Arduino Platform and C Programming', portant sur le langage C appliqué à la programmation de systèmes embarqués et de microcontrôleurs sur la plateforme Arduino."
+	},
+	"3ba1eda9-f282-811b-a25e-c57770aa09bb:fr:eabebfb765730a04": {
+		"title": "Interfaçage avec Arduino - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Cours de l'Université de Californie sur l'interfaçage avec Arduino et les systèmes embarqués."
+	},
+	"3ba1eda9-f282-8147-a78d-c6d083f1c99d:fr:15e6fed72791f71c": {
+		"title": "Python - Coursera : Apprendre à programmer",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du cours 'Apprendre à programmer' de Coursera, couvrant les fondamentaux de la programmation Python — syntaxe, logique et résolution de problèmes — dans le cadre de mon parcours autodidacte approfondi en Python appliqué à l'analyse de données, l'automatisation et l'IA/ML."
+	},
+	"3ba1eda9-f282-8199-bb52-e3be1a1ef605:fr:3b3df8a07874947e": {
+		"title": "A Programar - Coursera",
+		"category": "",
+		"location": "",
+		"description": "Cours de l'Universidad ORT Uruguay introduisant les fondamentaux de la programmation."
+	},
+	"3ba1eda9-f282-81d7-9e88-cd30f13872a9:fr:e70e639fad5097bf": {
+		"title": "Arduino - Interfaçage (Coursera)",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du cours 'Interfacing with the Arduino' sur Coursera, couvrant la connexion et la programmation de capteurs, d'actionneurs et d'autres composants matériels avec un microcontrôleur Arduino."
+	},
+	"3ba1eda9-f282-81f4-8f39-d605930616ef:fr:f60ee4de79702a28": {
+		"title": "Programmation - Coursera A Programar",
+		"category": "",
+		"location": "",
+		"description": "Suivi avec succès du cours 'A Programar' de Coursera, couvrant les fondamentaux de la programmation avec Python : variables, structures de contrôle et résolution de problèmes de base, constituant une base solide pour des projets futurs en programmation et en automatisation."
+	},
+	"3ba1eda9-f282-8128-b7d9-fafd5bee8703:fr:fda7d106f0a6b4d2": {
+		"title": "Anglais C1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Maîtrise du niveau d'anglais C1 (avancé/courant) via le programme interactif de Busuu — expression nuancée, vocabulaire soutenu et grammaire complexe. Confirme une aisance professionnelle quotidienne en anglais, en complément de mes certifications EF SET 90 et Alison English."
+	},
+	"3ba1eda9-f282-81b2-85ce-ebb394914402:fr:d580d1e683ea5277": {
+		"title": "Anglais C1 - Busuu",
+		"category": "",
+		"location": "",
+		"description": "Cours d'anglais Busuu, niveau C1."
+	},
+	"3ba1eda9-f282-8124-8d68-d44f8b045886:fr:3b8aea2f21ea1031": {
+		"title": "IA 2026 - BIG School",
+		"category": "",
+		"location": "",
+		"description": "Programme de certification IA 2026 de la BIG School."
+	},
+	"3ba1eda9-f282-815b-b26c-ebea6957c089:fr:ea5c6d5f37501320": {
+		"title": "Conception CAO - ARTS Instituto AutoCAD",
+		"category": "",
+		"location": "",
+		"description": "Validation de la formation 'AutoCAD 2012 2D' de l'ARTS Instituto, couvrant la conception assistée par ordinateur (CAO) 2D et le dessin technique sous AutoCAD — dessins techniques de précision, cotation et conventions de dessin utilisées en ingénierie et en architecture."
+	},
+	"3ba1eda9-f282-818a-8f5c-fb0d3584ff7b:fr:7496431dd63fbc40": {
+		"title": "AutoCAD 2012 2D - ARTS Instituto",
+		"category": "",
+		"location": "",
+		"description": "Formation AutoCAD 2012 2D au centre de formation agréé ARTS Instituto."
+	},
+	"3ba1eda9-f282-81f5-a1ce-d62bc45ccc4e:fr:0be3518747acaaae": {
+		"title": "Intelligence Artificielle - BIG School IA 2026",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du programme 'IA 2026' de la BIG School ('IA, Vibe Coding & Automation'), couvrant les capacités avancées de l'intelligence artificielle et du machine learning, notamment les flux de travail de développement assistés par l'IA et l'automatisation."
+	},
+	"3ba1eda9-f282-8103-befe-f8610eaeb173:fr:da117d7333ad360f": {
+		"title": "Le guide essentiel du TEFL - Alison",
+		"category": "",
+		"location": "",
+		"description": "Formation Alison proposant un guide complet sur l'enseignement du TEFL."
+	},
+	"3ba1eda9-f282-8105-9176-fd9da4aea2a6:fr:786bc49bec64e266": {
+		"title": "Immersion IA - Alura",
+		"category": "",
+		"location": "",
+		"description": "Cours d'immersion en IA d'Alura portant sur les fondamentaux de l'intelligence artificielle."
+	},
+	"3ba1eda9-f282-8143-bf06-d008f852ed89:fr:b98305f4f5318bb6": {
+		"title": "Introduction au processus d'apprentissage pour les enseignants et les formateurs - Alison",
+		"category": "",
+		"location": "",
+		"description": "Cours Alison portant sur les théories de l'apprentissage et les méthodologies pédagogiques."
+	},
+	"3ba1eda9-f282-816b-a1df-cc96a15b1281:fr:9a6fdffbd61f3804": {
+		"title": "Intelligence Artificielle - Alura Inmersión IA",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du programme 'Inmersión IA' (Immersion en IA) d'Alura, couvrant les fondamentaux de l'intelligence artificielle et de l'apprentissage automatique via un cursus intensif et pratique dispensé en espagnol."
+	},
+	"3ba1eda9-f282-8192-8c1d-ceea58cce45d:fr:c5f44b6df4226032": {
+		"title": "Stratégies d'enseignement TEFL - Alison",
+		"category": "",
+		"location": "",
+		"description": "Validation de la formation 'The Crucial TEFL Guide' d'Alison, portant sur les stratégies pédagogiques concrètes pour l'enseignement de l'anglais langue étrangère : adaptation aux différents styles d'apprentissage, gestion de groupes de niveaux hétérogènes et structuration de cours pour les apprenants de langue seconde."
+	},
+	"3ba1eda9-f282-81ff-9a0f-e272a3e42bf5:fr:7339b3102bd078aa": {
+		"title": "Méthodologies d'enseignement - Processus d'apprentissage Alison",
+		"category": "",
+		"location": "",
+		"description": "Certification obtenue via Alison : 'Introduction au processus d'apprentissage pour les enseignants et les formateurs'. Formation portant sur les mécanismes de l'apprentissage (styles d'apprentissage, motivation et conception pédagogique) et sur l'application de ces principes dans l'enseignement d'une langue ou d'une discipline technique."
+	},
+	"3ba1eda9-f282-8111-97db-c1ba0ad0d67f:fr:c573865fb223db83": {
+		"title": "Enseignement - Compétences pédagogiques Alison",
+		"category": "",
+		"location": "",
+		"description": "Obtention du « Diplôme en compétences pédagogiques pour les éducateurs » d'Alison, couvrant les méthodes pédagogiques ainsi que les techniques de gestion de classe et de formation applicables tant à l'enseignement des langues qu'à la formation technique."
+	},
+	"3ba1eda9-f282-8165-b9d2-fff3aa3d4528:fr:351566fdf8b5fa4c": {
+		"title": "TEFL - Alison",
+		"category": "",
+		"location": "",
+		"description": "Validation du cours 'Introduction to Teaching English as a Second Language' sur Alison, couvrant les bases du TEFL (Teaching English as a Foreign Language) : planification de cours, gestion de classe et techniques fondamentales d'enseignement de l'anglais langue seconde (ESL). Compétences directement applicables à mon expérience pratique de l'enseignement de l'anglais et de l'espagnol à des locuteurs non natifs."
+	},
+	"3ba1eda9-f282-8167-b730-d525b3098500:fr:b003b7972110245e": {
+		"title": "Diplôme en compétences pédagogiques pour les éducateurs - Alison",
+		"category": "",
+		"location": "",
+		"description": "Cours Alison couvrant les compétences et méthodologies d'enseignement essentielles pour les éducateurs."
+	},
+	"3ba1eda9-f282-816b-b0ce-f6df23d725b6:fr:cb697e24069109e5": {
+		"title": "Introduction à l'enseignement de l'anglais langue seconde - Alison",
+		"category": "",
+		"location": "",
+		"description": "Formation Alison portant sur les fondamentaux du TEFL (enseignement de l'anglais comme langue étrangère)."
+	},
+	"3ba1eda9-f282-816e-9903-da0f7e4bd1c8:fr:67de38fcf0fa6ae1": {
+		"title": "Anglais - Niveau Avancé (Alison)",
+		"category": "",
+		"location": "",
+		"description": "Validation du cours d'Alison 'English Grammar and Vocabulary - Discussing Work (Advanced Level)', couvrant la grammaire anglaise avancée et le vocabulaire spécialisé pour les contextes professionnels et commerciaux."
+	},
+	"3ba1eda9-f282-81c9-bade-de358b5b33b4:fr:264f39da291e7f0c": {
+		"title": "Grammaire et vocabulaire anglais - Communication professionnelle (Niveau avancé) - Alison",
+		"category": "",
+		"location": "",
+		"description": "Cours de niveau avancé proposé par Alison, axé sur la grammaire anglaise et le vocabulaire lié au monde du travail."
+	},
+	"3ba1eda9-f282-8109-a5d3-d63c550e23d2:fr:1accc0ce0c6f25e7": {
+		"title": "Introduction à la relecture - Alison",
+		"category": "",
+		"location": "",
+		"description": "Formation Alison portant sur les fondamentaux de la relecture et de la correction."
+	},
+	"3ba1eda9-f282-81a5-8d88-efcb8cc6a19f:fr:9ed5c7d1064e4808": {
+		"title": "Diplôme en grammaire anglaise de base - Alison",
+		"category": "",
+		"location": "",
+		"description": "Cours Alison couvrant les règles et les structures fondamentales de la grammaire anglaise."
+	},
+	"3ba1eda9-f282-81ad-bfbb-f9313ae5c635:fr:a67cd8cf0596c38b": {
+		"title": "Grammaire anglaise - Alison",
+		"category": "",
+		"location": "",
+		"description": "Obtention du 'Diploma in Basic English Grammar' d'Alison, couvrant en profondeur les règles de grammaire anglaise et la structure des phrases — classes grammaticales, temps et règles d'usage courant. Cette formation a permis de perfectionner ma maîtrise avancée de l'anglais ainsi que mes compétences pédagogiques pour l'enseignement de la grammaire."
+	},
+	"3ba1eda9-f282-81e1-9788-e7f5b89e9b92:fr:c99e983a1b276342": {
+		"title": "Relecture - Alison",
+		"category": "",
+		"location": "",
+		"description": "Réalisation de la formation 'An Introduction to Proofreading' par Alison, portant sur la révision et la correction de l'anglais écrit (grammaire, orthographe, ponctuation et clarté) — une compétence que j'applique tant dans ma rédaction technique que dans la correction des travaux écrits de mes étudiants."
+	},
+	"3ba1eda9-f282-8152-a096-ee9585ece089:fr:f9825034aa4735b6": {
+		"title": "Machine Learning - Implémentation de l'IA par Aesabana",
+		"category": "",
+		"location": "",
+		"description": "Obtention de la formation 'Implementación de Soluciones de IA' (Mise en œuvre de solutions d'IA) via Aesabana et le SENA (service national de formation professionnelle de Colombie), couvrant l'implémentation pratique du machine learning — application de modèles d'IA pour résoudre des problématiques métier concrètes."
+	},
+	"3ba1eda9-f282-8169-a9d6-e9c24e0278a6:fr:5e6567ecb01d65a0": {
+		"title": "IMPLÉMENTATION DE SOLUTIONS D'IA - Aesabana",
+		"category": "",
+		"location": "",
+		"description": "Certification de la SENA et de l'ASOCIACION DE EMPRESARIOS DE LA SABANA pour la mise en œuvre de solutions d'IA."
+	},
+	"3ba1eda9-f282-8173-9a4e-cfe7b7fc9f01:fr:17382a0a56476924": {
+		"title": "Assistance administrative - Alison",
+		"category": "",
+		"location": "",
+		"description": "Diplôme Alison en assistance administrative. Couvre la gestion de bureau et les tâches administratives."
+	},
+	"3ba1eda9-f282-81ad-b542-e1789b4de0dc:fr:0d6ad4e7324f081b": {
+		"title": "Assistance Administrative - Alison",
+		"category": "",
+		"location": "",
+		"description": "A suivi la formation 'Assistance Administrative' d'Alison, couvrant la gestion de bureau et la maîtrise des tâches administratives : planification, correspondance, gestion des dossiers et autres compétences de soutien opérationnel."
+	},
+	"3ba1eda9-f282-81b1-91b1-fc79171e8906:fr:2b50e6df001ad71f": {
+		"title": "Intelligence Artificielle - Implémentation IA Aesabana",
+		"category": "",
+		"location": "",
+		"description": "Réalisation du programme d'implémentation de solutions d'IA du SENA et d'Aesabana, portant sur l'intelligence artificielle pratique et appliquée — mise en œuvre de solutions basées sur l'IA pour des scénarios réels plutôt que sur des concepts purement théoriques."
+	},
+	"3ba1eda9-f282-8165-b0f0-f6820dd921eb:fr:fa439bc2901856aa": {
+		"title": "Support Administratif - Alison",
+		"category": "",
+		"location": "",
+		"description": "Formation Alison en support administratif couvrant la gestion de bureau et les tâches administratives."
+	},
+	"3b41eda9-f282-8134-894c-cfa54d891703:fr:88c37ede40836a62": {
+		"title": "Réflexion : La lutte intérieure",
+		"category": "",
+		"location": "",
+		"description": "L'une des réflexions personnelles de Daniel — sur la tension constante entre la raison et l'émotion dans les processus de pensée et de décision."
+	},
+	"3b41eda9-f282-815f-a00b-cac2cf4d5b5c:fr:c5f1d82974b67b00": {
+		"title": "Réflexion : Les mots",
+		"category": "",
+		"location": "",
+		"description": "Une réflexion personnelle sur le langage, le sens et la sincérité."
+	},
+	"3b41eda9-f282-817c-b57b-e3a26b56b1f7:fr:5bdb80007a9ca845": {
+		"title": "Nouvelle : La lumière",
+		"category": "",
+		"location": "",
+		"description": "Échantillon de fiction courte / écriture créative — genre surnaturel avec dénouement inattendu."
+	},
+	"3b41eda9-f282-8180-b63c-f11ec9c5e5a2:fr:bd0e11150a5f81d5": {
+		"title": "Nouvelle : Chemin vers la maison",
+		"category": "",
+		"location": "",
+		"description": "Exemple de création littéraire (fiction courte) — genre réalisme magique."
+	},
+	"3b41eda9-f282-81a0-acdb-d8a2e8a74c01:fr:c70e396736e47c41": {
+		"title": "Nouvelle : J'étais à la maison",
+		"category": "",
+		"location": "",
+		"description": "Exemple de fiction courte et d'écriture créative — genre surréaliste."
+	},
+	"3b41eda9-f282-81bf-9cac-d0749a7e1876:fr:0e5650c22e24dcdf": {
+		"title": "Réflexion : Elle",
+		"category": "",
+		"location": "",
+		"description": "Une réflexion personnelle et poétique sur l'amour et son épouse."
+	},
+	"3b41eda9-f282-81df-b020-d97af387fdf8:fr:2b5fb1cd745643c5": {
+		"title": "Réflexion : Perfection",
+		"category": "",
+		"location": "",
+		"description": "Une réflexion personnelle sur la perfection, l'imperfection et l'identité."
+	},
+	"3b31eda9-f282-8101-a1ae-f02f86488a69:fr:d3936c3c6bd40c18": {
+		"title": "Widget AI Language Quest",
+		"category": "",
+		"location": "",
+		"description": "J'ai conçu un micro-widget Notion intégrable (« Grimorio IA » / Livre de sorts IA) pour Language Quest, un tableau de bord d'apprentissage des langues gamifié sur le thème du RPG fantastique, conçu par mon épouse Yennifer Abreu. Cet outil permet aux utilisateurs d'interroger un mot ou une phrase dans une langue cible et d'obtenir une explication contextuelle adaptée à leur langue maternelle, ainsi que des corrections de texte et des suggestions d'activités, alimenté par l'API Google AI Studio (Gemini) via un proxy sans serveur sécurisé que j'ai développé pour maintenir la clé API hors du client."
+	},
+	"3b31eda9-f282-80f4-80ac-dc99f9e15da7:fr:317cb6365de84085": {
+		"title": "Asset Foundry",
+		"category": "Automatisation par l'IA",
+		"location": "",
+		"description": "Maison d'édition numérique entièrement automatisée qui génère, édite et commercialise des ouvrages de développement personnel via un pipeline LLM multi-agents n8n, incluant un chatbot RAG (Archie) capable de recommander ou de générer des livres ultra-personnalisés à la demande."
+	}
+}
