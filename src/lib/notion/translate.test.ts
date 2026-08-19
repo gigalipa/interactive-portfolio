@@ -128,6 +128,34 @@ describe("translateFields", () => {
 		expect(result.title).toBe("Software Engineer");
 	});
 
+	it("falls through to the next model in the chain on a 503 (model overloaded)", async () => {
+		const overloaded = {
+			ok: false,
+			status: 503,
+			json: async () => ({}),
+			text: async () => "This model is currently experiencing high demand.",
+		};
+		const ok = {
+			ok: true,
+			status: 200,
+			json: async () => ({
+				candidates: [
+					{ content: { parts: [{ text: JSON.stringify({ title: "C", category: "", location: "", description: "" }) }] } },
+				],
+			}),
+			text: async () => "",
+		};
+		const fetchImpl = vi.fn().mockResolvedValueOnce(overloaded).mockResolvedValueOnce(ok);
+
+		const result = await translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
+			apiKey: "key",
+			fetchImpl,
+		});
+
+		expect(fetchImpl).toHaveBeenCalledTimes(2);
+		expect(result.title).toBe("C");
+	});
+
 	it("waits and retries the whole chain once if every model is rate-limited, then succeeds", async () => {
 		vi.useFakeTimers();
 		try {

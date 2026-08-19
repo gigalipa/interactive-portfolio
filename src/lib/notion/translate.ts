@@ -77,12 +77,17 @@ function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// 429 = rate limit (quota exhausted); 503 = Gemini's "model is currently
+// experiencing high demand" transient overload. Both are worth falling
+// through the chain for — neither means the request itself was bad.
+const RETRYABLE_STATUSES = new Set([429, 503]);
+
 /** Tries each model in MODEL_FALLBACK_CHAIN in order, moving to the next only
- * on a 429 (rate limit) — any other failure returns immediately so the
- * caller's existing error handling applies. If every model in the chain is
- * 429'd in the same pass, waits RATE_LIMIT_COOLDOWN_MS and runs the whole
- * chain again once more before giving up (returning the last response, which
- * the caller turns into a hard failure). */
+ * on a retryable status (429/503) — any other failure returns immediately so
+ * the caller's existing error handling applies. If every model in the chain
+ * is still retryable in the same pass, waits RATE_LIMIT_COOLDOWN_MS and runs
+ * the whole chain again once more before giving up (returning the last
+ * response, which the caller turns into a hard failure). */
 async function callWithModelFallback(
 	requestBody: unknown,
 	apiKey: string,
@@ -97,7 +102,7 @@ async function callWithModelFallback(
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(requestBody),
 			});
-			if (response.status !== 429) return response;
+			if (!RETRYABLE_STATUSES.has(response.status)) return response;
 			lastResponse = response;
 		}
 		if (attempt < MAX_CHAIN_ATTEMPTS - 1) {
