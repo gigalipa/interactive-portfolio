@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
 
 /** Confirmed live via Step 2 of the plan that introduced this file — re-run that
  * verification if @google/genai is upgraded, since this is a newer API surface.
@@ -54,6 +54,14 @@ export async function mintEphemeralToken(
 				model: LIVE_MODEL,
 				config: {
 					systemInstruction: { parts: [{ text: systemInstructions }] },
+					// Setting liveConnectConstraints at all locks the whole
+					// LiveConnectConfig for any session opened with this token — so
+					// every field the client-side session needs (audio output,
+					// both transcription streams) must be set here, not just left
+					// for the browser's own connect() call to add later.
+					responseModalities: [Modality.AUDIO],
+					inputAudioTranscription: {},
+					outputAudioTranscription: {},
 				},
 			},
 		},

@@ -49,7 +49,7 @@ export function ChatMessages({
 			className="chat-scroll flex max-h-[50vh] flex-col gap-2 overflow-y-auto px-1 py-2 lg:max-h-none lg:min-h-0 lg:flex-1"
 		>
 			{messages.map((message) => (
-				<ChatBubble key={message.id} role={message.role} text={message.text} />
+				<ChatBubble key={message.id} role={message.role} text={message.text} mode={message.mode} />
 			))}
 			{status === "sending" && (
 				<div className="flex justify-start">

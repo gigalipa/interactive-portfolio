@@ -8,6 +8,7 @@ const baseProps = {
 	voiceLabel: "Voice chat (coming soon)",
 	disabled: false,
 	onSend: vi.fn(),
+	onStartVoice: vi.fn(),
 };
 
 describe("ChatBox", () => {
@@ -44,8 +45,10 @@ describe("ChatBox", () => {
 		expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
 	});
 
-	it("renders a disabled voice button with the provided label", () => {
-		render(<ChatBox {...baseProps} />);
-		expect(screen.getByRole("button", { name: "Voice chat (coming soon)" })).toBeDisabled();
+	it("calls onStartVoice when the waves button is clicked", () => {
+		const onStartVoice = vi.fn();
+		render(<ChatBox {...baseProps} onStartVoice={onStartVoice} />);
+		fireEvent.click(screen.getByRole("button", { name: "Voice chat (coming soon)" }));
+		expect(onStartVoice).toHaveBeenCalledTimes(1);
 	});
 });

@@ -6,9 +6,17 @@ export interface ChatBoxProps {
 	voiceLabel: string;
 	disabled: boolean;
 	onSend: (text: string) => void;
+	onStartVoice: () => void;
 }
 
-export function ChatBox({ inputPlaceholder, sendLabel, voiceLabel, disabled, onSend }: ChatBoxProps) {
+export function ChatBox({
+	inputPlaceholder,
+	sendLabel,
+	voiceLabel,
+	disabled,
+	onSend,
+	onStartVoice,
+}: ChatBoxProps) {
 	const [value, setValue] = useState("");
 
 	const submit = () => {
@@ -28,10 +36,10 @@ export function ChatBox({ inputPlaceholder, sendLabel, voiceLabel, disabled, onS
 		<div className="border-slate-mist bg-deep-blue/40 shadow-glow-blue flex items-center gap-2 rounded-full border p-2 backdrop-blur-xl">
 			<button
 				type="button"
-				disabled
+				onClick={onStartVoice}
 				aria-label={voiceLabel}
 				title={voiceLabel}
-				className="border-slate-mist-strong text-ion/40 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border"
+				className="border-electric-blue/70 bg-electric-blue/15 text-ion shadow-glow-blue hover:bg-electric-blue/25 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border backdrop-blur-lg"
 			>
 				~
 			</button>

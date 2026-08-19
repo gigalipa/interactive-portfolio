@@ -32,4 +32,28 @@ describe("ChatBubble", () => {
 		render(<ChatBubble role="user" text="I like **bold** text" />);
 		expect(screen.getByText("I like **bold** text")).toBeInTheDocument();
 	});
+
+	it("renders a mic indicator when mode is voice", () => {
+		render(<ChatBubble role="user" text="Hi!" mode="voice" />);
+		expect(screen.getByTestId("chat-bubble-voice-indicator")).toBeInTheDocument();
+	});
+
+	it("does not render a mic indicator for a text message", () => {
+		render(<ChatBubble role="user" text="Hi!" />);
+		expect(screen.queryByTestId("chat-bubble-voice-indicator")).not.toBeInTheDocument();
+	});
+
+	it("applies voice-violet styling instead of the model color for a voice-tagged model bubble", () => {
+		render(<ChatBubble role="model" text="Hi!" mode="voice" />);
+		const bubble = screen.getByTestId("chat-bubble-model");
+		expect(bubble).toHaveClass("border-voice-violet/60");
+		expect(bubble).not.toHaveClass("border-electric-blue/60");
+	});
+
+	it("applies voice-violet styling instead of the visitor color for a voice-tagged user bubble", () => {
+		render(<ChatBubble role="user" text="Hi!" mode="voice" />);
+		const bubble = screen.getByTestId("chat-bubble-user");
+		expect(bubble).toHaveClass("border-voice-violet/60");
+		expect(bubble).not.toHaveClass("border-signal-cyan/60");
+	});
 });

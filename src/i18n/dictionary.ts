@@ -33,6 +33,11 @@ export interface Dictionary {
 		inputPlaceholder: string;
 		send: string;
 		voiceComingSoon: string;
+		voiceStart: string;
+		voiceEndCall: string;
+		voiceConnecting: string;
+		voiceErrorGeneric: string;
+		voiceMicDenied: string;
 		thinking: string;
 		errorGeneric: string;
 		errorRateLimited: string;

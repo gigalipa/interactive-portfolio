@@ -28,6 +28,7 @@
 	--color-electric-blue: #2f5cff;
 	--color-electric-blue-soft: #5b7bff;
 	--color-signal-cyan: #67e8f9;
+	--color-voice-violet: #a78bfa;
 	--color-ion: #eaf2ff;
 	--color-slate-mist: rgb(148 163 184 / 0.18);
 	--color-slate-mist-strong: rgb(148 163 184 / 0.32);
@@ -35,6 +36,7 @@
 	--shadow-glow-blue: 0 0 24px 2px rgb(47 92 255 / 0.35);
 	--shadow-glow-blue-lg: 0 0 48px 6px rgb(47 92 255 / 0.3);
 	--shadow-glow-cyan: 0 0 24px 2px rgb(103 232 249 / 0.35);
+	--shadow-glow-violet: 0 0 24px 2px rgb(167 139 250 / 0.35);
 }
 
 h1,

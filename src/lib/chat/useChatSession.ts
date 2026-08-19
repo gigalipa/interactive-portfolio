@@ -15,6 +15,7 @@ export interface DisplayMessage {
 	id: string;
 	role: "user" | "model";
 	text: string;
+	mode?: "voice";
 }
 
 export type ChatStatus = "idle" | "sending" | "streaming" | "error";
@@ -32,6 +33,10 @@ export interface UseChatSessionResult {
 	messages: DisplayMessage[];
 	status: ChatStatus;
 	errorMessage: string | null;
+	/** The currently active conversation, whether it was started by a text or
+	 * a voice turn — so a caller (ChatWidget) can hand it to a voice session
+	 * that starts mid-conversation and needs to continue it, not fork a new one. */
+	conversationId: string | undefined;
 	sendMessage: (text: string) => void;
 	retryLast: () => void;
 	conversations: ConversationSummary[];
@@ -41,6 +46,7 @@ export interface UseChatSessionResult {
 	selectConversation: (conversationId: string) => void;
 	deleteConversationById: (conversationId: string) => void;
 	startNewConversation: () => void;
+	appendVoiceTurn: (turn: { conversationId?: string; userText: string; modelText: string }) => void;
 }
 
 function toDisplayMessages(messages: ChatMessage[]): DisplayMessage[] {
@@ -48,6 +54,7 @@ function toDisplayMessages(messages: ChatMessage[]): DisplayMessage[] {
 		id: crypto.randomUUID(),
 		role: message.role,
 		text: message.text,
+		mode: message.mode,
 	}));
 }
 
@@ -263,6 +270,19 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 		setHistoryOpen(false);
 	}, []);
 
+	const appendVoiceTurn = useCallback(
+		(turn: { conversationId?: string; userText: string; modelText: string }) => {
+			if (turn.conversationId) setConversationId(turn.conversationId);
+			setMessages((prev) => [
+				...prev,
+				{ id: crypto.randomUUID(), role: "user", text: turn.userText, mode: "voice" },
+				{ id: crypto.randomUUID(), role: "model", text: turn.modelText, mode: "voice" },
+			]);
+			if (consent === "accepted") refreshHistory();
+		},
+		[consent, refreshHistory],
+	);
+
 	return {
 		consent,
 		acceptConsent,
@@ -270,6 +290,7 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 		messages,
 		status,
 		errorMessage,
+		conversationId,
 		sendMessage,
 		retryLast,
 		conversations,
@@ -279,5 +300,6 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 		selectConversation,
 		deleteConversationById,
 		startNewConversation,
+		appendVoiceTurn,
 	};
 }
