@@ -47,6 +47,16 @@ describe("Accordion", () => {
 		expect(header).toHaveAttribute("aria-expanded", "true");
 	});
 
+	it("starts expanded when defaultOpen is true", () => {
+		render(
+			<Accordion title="Projects" defaultOpen>
+				<p>Project list</p>
+			</Accordion>,
+		);
+		expect(screen.getByText("Project list")).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: "Projects" })).toHaveAttribute("aria-expanded", "true");
+	});
+
 	it("keeps two independent Accordion instances open/closed independently", () => {
 		render(
 			<>

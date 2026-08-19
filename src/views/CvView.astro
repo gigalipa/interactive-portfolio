@@ -19,16 +19,27 @@ interface Props {
 	lang: Locale;
 }
 
+function requireEnv(name: "NOTION_TOKEN" | "GOOGLE_API_KEY_LLM"): string {
+	const value = import.meta.env[name];
+	if (!value) throw new Error(`Missing required build-time env var: ${name}`);
+	return value;
+}
+
 const { lang } = Astro.props;
 const t = getDictionary(lang);
 
-const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
+const notion = new Client({ auth: requireEnv("NOTION_TOKEN") });
 const allEntries = await fetchKnowledgeBaseEntries(notion);
 const cvEntries = selectCvEntries(allEntries);
+if (cvEntries.length === 0) {
+	throw new Error(
+		"No CV-eligible Knowledge Base entries found (Status=Published, Content Type in the 5 relevant types). Check the Notion database, NOTION_KNOWLEDGE_BASE_DATA_SOURCE_ID, and Content Type/Status property values.",
+	);
+}
 
 const cache = loadTranslationCache();
 const localizedEntries = await translateForLocale(cvEntries, lang, {
-	apiKey: import.meta.env.GOOGLE_API_KEY_LLM,
+	apiKey: requireEnv("GOOGLE_API_KEY_LLM"),
 	cache,
 });
 saveTranslationCache(cache);
@@ -54,7 +65,7 @@ const sectionLabel: Record<CvSection, string> = {
 		<div class="flex flex-col gap-3">
 			{
 				CV_SECTIONS.map((section) => (
-					<Accordion title={sectionLabel[section]} client:load>
+					<Accordion title={sectionLabel[section]} defaultOpen={true} client:load>
 						{sections[section].length > 0 ? (
 							sections[section].map((entry) => (
 								<EntryCard

@@ -1,12 +1,13 @@
 ---
 import type { LocalizedEntry } from "../../lib/notion/translate";
+import type { Locale } from "../../i18n/locales";
 
 interface Props {
 	entry: LocalizedEntry;
 	chips: string[];
 	presentLabel: string;
 	viewProjectsLabel: string;
-	lang: string;
+	lang: Locale;
 }
 
 const { entry, chips, presentLabel, viewProjectsLabel, lang } = Astro.props;
@@ -24,7 +25,8 @@ const dateRange = dates?.start
 const metaLine = [entry.displayCategory, entry.displayLocation, dateRange].filter(Boolean).join(" · ");
 
 const techStack = entry.metadata.techStack ?? [];
-const allChips = [...chips, ...techStack];
+const skillChips = [...new Set(chips)];
+const techChips = [...new Set(techStack)].filter((chip) => !skillChips.includes(chip));
 
 const isProject = entry.contentType === "Project";
 ---
@@ -34,9 +36,20 @@ const isProject = entry.contentType === "Project";
 	{metaLine && <p class="text-signal-cyan/70 mt-1 font-mono text-xs">{metaLine}</p>}
 	{entry.displayDescription && <p class="font-body text-ion/80 mt-2 text-sm">{entry.displayDescription}</p>}
 	{
-		allChips.length > 0 && (
+		skillChips.length > 0 && (
 			<div class="mt-3 flex flex-wrap gap-1.5">
-				{allChips.map((chip) => (
+				{skillChips.map((chip) => (
+					<span class="border-slate-mist-strong text-ion/70 rounded-full border px-2 py-0.5 text-xs">
+						{chip}
+					</span>
+				))}
+			</div>
+		)
+	}
+	{
+		techChips.length > 0 && (
+			<div class="mt-1.5 flex flex-wrap gap-1.5">
+				{techChips.map((chip) => (
 					<span class="border-slate-mist-strong text-ion/70 rounded-full border px-2 py-0.5 text-xs">
 						{chip}
 					</span>

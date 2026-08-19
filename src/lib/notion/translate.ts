@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { localeLabels, type Locale } from "../../i18n/locales";
+import type { Locale } from "../../i18n/locales";
 import type { KnowledgeBaseEntry } from "./knowledgeBase";
 
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -12,6 +12,12 @@ const TARGET_LANGUAGE_NAME: Record<Locale, string> = {
 	es: "Spanish",
 	fr: "French",
 };
+
+/** Notion's `Language` select property values, keyed by our locale codes.
+ * Deliberately separate from `localeLabels` (the site's language-switcher UI
+ * labels) even though the values currently coincide — they serve different
+ * concerns and shouldn't be coupled by accident. */
+const NOTION_LANGUAGE_CODE: Record<Locale, string> = { en: "EN", es: "ES", fr: "FR" };
 
 export interface TranslatableFields {
 	title: string;
@@ -143,7 +149,7 @@ export async function translateForLocale(
 	options: { apiKey: string; cache: TranslationCache; fetchImpl?: FetchLike },
 ): Promise<LocalizedEntry[]> {
 	const { apiKey, cache, fetchImpl } = options;
-	const targetLanguageCode = localeLabels[targetLocale];
+	const targetLanguageCode = NOTION_LANGUAGE_CODE[targetLocale];
 
 	const results: LocalizedEntry[] = [];
 	for (const entry of entries) {
