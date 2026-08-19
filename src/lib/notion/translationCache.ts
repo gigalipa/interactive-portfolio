@@ -27,6 +27,18 @@ export function loadTranslationCache(): TranslationCache {
 	}
 }
 
+/** Best-effort: never throws. Persisting the cache only works when `astro
+ * build` runs directly in Node against a real checkout (e.g. locally) — the
+ * committed result is what CI/Cloudflare Pages builds read. On Cloudflare
+ * Workers Builds specifically, prerendering runs inside the built Worker's
+ * own sandbox (rooted at a virtual `/bundle/`, not the actual repo checkout),
+ * which has no `src/` tree to write back to at all — CACHE_PATH is
+ * unreachable there by construction, not just empty. Swallowing that failure
+ * here keeps it a build-speed optimization instead of a build-breaking one. */
 export function saveTranslationCache(cache: TranslationCache): void {
-	writeFileSync(CACHE_PATH, `${JSON.stringify(cache, null, "\t")}\n`, "utf-8");
+	try {
+		writeFileSync(CACHE_PATH, `${JSON.stringify(cache, null, "\t")}\n`, "utf-8");
+	} catch (error) {
+		console.warn(`Could not persist the CV translation cache (non-fatal): ${String(error)}`);
+	}
 }
