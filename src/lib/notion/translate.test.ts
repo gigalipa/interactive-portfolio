@@ -156,6 +156,47 @@ describe("translateFields", () => {
 		expect(result.title).toBe("C");
 	});
 
+	it("falls through to the next model when a fetch throws (network error/timeout)", async () => {
+		const ok = {
+			ok: true,
+			status: 200,
+			json: async () => ({
+				candidates: [
+					{ content: { parts: [{ text: JSON.stringify({ title: "D", category: "", location: "", description: "" }) }] } },
+				],
+			}),
+			text: async () => "",
+		};
+		const fetchImpl = vi.fn().mockRejectedValueOnce(new Error("fetch failed")).mockResolvedValueOnce(ok);
+
+		const result = await translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
+			apiKey: "key",
+			fetchImpl,
+		});
+
+		expect(fetchImpl).toHaveBeenCalledTimes(2);
+		expect(result.title).toBe("D");
+	});
+
+	it("throws the last network error if every model fails with a thrown error on both passes", async () => {
+		vi.useFakeTimers();
+		try {
+			const fetchImpl = vi.fn().mockRejectedValue(new Error("fetch failed: Headers Timeout Error"));
+
+			const promise = translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
+				apiKey: "key",
+				fetchImpl,
+			});
+			const assertion = expect(promise).rejects.toThrow("Headers Timeout Error");
+			await vi.runAllTimersAsync();
+			await assertion;
+
+			expect(fetchImpl).toHaveBeenCalledTimes(6);
+		} finally {
+			vi.useRealTimers();
+		}
+	});
+
 	it("waits and retries the whole chain once if every model is rate-limited, then succeeds", async () => {
 		vi.useFakeTimers();
 		try {

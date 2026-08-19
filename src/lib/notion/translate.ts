@@ -82,37 +82,72 @@ function sleep(ms: number): Promise<void> {
 // through the chain for — neither means the request itself was bad.
 const RETRYABLE_STATUSES = new Set([429, 503]);
 
-/** Tries each model in MODEL_FALLBACK_CHAIN in order, moving to the next only
- * on a retryable status (429/503) — any other failure returns immediately so
- * the caller's existing error handling applies. If every model in the chain
- * is still retryable in the same pass, waits RATE_LIMIT_COOLDOWN_MS and runs
- * the whole chain again once more before giving up (returning the last
- * response, which the caller turns into a hard failure). */
+// A stalled connection can otherwise hang for undici's ~5-minute default
+// headers timeout per attempt — with up to 6 attempts across the chain and
+// cooldown, that risks eating the whole build's time budget. Fail an
+// individual attempt fast instead so the chain/cooldown logic actually gets
+// to run.
+const REQUEST_TIMEOUT_MS = 30_000;
+
+async function fetchWithTimeout(
+	url: string,
+	init: RequestInit,
+	fetchImpl: FetchLike,
+): ReturnType<FetchLike> {
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+	try {
+		return await fetchImpl(url, { ...init, signal: controller.signal });
+	} finally {
+		clearTimeout(timeout);
+	}
+}
+
+/** Tries each model in MODEL_FALLBACK_CHAIN in order, moving to the next on
+ * a retryable status (429/503) OR a thrown network error (timeout, DNS
+ * failure, connection reset, etc. — a stalled fetch is just as much a
+ * transient failure as a 429, and skipping the chain entirely for it would
+ * defeat the point) — any other failure response returns immediately so the
+ * caller's existing error handling applies. If every model in the chain is
+ * still failing in the same pass, waits RATE_LIMIT_COOLDOWN_MS and runs the
+ * whole chain again once more before giving up: returns the last response if
+ * there was one, otherwise re-throws the last network error — the caller
+ * turns either into a hard failure. */
 async function callWithModelFallback(
 	requestBody: unknown,
 	apiKey: string,
 	fetchImpl: FetchLike,
 ): ReturnType<FetchLike> {
 	let lastResponse: Awaited<ReturnType<FetchLike>> | undefined;
+	let lastError: unknown;
 
 	for (let attempt = 0; attempt < MAX_CHAIN_ATTEMPTS; attempt++) {
 		for (const model of MODEL_FALLBACK_CHAIN) {
-			const response = await fetchImpl(`${API_BASE}/${model}:generateContent?key=${apiKey}`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(requestBody),
-			});
-			if (!RETRYABLE_STATUSES.has(response.status)) return response;
-			lastResponse = response;
+			try {
+				const response = await fetchWithTimeout(
+					`${API_BASE}/${model}:generateContent?key=${apiKey}`,
+					{
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(requestBody),
+					},
+					fetchImpl,
+				);
+				if (!RETRYABLE_STATUSES.has(response.status)) return response;
+				lastResponse = response;
+				lastError = undefined;
+			} catch (error) {
+				lastError = error;
+				lastResponse = undefined;
+			}
 		}
 		if (attempt < MAX_CHAIN_ATTEMPTS - 1) {
 			await sleep(RATE_LIMIT_COOLDOWN_MS);
 		}
 	}
 
-	// TypeScript can't see the loop always assigns lastResponse at least once
-	// (MODEL_FALLBACK_CHAIN and MAX_CHAIN_ATTEMPTS are both non-empty).
-	return lastResponse as Awaited<ReturnType<FetchLike>>;
+	if (lastResponse) return lastResponse;
+	throw lastError instanceof Error ? lastError : new Error(String(lastError));
 }
 
 function isTranslatableFields(value: unknown): value is TranslatableFields {
