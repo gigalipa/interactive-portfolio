@@ -14,9 +14,18 @@ export interface Dictionary {
 		tagline: string;
 	};
 	cv: {
-		phase: string;
 		title: string;
-		body: string;
+		tagline: string;
+		summary: string;
+		sections: {
+			professionalExperience: string;
+			projects: string;
+			academicExperience: string;
+			personalInterests: string;
+		};
+		viewProjects: string;
+		present: string;
+		emptySection: string;
 	};
 	portfolio: {
 		phase: string;

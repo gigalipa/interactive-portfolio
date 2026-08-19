@@ -16,9 +16,19 @@ export default {
 		tagline: "Ask me anything about my work, background, or projects.",
 	},
 	cv: {
-		phase: "Phase 5",
 		title: "CV",
-		body: "Overview and accordion sections (experience, projects, academics, interests) land here.",
+		tagline: "AI & Automation Engineer | Project Manager | Specialized in LLM Pipelines (n8n), NLP & Machine Learning",
+		summary:
+			"Junior AI & ML Engineer with a strong engineering foundation and hands-on experience architecting generative AI solutions, multi-model AI agents, and automated business workflows. Proficient in Python, custom REST APIs, LLM routing (Claude, Gemini, Llama, Hugging Face, EvoLink API), orchestration platforms (n8n, Docker), vector databases (pgvector, ChromaDB), and predictive ML dashboards. Proven track record of turning complex technical concepts into clear business solutions, delivering rapid proofs of concept, and managing automated productivity workflows via CLI tools and MCPs.",
+		sections: {
+			professionalExperience: "Professional Experience",
+			projects: "Projects",
+			academicExperience: "Academic Experience & Certifications",
+			personalInterests: "Personal Interests & Background",
+		},
+		viewProjects: "View my projects",
+		present: "Present",
+		emptySection: "Nothing published here yet.",
 	},
 	portfolio: {
 		phase: "Phase 6",

@@ -16,9 +16,20 @@ export default {
 		tagline: "Pregúntame lo que quieras sobre mi trabajo, trayectoria o proyectos.",
 	},
 	cv: {
-		phase: "Fase 5",
 		title: "CV",
-		body: "Aquí llegarán el resumen y las secciones desplegables (experiencia, proyectos, formación, intereses).",
+		tagline:
+			"Ingeniero de IA y Automatización | Project Manager | Especializado en Pipelines de LLM (n8n), PLN y Machine Learning",
+		summary:
+			"Ingeniero Junior de IA y Machine Learning con una sólida base en ingeniería y experiencia práctica diseñando soluciones de IA generativa, agentes de IA multi-modelo y flujos de trabajo empresariales automatizados. Dominio de Python, APIs REST personalizadas, enrutamiento de LLMs (Claude, Gemini, Llama, Hugging Face, EvoLink API), plataformas de orquestación (n8n, Docker), bases de datos vectoriales (pgvector, ChromaDB) y paneles predictivos de ML. Historial comprobado de traducir conceptos técnicos complejos en soluciones de negocio claras, entregar pruebas de concepto (PoC) rápidas y gestionar flujos de productividad automatizados mediante herramientas de línea de comandos y MCPs.",
+		sections: {
+			professionalExperience: "Experiencia Profesional",
+			projects: "Proyectos",
+			academicExperience: "Formación Académica y Certificaciones",
+			personalInterests: "Intereses Personales y Trayectoria",
+		},
+		viewProjects: "Ver mis proyectos",
+		present: "Presente",
+		emptySection: "Aún no hay contenido publicado aquí.",
 	},
 	portfolio: {
 		phase: "Fase 6",
