@@ -8,6 +8,9 @@ import { GoogleGenAI, Modality } from "@google/genai";
  * in src/lib/rag/chat.ts and the SDK's own examples). */
 export const LIVE_MODEL = "gemini-2.5-flash-native-audio-latest";
 
+// Picked by Daniel to match his own voice more closely than the API default.
+const VOICE_NAME = "Umbriel";
+
 const TOKEN_TTL_MINUTES = 30;
 // Per the SDK's field semantics, newSessionExpireTime is the deadline to
 // *start* a session with this token — the Google-documented pattern keeps
@@ -62,6 +65,9 @@ export async function mintEphemeralToken(
 					responseModalities: [Modality.AUDIO],
 					inputAudioTranscription: {},
 					outputAudioTranscription: {},
+					speechConfig: {
+						voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICE_NAME } },
+					},
 				},
 			},
 		},
