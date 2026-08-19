@@ -89,6 +89,105 @@ describe("translateFields", () => {
 			}),
 		).rejects.toThrow("not valid TranslatableFields JSON");
 	});
+
+	it("falls through to the next model in the chain on a 429", async () => {
+		const rateLimited = { ok: false, status: 429, json: async () => ({}), text: async () => "rate limited" };
+		const ok = {
+			ok: true,
+			status: 200,
+			json: async () => ({
+				candidates: [
+					{
+						content: {
+							parts: [
+								{
+									text: JSON.stringify({
+										title: "Software Engineer",
+										category: "",
+										location: "",
+										description: "",
+									}),
+								},
+							],
+						},
+					},
+				],
+			}),
+			text: async () => "",
+		};
+		const fetchImpl = vi.fn().mockResolvedValueOnce(rateLimited).mockResolvedValueOnce(ok);
+
+		const result = await translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
+			apiKey: "key",
+			fetchImpl,
+		});
+
+		expect(fetchImpl).toHaveBeenCalledTimes(2);
+		expect(fetchImpl.mock.calls[0][0]).toContain("gemini-flash-lite-latest");
+		expect(fetchImpl.mock.calls[1][0]).toContain("gemini-3.1-flash-lite");
+		expect(result.title).toBe("Software Engineer");
+	});
+
+	it("waits and retries the whole chain once if every model is rate-limited, then succeeds", async () => {
+		vi.useFakeTimers();
+		try {
+			const rateLimited = { ok: false, status: 429, json: async () => ({}), text: async () => "rate limited" };
+			const ok = {
+				ok: true,
+				status: 200,
+				json: async () => ({
+					candidates: [
+						{ content: { parts: [{ text: JSON.stringify({ title: "B", category: "", location: "", description: "" }) }] } },
+					],
+				}),
+				text: async () => "",
+			};
+			// All 3 models 429 on the first pass, then the first model succeeds on the retry pass.
+			const fetchImpl = vi
+				.fn()
+				.mockResolvedValueOnce(rateLimited)
+				.mockResolvedValueOnce(rateLimited)
+				.mockResolvedValueOnce(rateLimited)
+				.mockResolvedValueOnce(ok);
+
+			const promise = translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
+				apiKey: "key",
+				fetchImpl,
+			});
+			await vi.runAllTimersAsync();
+			const result = await promise;
+
+			expect(fetchImpl).toHaveBeenCalledTimes(4);
+			expect(result.title).toBe("B");
+		} finally {
+			vi.useRealTimers();
+		}
+	});
+
+	it("throws with the last 429 response if every model is rate-limited on both passes", async () => {
+		vi.useFakeTimers();
+		try {
+			const rateLimited = {
+				ok: false,
+				status: 429,
+				json: async () => ({}),
+				text: async () => "still rate limited",
+			};
+			const fetchImpl = vi.fn().mockResolvedValue(rateLimited);
+
+			const promise = translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
+				apiKey: "key",
+				fetchImpl,
+			});
+			const assertion = expect(promise).rejects.toThrow("Translation request failed (429)");
+			await vi.runAllTimersAsync();
+			await assertion;
+
+			expect(fetchImpl).toHaveBeenCalledTimes(6);
+		} finally {
+			vi.useRealTimers();
+		}
+	});
 });
 
 describe("translateForLocale", () => {

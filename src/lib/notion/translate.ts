@@ -4,8 +4,18 @@ import type { KnowledgeBaseEntry } from "./knowledgeBase";
 
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const TRANSLATE_MODEL = "gemini-flash-lite-latest";
-const MAX_RETRIES = 3;
-const BASE_RETRY_DELAY_MS = 5_000;
+// The Gemini free tier's per-model RPM/TPM quota is shared per project, not
+// per call site — a modest Knowledge Base can still trip it during a single
+// build's worth of translation calls. Each model in this chain draws from a
+// separate quota bucket, so falling through it spreads the same work across
+// three independent limits before we ever need to wait one out.
+const MODEL_FALLBACK_CHAIN = [TRANSLATE_MODEL, "gemini-3.1-flash-lite", "gemini-3.5-flash-lite"];
+// If every model in the chain is rate-limited in the same pass, the whole
+// project's free-tier quota is exhausted, not just one model's — waiting
+// lets the per-minute window reset. One retry (two attempts total) after
+// that wait, then hard-fail per the module's existing no-silent-fallback rule.
+const RATE_LIMIT_COOLDOWN_MS = 60_000;
+const MAX_CHAIN_ATTEMPTS = 2;
 
 const TARGET_LANGUAGE_NAME: Record<Locale, string> = {
 	en: "English",
@@ -67,16 +77,37 @@ function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchWithRetry(
-	url: string,
-	init: RequestInit,
+/** Tries each model in MODEL_FALLBACK_CHAIN in order, moving to the next only
+ * on a 429 (rate limit) — any other failure returns immediately so the
+ * caller's existing error handling applies. If every model in the chain is
+ * 429'd in the same pass, waits RATE_LIMIT_COOLDOWN_MS and runs the whole
+ * chain again once more before giving up (returning the last response, which
+ * the caller turns into a hard failure). */
+async function callWithModelFallback(
+	requestBody: unknown,
+	apiKey: string,
 	fetchImpl: FetchLike,
 ): ReturnType<FetchLike> {
-	for (let attempt = 0; ; attempt++) {
-		const response = await fetchImpl(url, init);
-		if (response.status !== 429 || attempt >= MAX_RETRIES) return response;
-		await sleep(BASE_RETRY_DELAY_MS * 2 ** attempt);
+	let lastResponse: Awaited<ReturnType<FetchLike>> | undefined;
+
+	for (let attempt = 0; attempt < MAX_CHAIN_ATTEMPTS; attempt++) {
+		for (const model of MODEL_FALLBACK_CHAIN) {
+			const response = await fetchImpl(`${API_BASE}/${model}:generateContent?key=${apiKey}`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(requestBody),
+			});
+			if (response.status !== 429) return response;
+			lastResponse = response;
+		}
+		if (attempt < MAX_CHAIN_ATTEMPTS - 1) {
+			await sleep(RATE_LIMIT_COOLDOWN_MS);
+		}
 	}
+
+	// TypeScript can't see the loop always assigns lastResponse at least once
+	// (MODEL_FALLBACK_CHAIN and MAX_CHAIN_ATTEMPTS are both non-empty).
+	return lastResponse as Awaited<ReturnType<FetchLike>>;
 }
 
 function isTranslatableFields(value: unknown): value is TranslatableFields {
@@ -100,25 +131,21 @@ export async function translateFields(
 ): Promise<TranslatableFields> {
 	const { apiKey, fetchImpl = fetch as unknown as FetchLike } = options;
 
-	const response = await fetchWithRetry(
-		`${API_BASE}/${TRANSLATE_MODEL}:generateContent?key=${apiKey}`,
+	const response = await callWithModelFallback(
 		{
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				contents: [
-					{
-						role: "user",
-						parts: [
-							{
-								text: `Translate the following JSON object's string values into ${TARGET_LANGUAGE_NAME[targetLocale]}. Keep the same keys. Preserve a professional CV tone. Return ONLY the translated JSON object, no other text.\n\n${JSON.stringify(fields)}`,
-							},
-						],
-					},
-				],
-				generationConfig: { responseMimeType: "application/json" },
-			}),
+			contents: [
+				{
+					role: "user",
+					parts: [
+						{
+							text: `Translate the following JSON object's string values into ${TARGET_LANGUAGE_NAME[targetLocale]}. Keep the same keys. Preserve a professional CV tone. Return ONLY the translated JSON object, no other text.\n\n${JSON.stringify(fields)}`,
+						},
+					],
+				},
+			],
+			generationConfig: { responseMimeType: "application/json" },
 		},
+		apiKey,
 		fetchImpl,
 	);
 
