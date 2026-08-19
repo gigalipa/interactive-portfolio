@@ -176,12 +176,12 @@ Per prior decision: stock Gemini Live API voice, not a cloned voice — keeps la
 
 ## Phase 5 — CV Page
 
-- [ ] Quick-overview header section
-- [ ] Accordion component (glass-styled, consistent with design system)
-- [ ] Sections: Professional Experience, Projects (linking into Portfolio page detail routes), Academic Experience & Certifications, Other Experience, Personal Interests & Background
-- [ ] Populate content by querying the Notion Knowledge Base (`Status = Published`, `Content Type` in Professional Experience / Academic Experience / Skill / Personal Interest) — same source of truth as the RAG pipeline (Phase 2.2), fetched at build time and rendered directly (not just embedded)
-- [ ] Translate content for EN/ES/FR
-- [ ] Optional: downloadable PDF version of the CV
+- [x] Quick-overview header section — name, LinkedIn-style tagline, and summary, hand-written in the i18n dictionaries (EN/ES/FR)
+- [x] Accordion component (glass-styled, consistent with design system) — each of the 4 sections is an independent React island, defaulting open (crawler/no-JS friendly)
+- [x] Sections: Professional Experience, Projects (linking to the Portfolio index page — detail routes deferred to Phase 6), Academic Experience & Certifications, Personal Interests & Background — "Other Experience" folded into Personal Interests & Background per Daniel's call (no content needs it); Skill-type entries render as relation-derived chip pills on other entries instead of their own section
+- [x] Populate content by querying the Notion Knowledge Base (`Status = Published`, `Content Type` in Professional Experience / Project / Academic Experience / Personal Interest / Skill) — **resolved differently than originally scoped**: live in-build Notion/Gemini fetching kept breaking Cloudflare production builds (env var visibility, rate limits, an unconfigurable outer prerender timeout at 145 entries). Moved to a local sync script (`pnpm cv:sync`, `scripts/sync-cv.ts`, mirroring `scripts/ingest.ts`) that writes a committed `src/lib/cv/content.json`; the build only ever reads that static file. The CV updates when someone re-runs the sync script and commits, not automatically on every deploy.
+- [x] Translate content for EN/ES/FR — Gemini (`gemma-4-26b-a4b-it` primary, Gemini flash-lite models as fallback tiers), cached by content hash in `src/lib/notion/.cv-translation-cache.json`, run from the sync script
+- [ ] Optional: downloadable PDF version of the CV — deferred (confirmed with Daniel)
 
 ---
 
