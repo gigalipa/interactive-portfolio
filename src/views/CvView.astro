@@ -1,7 +1,19 @@
 ---
+import { Client } from "@notionhq/client";
 import Layout from "../layouts/Layout.astro";
-import GlassPanel from "../components/ui/GlassPanel.astro";
+import { Accordion } from "../components/cv/Accordion";
+import EntryCard from "../components/cv/EntryCard.astro";
 import { getDictionary, type Locale } from "../i18n";
+import { fetchKnowledgeBaseEntries } from "../lib/notion/knowledgeBase";
+import { translateForLocale } from "../lib/notion/translate";
+import { loadTranslationCache, saveTranslationCache } from "../lib/notion/translationCache";
+import {
+	CV_SECTIONS,
+	groupBySection,
+	selectCvEntries,
+	skillChipsFor,
+	type CvSection,
+} from "../lib/cv/groupEntries";
 
 interface Props {
 	lang: Locale;
@@ -9,24 +21,56 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = getDictionary(lang);
+
+const notion = new Client({ auth: import.meta.env.NOTION_TOKEN });
+const allEntries = await fetchKnowledgeBaseEntries(notion);
+const cvEntries = selectCvEntries(allEntries);
+
+const cache = loadTranslationCache();
+const localizedEntries = await translateForLocale(cvEntries, lang, {
+	apiKey: import.meta.env.GOOGLE_API_KEY_LLM,
+	cache,
+});
+saveTranslationCache(cache);
+
+const sections = groupBySection(localizedEntries);
+
+const sectionLabel: Record<CvSection, string> = {
+	"Professional Experience": t.cv.sections.professionalExperience,
+	Projects: t.cv.sections.projects,
+	"Academic Experience & Certifications": t.cv.sections.academicExperience,
+	"Personal Interests & Background": t.cv.sections.personalInterests,
+};
 ---
 
-<Layout
-	title={`${t.cv.title} — Daniel Peraza`}
-	description={t.meta.description}
-	lang={lang}
->
-	<main class="flex min-h-screen items-center justify-center px-6 py-24">
-		<GlassPanel class="max-w-lg p-8 text-center" glow="blue">
-			<p
-				class="text-signal-cyan/80 font-mono text-xs tracking-[0.2em] uppercase"
-			>
-				{t.cv.phase}
-			</p>
-			<h1 class="font-display text-ion mt-3 text-2xl font-semibold">
-				{t.cv.title}
-			</h1>
-			<p class="font-body text-ion/70 mt-3 text-sm">{t.cv.body}</p>
-		</GlassPanel>
+<Layout title={`${t.cv.title} — Daniel Peraza`} description={t.meta.description} lang={lang}>
+	<main class="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-24">
+		<header class="text-center">
+			<h1 class="font-display text-ion text-3xl font-semibold">Daniel Peraza</h1>
+			<p class="text-signal-cyan mt-2 text-sm">{t.cv.tagline}</p>
+			<p class="font-body text-ion/70 mx-auto mt-4 max-w-xl text-sm">{t.cv.summary}</p>
+		</header>
+
+		<div class="flex flex-col gap-3">
+			{
+				CV_SECTIONS.map((section) => (
+					<Accordion title={sectionLabel[section]} client:load>
+						{sections[section].length > 0 ? (
+							sections[section].map((entry) => (
+								<EntryCard
+									entry={entry}
+									chips={skillChipsFor(entry, localizedEntries)}
+									presentLabel={t.cv.present}
+									viewProjectsLabel={t.cv.viewProjects}
+									lang={lang}
+								/>
+							))
+						) : (
+							<p class="text-ion/60 text-sm">{t.cv.emptySection}</p>
+						)}
+					</Accordion>
+				))
+			}
+		</div>
 	</main>
 </Layout>
