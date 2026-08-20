@@ -1,1 +1,197 @@
-{}
+{
+	"en": [
+		{
+			"pageId": "3b31eda9-f282-8101-a1ae-f02f86488a69",
+			"title": "Language Quest AI Widget",
+			"summary": "An AI-powered \"spellbook\" widget embedded in a Notion language-learning dashboard, giving contextual word/phrase explanations, corrections, and activity ideas via a secured Google Gemini API proxy.",
+			"description": "I built an embeddable Notion micro-widget (\"Grimorio IA\" / AI Spellbook) for Language Quest, a fantasy-RPG-themed gamified language-learning dashboard my wife Yennifer Abreu designed. It lets users query a word or phrase in a target language and get a contextual explanation adapted to their native language, plus text correction and activity suggestions, powered by the Google AI Studio (Gemini) API behind a secure serverless proxy I built to keep the API key off the client.",
+			"contentType": "Project",
+			"tags": [
+				"ai",
+				"web-dev"
+			],
+			"priority": 4,
+			"status": "Published",
+			"language": "EN",
+			"relatedTo": [],
+			"metadata": {},
+			"displayTitle": "Language Quest AI Widget",
+			"displayCategory": "",
+			"displayLocation": "",
+			"displayDescription": "I built an embeddable Notion micro-widget (\"Grimorio IA\" / AI Spellbook) for Language Quest, a fantasy-RPG-themed gamified language-learning dashboard my wife Yennifer Abreu designed. It lets users query a word or phrase in a target language and get a contextual explanation adapted to their native language, plus text correction and activity suggestions, powered by the Google AI Studio (Gemini) API behind a secure serverless proxy I built to keep the API key off the client.",
+			"slug": "language-quest-ai-widget"
+		},
+		{
+			"pageId": "3b31eda9-f282-80f4-80ac-dc99f9e15da7",
+			"title": "Asset Foundry",
+			"summary": "Multi-agent AI publishing pipeline (n8n + hybrid LLMs) that autonomously researches, writes, edits, and markets self-help books, already generating royalties on Amazon KDP.",
+			"description": "Fully automated digital publishing house that generates, edits, and markets self-help books via an n8n multi-agent LLM pipeline, plus a RAG chatbot (Archie) that recommends or generates ultra-personalized books on demand.",
+			"contentType": "Project",
+			"tags": [
+				"ai",
+				"data-science"
+			],
+			"priority": 5,
+			"status": "Published",
+			"language": "EN",
+			"relatedTo": [],
+			"metadata": {
+				"category": "AI Automation",
+				"dates": {
+					"start": "2026-04-30",
+					"ongoing": true
+				},
+				"techStack": [
+					"n8n",
+					"Gemini 3.5 Flash",
+					"Gemini 3.5 Flash Lite",
+					"Gemma 4",
+					"Llama (Groq API)",
+					"GPT-4o image (EvoLink)",
+					"TTS",
+					"Vector DB",
+					"Relational DB",
+					"Google Drive API",
+					"RAG",
+					"Embeddings",
+					"Pydantic"
+				]
+			},
+			"displayTitle": "Asset Foundry",
+			"displayCategory": "AI Automation",
+			"displayLocation": "",
+			"displayDescription": "Fully automated digital publishing house that generates, edits, and markets self-help books via an n8n multi-agent LLM pipeline, plus a RAG chatbot (Archie) that recommends or generates ultra-personalized books on demand.",
+			"slug": "asset-foundry"
+		}
+	],
+	"es": [
+		{
+			"pageId": "3b31eda9-f282-8101-a1ae-f02f86488a69",
+			"title": "Language Quest AI Widget",
+			"summary": "An AI-powered \"spellbook\" widget embedded in a Notion language-learning dashboard, giving contextual word/phrase explanations, corrections, and activity ideas via a secured Google Gemini API proxy.",
+			"description": "I built an embeddable Notion micro-widget (\"Grimorio IA\" / AI Spellbook) for Language Quest, a fantasy-RPG-themed gamified language-learning dashboard my wife Yennifer Abreu designed. It lets users query a word or phrase in a target language and get a contextual explanation adapted to their native language, plus text correction and activity suggestions, powered by the Google AI Studio (Gemini) API behind a secure serverless proxy I built to keep the API key off the client.",
+			"contentType": "Project",
+			"tags": [
+				"ai",
+				"web-dev"
+			],
+			"priority": 4,
+			"status": "Published",
+			"language": "EN",
+			"relatedTo": [],
+			"metadata": {},
+			"displayTitle": "Widget de IA de Language Quest",
+			"displayCategory": "",
+			"displayLocation": "",
+			"displayDescription": "Desarrollé un micro-widget integrable en Notion (\"Grimorio IA\" / AI Spellbook) para Language Quest, una plataforma de aprendizaje de idiomas gamificada con temática de RPG de fantasía diseñada por Yennifer Abreu. La herramienta permite a los usuarios consultar palabras o frases en un idioma objetivo para obtener explicaciones contextuales adaptadas a su lengua materna, además de corrección de texto y sugerencias de actividades. El sistema está impulsado por la API de Google AI Studio (Gemini) mediante un proxy serverless seguro que implementé para proteger la clave de la API del lado del cliente.",
+			"slug": "language-quest-ai-widget"
+		},
+		{
+			"pageId": "3b31eda9-f282-80f4-80ac-dc99f9e15da7",
+			"title": "Asset Foundry",
+			"summary": "Multi-agent AI publishing pipeline (n8n + hybrid LLMs) that autonomously researches, writes, edits, and markets self-help books, already generating royalties on Amazon KDP.",
+			"description": "Fully automated digital publishing house that generates, edits, and markets self-help books via an n8n multi-agent LLM pipeline, plus a RAG chatbot (Archie) that recommends or generates ultra-personalized books on demand.",
+			"contentType": "Project",
+			"tags": [
+				"ai",
+				"data-science"
+			],
+			"priority": 5,
+			"status": "Published",
+			"language": "EN",
+			"relatedTo": [],
+			"metadata": {
+				"category": "AI Automation",
+				"dates": {
+					"start": "2026-04-30",
+					"ongoing": true
+				},
+				"techStack": [
+					"n8n",
+					"Gemini 3.5 Flash",
+					"Gemini 3.5 Flash Lite",
+					"Gemma 4",
+					"Llama (Groq API)",
+					"GPT-4o image (EvoLink)",
+					"TTS",
+					"Vector DB",
+					"Relational DB",
+					"Google Drive API",
+					"RAG",
+					"Embeddings",
+					"Pydantic"
+				]
+			},
+			"displayTitle": "Asset Foundry",
+			"displayCategory": "Automatización de IA",
+			"displayLocation": "",
+			"displayDescription": "Editorial digital totalmente automatizada que genera, edita y comercializa libros de autoayuda mediante un pipeline de LLM multiagente en n8n, además de un chatbot RAG (Archie) que recomienda o genera libros ultra-personalizados bajo demanda.",
+			"slug": "asset-foundry"
+		}
+	],
+	"fr": [
+		{
+			"pageId": "3b31eda9-f282-8101-a1ae-f02f86488a69",
+			"title": "Language Quest AI Widget",
+			"summary": "An AI-powered \"spellbook\" widget embedded in a Notion language-learning dashboard, giving contextual word/phrase explanations, corrections, and activity ideas via a secured Google Gemini API proxy.",
+			"description": "I built an embeddable Notion micro-widget (\"Grimorio IA\" / AI Spellbook) for Language Quest, a fantasy-RPG-themed gamified language-learning dashboard my wife Yennifer Abreu designed. It lets users query a word or phrase in a target language and get a contextual explanation adapted to their native language, plus text correction and activity suggestions, powered by the Google AI Studio (Gemini) API behind a secure serverless proxy I built to keep the API key off the client.",
+			"contentType": "Project",
+			"tags": [
+				"ai",
+				"web-dev"
+			],
+			"priority": 4,
+			"status": "Published",
+			"language": "EN",
+			"relatedTo": [],
+			"metadata": {},
+			"displayTitle": "Widget AI Language Quest",
+			"displayCategory": "",
+			"displayLocation": "",
+			"displayDescription": "J'ai conçu un micro-widget Notion intégrable (« Grimorio IA » / Livre de sorts IA) pour Language Quest, un tableau de bord d'apprentissage des langues gamifié sur le thème du RPG fantastique, conçu par mon épouse Yennifer Abreu. Cet outil permet aux utilisateurs d'interroger un mot ou une phrase dans une langue cible et d'obtenir une explication contextuelle adaptée à leur langue maternelle, ainsi que des corrections de texte et des suggestions d'activités, alimenté par l'API Google AI Studio (Gemini) via un proxy sans serveur sécurisé que j'ai développé pour maintenir la clé API hors du client.",
+			"slug": "language-quest-ai-widget"
+		},
+		{
+			"pageId": "3b31eda9-f282-80f4-80ac-dc99f9e15da7",
+			"title": "Asset Foundry",
+			"summary": "Multi-agent AI publishing pipeline (n8n + hybrid LLMs) that autonomously researches, writes, edits, and markets self-help books, already generating royalties on Amazon KDP.",
+			"description": "Fully automated digital publishing house that generates, edits, and markets self-help books via an n8n multi-agent LLM pipeline, plus a RAG chatbot (Archie) that recommends or generates ultra-personalized books on demand.",
+			"contentType": "Project",
+			"tags": [
+				"ai",
+				"data-science"
+			],
+			"priority": 5,
+			"status": "Published",
+			"language": "EN",
+			"relatedTo": [],
+			"metadata": {
+				"category": "AI Automation",
+				"dates": {
+					"start": "2026-04-30",
+					"ongoing": true
+				},
+				"techStack": [
+					"n8n",
+					"Gemini 3.5 Flash",
+					"Gemini 3.5 Flash Lite",
+					"Gemma 4",
+					"Llama (Groq API)",
+					"GPT-4o image (EvoLink)",
+					"TTS",
+					"Vector DB",
+					"Relational DB",
+					"Google Drive API",
+					"RAG",
+					"Embeddings",
+					"Pydantic"
+				]
+			},
+			"displayTitle": "Asset Foundry",
+			"displayCategory": "Automatisation par l'IA",
+			"displayLocation": "",
+			"displayDescription": "Maison d'édition numérique entièrement automatisée qui génère, édite et commercialise des ouvrages de développement personnel via un pipeline LLM multi-agents n8n, incluant un chatbot RAG (Archie) capable de recommander ou de générer des livres ultra-personnalisés à la demande.",
+			"slug": "asset-foundry"
+		}
+	]
+}
