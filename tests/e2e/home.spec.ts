@@ -30,5 +30,5 @@ test("language switcher preserves the current route", async ({ page }) => {
 	await page.goto("/en/cv");
 	await page.click("summary");
 	await page.getByRole("link", { name: "ES" }).click();
-	await expect(page).toHaveURL(/\/es\/cv$/);
+	await expect(page).toHaveURL(/\/es\/cv\/?$/);
 });

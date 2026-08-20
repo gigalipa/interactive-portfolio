@@ -66,6 +66,12 @@ test.describe("live model round-trips", () => {
 		({ browserName }) => browserName !== "chromium",
 		"The live-model quota only stretches to one browser project.",
 	);
+	// CI's `astro preview` has no .dev.vars (gitignored, never written there), so
+	// GOOGLE_API_KEY_EMB/_LLM and the Chroma credentials are unset and every real
+	// Gemini call 400s. Real coverage of this path only happens locally, against
+	// real credentials — skip it in CI rather than burn free-tier quota on a test
+	// that can never pass there.
+	test.skip(!!process.env.CI, "Requires real Gemini/Chroma credentials, not available in CI.");
 
 	test.beforeEach(async () => {
 		await new Promise((resolve) => setTimeout(resolve, QUOTA_COOLDOWN));
