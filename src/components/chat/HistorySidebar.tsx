@@ -51,7 +51,10 @@ export function HistorySidebar({
 			</button>
 			<ul className="flex flex-1 flex-col gap-1 overflow-y-auto">
 				{conversations.map((conversation) => (
-					<li key={conversation.conversationId} className="group flex items-center gap-1">
+					<li
+						key={conversation.conversationId}
+						className="group flex items-center gap-1"
+					>
 						<button
 							type="button"
 							onClick={() => onSelect(conversation.conversationId)}
@@ -63,14 +66,16 @@ export function HistorySidebar({
 							type="button"
 							onClick={() => onDelete(conversation.conversationId)}
 							aria-label={deleteLabel}
-							className="text-ion/40 hover:text-ion/80 px-1 text-xs opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100"
+							className="text-ion/40 hover:text-ion/80 px-1 text-xs opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:opacity-100"
 						>
 							×
 						</button>
 					</li>
 				))}
 			</ul>
-			<p className="text-ion/50 border-slate-mist border-t pt-3 text-xs">{retentionNoticeText}</p>
+			<p className="text-ion/50 border-slate-mist border-t pt-3 text-xs">
+				{retentionNoticeText}
+			</p>
 		</div>
 	);
 }

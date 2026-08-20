@@ -7,15 +7,21 @@ export interface LocalizedPortfolioEntry extends LocalizedEntry {
 }
 
 /** Entries eligible for the Portfolio build: Published Project-type entries. */
-export function selectPortfolioEntries(entries: KnowledgeBaseEntry[]): KnowledgeBaseEntry[] {
-	return entries.filter((entry) => entry.status === "Published" && entry.contentType === "Project");
+export function selectPortfolioEntries(
+	entries: KnowledgeBaseEntry[],
+): KnowledgeBaseEntry[] {
+	return entries.filter(
+		(entry) => entry.status === "Published" && entry.contentType === "Project",
+	);
 }
 
 /** Assigns one slug per entry (keyed by pageId), derived from its English
  * title via `slugify`. Throws if two different entries produce the same
  * slug — resolved by editing one of the source titles in Notion, not
  * auto-disambiguated (see the Phase 6 design spec). */
-export function assignSlugs(entries: KnowledgeBaseEntry[]): Map<string, string> {
+export function assignSlugs(
+	entries: KnowledgeBaseEntry[],
+): Map<string, string> {
 	const slugs = new Map<string, string>();
 	const ownerBySlug = new Map<string, { pageId: string; title: string }>();
 

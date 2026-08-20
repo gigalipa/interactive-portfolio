@@ -6,7 +6,9 @@ export interface VoiceTokenResponse {
 
 /** Mints a Live API ephemeral token. Throws on failure — a failed mint must
  * abort the connect attempt in useVoiceSession, not silently proceed. */
-export async function mintVoiceToken(language: string): Promise<VoiceTokenResponse> {
+export async function mintVoiceToken(
+	language: string,
+): Promise<VoiceTokenResponse> {
 	const response = await fetch("/api/voice/token", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },

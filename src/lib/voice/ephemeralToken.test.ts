@@ -56,8 +56,11 @@ describe("mintEphemeralToken", () => {
 		});
 
 		const [arg] = create.mock.calls[0];
-		const liveConfig = (arg as { config: { liveConnectConstraints: { config: Record<string, unknown> } } })
-			.config.liveConnectConstraints.config;
+		const liveConfig = (
+			arg as {
+				config: { liveConnectConstraints: { config: Record<string, unknown> } };
+			}
+		).config.liveConnectConstraints.config;
 		expect(liveConfig.responseModalities).toEqual(["AUDIO"]);
 		expect(liveConfig.inputAudioTranscription).toEqual({});
 		expect(liveConfig.outputAudioTranscription).toEqual({});
@@ -74,8 +77,11 @@ describe("mintEphemeralToken", () => {
 		});
 
 		const [arg] = create.mock.calls[0];
-		const liveConfig = (arg as { config: { liveConnectConstraints: { config: Record<string, unknown> } } })
-			.config.liveConnectConstraints.config;
+		const liveConfig = (
+			arg as {
+				config: { liveConnectConstraints: { config: Record<string, unknown> } };
+			}
+		).config.liveConnectConstraints.config;
 		expect(liveConfig.speechConfig).toEqual({
 			voiceConfig: { prebuiltVoiceConfig: { voiceName: "Umbriel" } },
 		});

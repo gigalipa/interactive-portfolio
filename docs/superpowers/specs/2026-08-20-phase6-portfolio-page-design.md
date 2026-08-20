@@ -28,7 +28,7 @@ one rather than rediscovering its necessity.
   referenced from the CV's Projects accordion as links).
 - **Slug generation**: a new `src/lib/portfolio/slug.ts` exports `slugify(title: string): string`
   (lowercase, non-alphanumeric → `-`, trimmed/collapsed). The sync script computes one slug per
-  *English* title (the stable, non-localized identifier) and reuses it across all three locales'
+  _English_ title (the stable, non-localized identifier) and reuses it across all three locales'
   content entries, so a given project has one URL path segment regardless of viewed locale
   (`/en/portfolio/<slug>`, `/es/portfolio/<slug>`, `/fr/portfolio/<slug>`). Collisions (two
   Projects producing the same slug) are detected in the sync script and hard-fail the sync with a
@@ -47,20 +47,20 @@ one rather than rediscovering its necessity.
   field even though `docs/notion-metadata-schema.json` already defines one. Add it:
   ```ts
   export interface MetadataMedia {
-    type: "image" | "video";
-    url: string;
-    alt?: string;
-    caption?: string;
-    cover?: boolean;
+  	type: "image" | "video";
+  	url: string;
+  	alt?: string;
+  	caption?: string;
+  	cover?: boolean;
   }
   // ...
   export interface EntryMetadata {
-    category?: string;
-    dates?: MetadataDates;
-    location?: string;
-    links?: MetadataLink[];
-    media?: MetadataMedia[];
-    techStack?: string[];
+  	category?: string;
+  	dates?: MetadataDates;
+  	location?: string;
+  	links?: MetadataLink[];
+  	media?: MetadataMedia[];
+  	techStack?: string[];
   }
   ```
 
@@ -69,7 +69,7 @@ one rather than rediscovering its necessity.
 ```ts
 // src/lib/portfolio/content.ts (or colocated in the sync script + a shared type file)
 export interface LocalizedPortfolioEntry extends LocalizedEntry {
-  slug: string;
+	slug: string;
 }
 ```
 
@@ -93,7 +93,7 @@ fields (`metadata.links`, `metadata.media` post-fix, `metadata.techStack`, `meta
   their own `slug` field or a lookup into `portfolio/content.json`; the function is deterministic
   and pure, so both call sites reproduce the identical result independently. If a CV Project entry
   somehow isn't Portfolio-eligible (shouldn't happen since both use the same `Content Type =
-  Project, Status = Published` filter, but data can drift), the link 404s — acceptable, not
+Project, Status = Published` filter, but data can drift), the link 404s — acceptable, not
   worth a cross-check at render time for a low-traffic personal site.
 
 ## UI

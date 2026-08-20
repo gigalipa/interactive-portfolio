@@ -26,11 +26,13 @@
 ## Task 1: Extract shared Notion Knowledge Base module
 
 **Files:**
+
 - Create: `src/lib/notion/knowledgeBase.ts`
 - Create: `src/lib/notion/knowledgeBase.test.ts`
 - Modify: `scripts/ingest.ts` (replace its private `extractEntry`/`fetchAllEntries`/`plainText` with imports from the new module)
 
 **Interfaces:**
+
 - Produces: `KNOWLEDGE_BASE_DATA_SOURCE_ID: string`, `interface EntryMetadata { category?, dates?: { start?, end?, ongoing? }, location?, links?: Array<{label, url, type?}>, techStack?: string[] }`, `interface KnowledgeBaseEntry { pageId, title, summary, description, contentType, tags, priority, status, language, relatedTo, metadata: EntryMetadata }`, `parseMetadata(raw: string | undefined): EntryMetadata`, `extractEntry(page: PageObjectResponse): KnowledgeBaseEntry`, `fetchKnowledgeBaseEntries(notion: Client, dataSourceId?: string): Promise<KnowledgeBaseEntry[]>` (returns every entry regardless of Status/Content Type — callers filter).
 
 - [ ] **Step 1: Write the failing tests**
@@ -39,25 +41,45 @@ Create `src/lib/notion/knowledgeBase.test.ts`:
 
 ```typescript
 import { describe, expect, it, vi } from "vitest";
-import { extractEntry, fetchKnowledgeBaseEntries, parseMetadata } from "./knowledgeBase";
+import {
+	extractEntry,
+	fetchKnowledgeBaseEntries,
+	parseMetadata,
+} from "./knowledgeBase";
 import type { PageObjectResponse } from "@notionhq/client";
 
-function fakePage(overrides: Partial<PageObjectResponse["properties"]> = {}): PageObjectResponse {
+function fakePage(
+	overrides: Partial<PageObjectResponse["properties"]> = {},
+): PageObjectResponse {
 	return {
 		id: "page-1",
 		properties: {
 			Title: { type: "title", title: [{ plain_text: "Senior Engineer" }] },
-			Summary: { type: "rich_text", rich_text: [{ plain_text: "A short summary." }] },
-			Description: { type: "rich_text", rich_text: [{ plain_text: "A longer description." }] },
-			"Content Type": { type: "select", select: { name: "Professional Experience" } },
-			Tags: { type: "multi_select", multi_select: [{ name: "backend" }, { name: "ai" }] },
+			Summary: {
+				type: "rich_text",
+				rich_text: [{ plain_text: "A short summary." }],
+			},
+			Description: {
+				type: "rich_text",
+				rich_text: [{ plain_text: "A longer description." }],
+			},
+			"Content Type": {
+				type: "select",
+				select: { name: "Professional Experience" },
+			},
+			Tags: {
+				type: "multi_select",
+				multi_select: [{ name: "backend" }, { name: "ai" }],
+			},
 			Priority: { type: "number", number: 5 },
 			Status: { type: "select", select: { name: "Published" } },
 			Language: { type: "select", select: { name: "ES" } },
 			"Related To": { type: "relation", relation: [{ id: "skill-1" }] },
 			Metadata: {
 				type: "rich_text",
-				rich_text: [{ plain_text: '{"category":"Full-time Role","location":"Remote"}' }],
+				rich_text: [
+					{ plain_text: '{"category":"Full-time Role","location":"Remote"}' },
+				],
 			},
 			...overrides,
 			// biome-ignore: test fixture, not a real PageObjectResponse
@@ -67,7 +89,9 @@ function fakePage(overrides: Partial<PageObjectResponse["properties"]> = {}): Pa
 
 describe("parseMetadata", () => {
 	it("parses a valid JSON metadata string", () => {
-		expect(parseMetadata('{"category":"Web App","techStack":["Astro"]}')).toEqual({
+		expect(
+			parseMetadata('{"category":"Web App","techStack":["Astro"]}'),
+		).toEqual({
 			category: "Web App",
 			techStack: ["Astro"],
 		});
@@ -105,7 +129,10 @@ describe("extractEntry", () => {
 
 	it("parses the Metadata JSON property into structured fields", () => {
 		const entry = extractEntry(fakePage());
-		expect(entry.metadata).toEqual({ category: "Full-time Role", location: "Remote" });
+		expect(entry.metadata).toEqual({
+			category: "Full-time Role",
+			location: "Remote",
+		});
 	});
 
 	it("defaults metadata to an empty object when the Metadata property is absent", () => {
@@ -119,12 +146,20 @@ describe("fetchKnowledgeBaseEntries", () => {
 		const query = vi
 			.fn()
 			.mockResolvedValueOnce({
-				results: [fakePage({ Title: { type: "title", title: [{ plain_text: "First" }] } } as never)],
+				results: [
+					fakePage({
+						Title: { type: "title", title: [{ plain_text: "First" }] },
+					} as never),
+				],
 				has_more: true,
 				next_cursor: "cursor-2",
 			})
 			.mockResolvedValueOnce({
-				results: [fakePage({ Title: { type: "title", title: [{ plain_text: "Second" }] } } as never)],
+				results: [
+					fakePage({
+						Title: { type: "title", title: [{ plain_text: "Second" }] },
+					} as never),
+				],
 				has_more: false,
 				next_cursor: null,
 			});
@@ -171,7 +206,10 @@ Create `src/lib/notion/knowledgeBase.ts`:
 
 ```typescript
 import type { Client } from "@notionhq/client";
-import type { PageObjectResponse, RichTextItemResponse } from "@notionhq/client";
+import type {
+	PageObjectResponse,
+	RichTextItemResponse,
+} from "@notionhq/client";
 
 export const KNOWLEDGE_BASE_DATA_SOURCE_ID =
 	process.env.NOTION_KNOWLEDGE_BASE_DATA_SOURCE_ID ||
@@ -213,7 +251,9 @@ export interface KnowledgeBaseEntry {
 	metadata: EntryMetadata;
 }
 
-export function plainText(richText: RichTextItemResponse[] | undefined): string {
+export function plainText(
+	richText: RichTextItemResponse[] | undefined,
+): string {
 	return (richText ?? []).map((item) => item.plain_text).join("");
 }
 
@@ -233,28 +273,42 @@ export function parseMetadata(raw: string | undefined): EntryMetadata {
 export function extractEntry(page: PageObjectResponse): KnowledgeBaseEntry {
 	const props = page.properties;
 
-	const title = props.Title?.type === "title" ? plainText(props.Title.title) : "";
+	const title =
+		props.Title?.type === "title" ? plainText(props.Title.title) : "";
 	const summary =
-		props.Summary?.type === "rich_text" ? plainText(props.Summary.rich_text) : "";
+		props.Summary?.type === "rich_text"
+			? plainText(props.Summary.rich_text)
+			: "";
 	const description =
-		props.Description?.type === "rich_text" ? plainText(props.Description.rich_text) : "";
+		props.Description?.type === "rich_text"
+			? plainText(props.Description.rich_text)
+			: "";
 	const contentType =
 		props["Content Type"]?.type === "select"
 			? (props["Content Type"].select?.name ?? null)
 			: null;
 	const tags =
-		props.Tags?.type === "multi_select" ? props.Tags.multi_select.map((o) => o.name) : [];
-	const priority = props.Priority?.type === "number" ? props.Priority.number : null;
+		props.Tags?.type === "multi_select"
+			? props.Tags.multi_select.map((o) => o.name)
+			: [];
+	const priority =
+		props.Priority?.type === "number" ? props.Priority.number : null;
 	const status =
-		props.Status?.type === "select" ? (props.Status.select?.name ?? null) : null;
+		props.Status?.type === "select"
+			? (props.Status.select?.name ?? null)
+			: null;
 	const language =
-		props.Language?.type === "select" ? (props.Language.select?.name ?? null) : null;
+		props.Language?.type === "select"
+			? (props.Language.select?.name ?? null)
+			: null;
 	const relatedTo =
 		props["Related To"]?.type === "relation"
 			? props["Related To"].relation.map((r) => r.id)
 			: [];
 	const metadataRaw =
-		props.Metadata?.type === "rich_text" ? plainText(props.Metadata.rich_text) : undefined;
+		props.Metadata?.type === "rich_text"
+			? plainText(props.Metadata.rich_text)
+			: undefined;
 
 	return {
 		pageId: page.id,
@@ -298,7 +352,9 @@ export async function fetchKnowledgeBaseEntries(
 			}
 		}
 
-		cursor = response.has_more ? (response.next_cursor ?? undefined) : undefined;
+		cursor = response.has_more
+			? (response.next_cursor ?? undefined)
+			: undefined;
 		await sleep(NOTION_REQUEST_DELAY_MS);
 	} while (cursor);
 
@@ -314,6 +370,7 @@ Expected: PASS (10 tests)
 - [ ] **Step 5: Update `scripts/ingest.ts` to use the shared module**
 
 Modify `scripts/ingest.ts`:
+
 - Remove the local `KNOWLEDGE_BASE_DATA_SOURCE_ID` constant, `KnowledgeBaseEntry` interface, `plainText`, `extractEntry`, and `fetchAllEntries` functions (lines 22–130 of the current file).
 - Add `import { fetchKnowledgeBaseEntries } from "../src/lib/notion/knowledgeBase";` near the top, alongside the other `src/lib/rag/*` imports.
 - In `run()`, change `const entries = await fetchAllEntries(notion);` to `const entries = await fetchKnowledgeBaseEntries(notion);`.
@@ -340,10 +397,12 @@ upcoming CV page build can reuse the same Notion parsing logic."
 ## Task 2: CV section grouping and skill-chip matching
 
 **Files:**
+
 - Create: `src/lib/cv/groupEntries.ts`
 - Create: `src/lib/cv/groupEntries.test.ts`
 
 **Interfaces:**
+
 - Consumes: `KnowledgeBaseEntry` from Task 1 (`../notion/knowledgeBase`); `LocalizedEntry` type from Task 3 (`../notion/translate`) — see note in Step 3 below on the import-order workaround.
 - Produces: `CV_CONTENT_TYPES: readonly string[]`, `selectCvEntries(entries: KnowledgeBaseEntry[]): KnowledgeBaseEntry[]`, `type CvSection`, `CV_SECTIONS: CvSection[]`, `skillChipsFor(entry: LocalizedEntry, allEntries: LocalizedEntry[]): string[]`, `groupBySection(entries: LocalizedEntry[]): Record<CvSection, LocalizedEntry[]>`.
 
@@ -364,7 +423,9 @@ import {
 } from "./groupEntries";
 import type { KnowledgeBaseEntry } from "../notion/knowledgeBase";
 
-function kbEntry(overrides: Partial<KnowledgeBaseEntry> = {}): KnowledgeBaseEntry {
+function kbEntry(
+	overrides: Partial<KnowledgeBaseEntry> = {},
+): KnowledgeBaseEntry {
 	return {
 		pageId: "p1",
 		title: "Title",
@@ -381,7 +442,9 @@ function kbEntry(overrides: Partial<KnowledgeBaseEntry> = {}): KnowledgeBaseEntr
 	};
 }
 
-function localized(overrides: Partial<LocalizedEntryLike> = {}): LocalizedEntryLike {
+function localized(
+	overrides: Partial<LocalizedEntryLike> = {},
+): LocalizedEntryLike {
 	const base = kbEntry(overrides);
 	return {
 		...base,
@@ -396,9 +459,21 @@ function localized(overrides: Partial<LocalizedEntryLike> = {}): LocalizedEntryL
 describe("selectCvEntries", () => {
 	it("keeps only Published entries with a relevant Content Type", () => {
 		const entries = [
-			kbEntry({ pageId: "a", status: "Published", contentType: "Professional Experience" }),
-			kbEntry({ pageId: "b", status: "Draft", contentType: "Professional Experience" }),
-			kbEntry({ pageId: "c", status: "Published", contentType: "Some Other Type" }),
+			kbEntry({
+				pageId: "a",
+				status: "Published",
+				contentType: "Professional Experience",
+			}),
+			kbEntry({
+				pageId: "b",
+				status: "Draft",
+				contentType: "Professional Experience",
+			}),
+			kbEntry({
+				pageId: "c",
+				status: "Published",
+				contentType: "Some Other Type",
+			}),
 			kbEntry({ pageId: "d", status: "Published", contentType: "Skill" }),
 		];
 		expect(selectCvEntries(entries).map((e) => e.pageId)).toEqual(["a", "d"]);
@@ -414,14 +489,22 @@ describe("groupBySection", () => {
 			localized({ pageId: "d", contentType: "Personal Interest" }),
 		];
 		const grouped = groupBySection(entries);
-		expect(grouped["Professional Experience"].map((e) => e.pageId)).toEqual(["a"]);
+		expect(grouped["Professional Experience"].map((e) => e.pageId)).toEqual([
+			"a",
+		]);
 		expect(grouped.Projects.map((e) => e.pageId)).toEqual(["b"]);
-		expect(grouped["Academic Experience & Certifications"].map((e) => e.pageId)).toEqual(["c"]);
-		expect(grouped["Personal Interests & Background"].map((e) => e.pageId)).toEqual(["d"]);
+		expect(
+			grouped["Academic Experience & Certifications"].map((e) => e.pageId),
+		).toEqual(["c"]);
+		expect(
+			grouped["Personal Interests & Background"].map((e) => e.pageId),
+		).toEqual(["d"]);
 	});
 
 	it("excludes Skill entries from every section", () => {
-		const grouped = groupBySection([localized({ pageId: "s", contentType: "Skill" })]);
+		const grouped = groupBySection([
+			localized({ pageId: "s", contentType: "Skill" }),
+		]);
 		for (const section of CV_SECTIONS) {
 			expect(grouped[section]).toEqual([]);
 		}
@@ -429,16 +512,29 @@ describe("groupBySection", () => {
 
 	it("sorts entries by start date descending", () => {
 		const entries = [
-			localized({ pageId: "old", metadata: { dates: { start: "2020-01-01" } } }),
-			localized({ pageId: "new", metadata: { dates: { start: "2024-01-01" } } }),
+			localized({
+				pageId: "old",
+				metadata: { dates: { start: "2020-01-01" } },
+			}),
+			localized({
+				pageId: "new",
+				metadata: { dates: { start: "2024-01-01" } },
+			}),
 		];
 		const grouped = groupBySection(entries);
-		expect(grouped["Professional Experience"].map((e) => e.pageId)).toEqual(["new", "old"]);
+		expect(grouped["Professional Experience"].map((e) => e.pageId)).toEqual([
+			"new",
+			"old",
+		]);
 	});
 
 	it("falls back to Priority (higher first) for entries with no date, sorted after all dated entries", () => {
 		const entries = [
-			localized({ pageId: "dated", metadata: { dates: { start: "2020-01-01" } }, priority: 0 }),
+			localized({
+				pageId: "dated",
+				metadata: { dates: { start: "2020-01-01" } },
+				priority: 0,
+			}),
 			localized({ pageId: "low-priority", metadata: {}, priority: 1 }),
 			localized({ pageId: "high-priority", metadata: {}, priority: 9 }),
 		];
@@ -464,14 +560,22 @@ describe("skillChipsFor", () => {
 	});
 
 	it("matches when the target entry itself lists the skill in relatedTo (the other relation direction)", () => {
-		const skill = localized({ pageId: "skill-1", contentType: "Skill", displayTitle: "Python" });
+		const skill = localized({
+			pageId: "skill-1",
+			contentType: "Skill",
+			displayTitle: "Python",
+		});
 		const target = localized({ pageId: "job", relatedTo: ["skill-1"] });
 		expect(skillChipsFor(target, [target, skill])).toEqual(["Python"]);
 	});
 
 	it("returns an empty array when no Skill entries relate to the target", () => {
 		const target = localized({ pageId: "job" });
-		const unrelatedSkill = localized({ pageId: "skill-1", contentType: "Skill", relatedTo: ["other"] });
+		const unrelatedSkill = localized({
+			pageId: "skill-1",
+			contentType: "Skill",
+			relatedTo: ["other"],
+		});
 		expect(skillChipsFor(target, [target, unrelatedSkill])).toEqual([]);
 	});
 });
@@ -531,7 +635,9 @@ const SECTION_BY_CONTENT_TYPE: Record<string, CvSection> = {
 
 /** Entries eligible for the CV build: Published, one of the five relevant
  * Content Types (Skill included — needed for chip matching, not its own section). */
-export function selectCvEntries(entries: KnowledgeBaseEntry[]): KnowledgeBaseEntry[] {
+export function selectCvEntries(
+	entries: KnowledgeBaseEntry[],
+): KnowledgeBaseEntry[] {
 	return entries.filter(
 		(entry) =>
 			entry.status === "Published" &&
@@ -558,9 +664,13 @@ export function skillChipsFor(
 	entry: LocalizedEntryLike,
 	allEntries: LocalizedEntryLike[],
 ): string[] {
-	const skills = allEntries.filter((candidate) => candidate.contentType === "Skill");
+	const skills = allEntries.filter(
+		(candidate) => candidate.contentType === "Skill",
+	);
 	const matched = skills.filter(
-		(skill) => entry.relatedTo.includes(skill.pageId) || skill.relatedTo.includes(entry.pageId),
+		(skill) =>
+			entry.relatedTo.includes(skill.pageId) ||
+			skill.relatedTo.includes(entry.pageId),
 	);
 	return matched.map((skill) => skill.displayTitle);
 }
@@ -609,12 +719,14 @@ git commit -m "feat(cv): add section grouping and skill-chip matching logic"
 ## Task 3: Translation with a committed cache
 
 **Files:**
+
 - Create: `src/lib/notion/translate.ts`
 - Create: `src/lib/notion/translate.test.ts`
 - Create: `src/lib/notion/translationCache.ts`
 - Create: `src/lib/notion/.cv-translation-cache.json` (initial content: `{}`)
 
 **Interfaces:**
+
 - Consumes: `KnowledgeBaseEntry` from Task 1 (`./knowledgeBase`); `Locale`, `localeLabels` from `../../i18n/locales`.
 - Produces: `interface TranslatableFields { title, category, location, description }`, `type TranslationCache = Record<string, TranslatableFields>`, `interface LocalizedEntry extends KnowledgeBaseEntry { displayTitle, displayCategory, displayLocation, displayDescription }`, `hashFields(fields: TranslatableFields): string`, `cacheKey(pageId: string, targetLocale: Locale, fields: TranslatableFields): string`, `translateFields(fields, targetLocale, options: { apiKey, fetchImpl? }): Promise<TranslatableFields>`, `translateForLocale(entries: KnowledgeBaseEntry[], targetLocale: Locale, options: { apiKey, cache: TranslationCache, fetchImpl? }): Promise<LocalizedEntry[]>`; separately, `loadTranslationCache(): TranslationCache` / `saveTranslationCache(cache: TranslationCache): void` from `./translationCache`.
 
@@ -624,10 +736,17 @@ Create `src/lib/notion/translate.test.ts`:
 
 ```typescript
 import { describe, expect, it, vi } from "vitest";
-import { cacheKey, hashFields, translateFields, translateForLocale } from "./translate";
+import {
+	cacheKey,
+	hashFields,
+	translateFields,
+	translateForLocale,
+} from "./translate";
 import type { KnowledgeBaseEntry } from "./knowledgeBase";
 
-function entry(overrides: Partial<KnowledgeBaseEntry> = {}): KnowledgeBaseEntry {
+function entry(
+	overrides: Partial<KnowledgeBaseEntry> = {},
+): KnowledgeBaseEntry {
 	return {
 		pageId: "p1",
 		title: "Ingeniero de Software",
@@ -648,24 +767,43 @@ function fakeFetch(jsonText: string) {
 	return vi.fn().mockResolvedValue({
 		ok: true,
 		status: 200,
-		json: async () => ({ candidates: [{ content: { parts: [{ text: jsonText }] } }] }),
+		json: async () => ({
+			candidates: [{ content: { parts: [{ text: jsonText }] } }],
+		}),
 		text: async () => "",
 	});
 }
 
 describe("hashFields / cacheKey", () => {
 	it("produces the same hash for identical fields", () => {
-		const fields = { title: "A", category: "B", location: "C", description: "D" };
+		const fields = {
+			title: "A",
+			category: "B",
+			location: "C",
+			description: "D",
+		};
 		expect(hashFields(fields)).toBe(hashFields({ ...fields }));
 	});
 
 	it("produces a different hash when a field changes", () => {
-		const fields = { title: "A", category: "B", location: "C", description: "D" };
-		expect(hashFields(fields)).not.toBe(hashFields({ ...fields, description: "changed" }));
+		const fields = {
+			title: "A",
+			category: "B",
+			location: "C",
+			description: "D",
+		};
+		expect(hashFields(fields)).not.toBe(
+			hashFields({ ...fields, description: "changed" }),
+		);
 	});
 
 	it("builds a cache key from pageId, locale, and the field hash", () => {
-		const fields = { title: "A", category: "B", location: "C", description: "D" };
+		const fields = {
+			title: "A",
+			category: "B",
+			location: "C",
+			description: "D",
+		};
 		expect(cacheKey("p1", "en", fields)).toBe(`p1:en:${hashFields(fields)}`);
 	});
 });
@@ -681,7 +819,12 @@ describe("translateFields", () => {
 			}),
 		);
 		const result = await translateFields(
-			{ title: "Ingeniero de Software", category: "Full-time Role", location: "Remoto", description: "Construí sistemas de IA." },
+			{
+				title: "Ingeniero de Software",
+				category: "Full-time Role",
+				location: "Remoto",
+				description: "Construí sistemas de IA.",
+			},
 			"en",
 			{ apiKey: "key", fetchImpl },
 		);
@@ -694,24 +837,35 @@ describe("translateFields", () => {
 	});
 
 	it("throws if the response is not ok", async () => {
-		const fetchImpl = vi
-			.fn()
-			.mockResolvedValue({ ok: false, status: 500, json: async () => ({}), text: async () => "server error" });
+		const fetchImpl = vi.fn().mockResolvedValue({
+			ok: false,
+			status: 500,
+			json: async () => ({}),
+			text: async () => "server error",
+		});
 		await expect(
-			translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-				apiKey: "key",
-				fetchImpl,
-			}),
+			translateFields(
+				{ title: "A", category: "", location: "", description: "" },
+				"en",
+				{
+					apiKey: "key",
+					fetchImpl,
+				},
+			),
 		).rejects.toThrow("Translation request failed (500)");
 	});
 
 	it("throws if the response text isn't valid TranslatableFields JSON", async () => {
 		const fetchImpl = fakeFetch(JSON.stringify({ oops: "wrong shape" }));
 		await expect(
-			translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-				apiKey: "key",
-				fetchImpl,
-			}),
+			translateFields(
+				{ title: "A", category: "", location: "", description: "" },
+				"en",
+				{
+					apiKey: "key",
+					fetchImpl,
+				},
+			),
 		).rejects.toThrow("not valid TranslatableFields JSON");
 	});
 });
@@ -719,11 +873,15 @@ describe("translateFields", () => {
 describe("translateForLocale", () => {
 	it("passes an entry through unchanged when it's already in the target locale", async () => {
 		const fetchImpl = vi.fn();
-		const [result] = await translateForLocale([entry({ language: "ES" })], "es", {
-			apiKey: "key",
-			cache: {},
-			fetchImpl,
-		});
+		const [result] = await translateForLocale(
+			[entry({ language: "ES" })],
+			"es",
+			{
+				apiKey: "key",
+				cache: {},
+				fetchImpl,
+			},
+		);
 		expect(fetchImpl).not.toHaveBeenCalled();
 		expect(result.displayTitle).toBe("Ingeniero de Software");
 		expect(result.displayDescription).toBe("Construí sistemas de IA.");
@@ -738,12 +896,19 @@ describe("translateForLocale", () => {
 				description: "Built AI systems.",
 			}),
 		);
-		const cache: Record<string, { title: string; category: string; location: string; description: string }> = {};
-		const [result] = await translateForLocale([entry({ language: "ES" })], "en", {
-			apiKey: "key",
-			cache,
-			fetchImpl,
-		});
+		const cache: Record<
+			string,
+			{ title: string; category: string; location: string; description: string }
+		> = {};
+		const [result] = await translateForLocale(
+			[entry({ language: "ES" })],
+			"en",
+			{
+				apiKey: "key",
+				cache,
+				fetchImpl,
+			},
+		);
 		expect(fetchImpl).toHaveBeenCalledTimes(1);
 		expect(result.displayTitle).toBe("Software Engineer");
 		expect(Object.keys(cache)).toHaveLength(1);
@@ -760,10 +925,19 @@ describe("translateForLocale", () => {
 		};
 		const key = cacheKey(source.pageId, "en", fields);
 		const cache = {
-			[key]: { title: "Cached Title", category: "Cached Cat", location: "Cached Loc", description: "Cached Desc" },
+			[key]: {
+				title: "Cached Title",
+				category: "Cached Cat",
+				location: "Cached Loc",
+				description: "Cached Desc",
+			},
 		};
 
-		const [result] = await translateForLocale([source], "en", { apiKey: "key", cache, fetchImpl });
+		const [result] = await translateForLocale([source], "en", {
+			apiKey: "key",
+			cache,
+			fetchImpl,
+		});
 
 		expect(fetchImpl).not.toHaveBeenCalled();
 		expect(result.displayTitle).toBe("Cached Title");
@@ -814,7 +988,10 @@ export interface LocalizedEntry extends KnowledgeBaseEntry {
 
 /** Narrow structural subset of `fetch` — real `fetch` satisfies this. */
 export interface FetchLike {
-	(url: string, init: RequestInit): Promise<{
+	(
+		url: string,
+		init: RequestInit,
+	): Promise<{
 		ok: boolean;
 		status: number;
 		json(): Promise<unknown>;
@@ -833,10 +1010,17 @@ function extractTranslatable(entry: KnowledgeBaseEntry): TranslatableFields {
 
 /** Deterministic content hash so an unchanged entry reuses its cached translation. */
 export function hashFields(fields: TranslatableFields): string {
-	return createHash("sha256").update(JSON.stringify(fields)).digest("hex").slice(0, 16);
+	return createHash("sha256")
+		.update(JSON.stringify(fields))
+		.digest("hex")
+		.slice(0, 16);
 }
 
-export function cacheKey(pageId: string, targetLocale: Locale, fields: TranslatableFields): string {
+export function cacheKey(
+	pageId: string,
+	targetLocale: Locale,
+	fields: TranslatableFields,
+): string {
 	return `${pageId}:${targetLocale}:${hashFields(fields)}`;
 }
 
@@ -900,7 +1084,9 @@ export async function translateFields(
 	);
 
 	if (!response.ok) {
-		throw new Error(`Translation request failed (${response.status}): ${await response.text()}`);
+		throw new Error(
+			`Translation request failed (${response.status}): ${await response.text()}`,
+		);
 	}
 
 	const body = (await response.json()) as {
@@ -911,7 +1097,9 @@ export async function translateFields(
 
 	const parsed: unknown = JSON.parse(text);
 	if (!isTranslatableFields(parsed)) {
-		throw new Error(`Translation response was not valid TranslatableFields JSON: ${text}`);
+		throw new Error(
+			`Translation response was not valid TranslatableFields JSON: ${text}`,
+		);
 	}
 
 	return parsed;
@@ -939,7 +1127,10 @@ export async function translateForLocale(
 			if (cached) {
 				localized = cached;
 			} else {
-				localized = await translateFields(source, targetLocale, { apiKey, fetchImpl });
+				localized = await translateFields(source, targetLocale, {
+					apiKey,
+					fetchImpl,
+				});
 				cache[key] = localized;
 			}
 		}
@@ -977,7 +1168,9 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { TranslationCache } from "./translate";
 
-const CACHE_PATH = fileURLToPath(new URL("./.cv-translation-cache.json", import.meta.url));
+const CACHE_PATH = fileURLToPath(
+	new URL("./.cv-translation-cache.json", import.meta.url),
+);
 
 /** Loads the committed translation cache. Never throws — a missing or
  * corrupted cache file just means every entry gets re-translated this build. */
@@ -1014,12 +1207,14 @@ git commit -m "feat(cv): add Gemini translation with a committed build cache"
 ## Task 4: i18n dictionary additions
 
 **Files:**
+
 - Modify: `src/i18n/dictionary.ts`
 - Modify: `src/i18n/dictionaries/en.ts`
 - Modify: `src/i18n/dictionaries/es.ts`
 - Modify: `src/i18n/dictionaries/fr.ts`
 
 **Interfaces:**
+
 - Produces: the new `Dictionary["cv"]` shape every later `.astro` task reads from (`t.cv.title`, `t.cv.tagline`, `t.cv.summary`, `t.cv.sections.*`, `t.cv.viewProjects`, `t.cv.present`, `t.cv.emptySection`).
 
 This task has no test file — dictionary content is exercised indirectly by `astro check` (compile-time `satisfies Dictionary` completeness checking) and by Task 7's manual verification checklist, matching how every other dictionary entry in this codebase is validated.
@@ -1029,30 +1224,30 @@ This task has no test file — dictionary content is exercised indirectly by `as
 In `src/i18n/dictionary.ts`, replace the existing `cv` block:
 
 ```typescript
-	cv: {
-		phase: string;
-		title: string;
-		body: string;
-	};
+cv: {
+	phase: string;
+	title: string;
+	body: string;
+}
 ```
 
 with:
 
 ```typescript
-	cv: {
-		title: string;
-		tagline: string;
-		summary: string;
-		sections: {
-			professionalExperience: string;
-			projects: string;
-			academicExperience: string;
-			personalInterests: string;
-		};
-		viewProjects: string;
-		present: string;
-		emptySection: string;
-	};
+cv: {
+	title: string;
+	tagline: string;
+	summary: string;
+	sections: {
+		professionalExperience: string;
+		projects: string;
+		academicExperience: string;
+		personalInterests: string;
+	}
+	viewProjects: string;
+	present: string;
+	emptySection: string;
+}
 ```
 
 - [ ] **Step 2: Update `en.ts`**
@@ -1140,10 +1335,12 @@ git commit -m "feat(cv): add CV header and section-label copy to i18n dictionari
 ## Task 5: `Accordion` component
 
 **Files:**
+
 - Create: `src/components/cv/Accordion.tsx`
 - Create: `src/components/cv/Accordion.test.tsx`
 
 **Interfaces:**
+
 - Produces: `interface AccordionProps { title: string; children: ReactNode }`, `function Accordion(props: AccordionProps): JSX.Element`.
 
 Note: rather than one component owning an array of sections' worth of state (which would require passing pre-rendered Astro markup into a single React island's props — not supported for named slots in Astro), each section becomes its own independent `Accordion` instance mounted with `client:load` in `CvView.astro` (Task 7), receiving its entries as the default slot (`children`). This still satisfies the spec's "multi-open" requirement — each instance's open/closed state is already independent since each is a separate component instance, with no shared state needed at all.
@@ -1259,7 +1456,9 @@ export function Accordion({ title, children }: AccordionProps) {
 					<path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
 				</svg>
 			</button>
-			{isOpen && <div className="flex flex-col gap-3 px-5 pb-5">{children}</div>}
+			{isOpen && (
+				<div className="flex flex-col gap-3 px-5 pb-5">{children}</div>
+			)}
 		</div>
 	);
 }
@@ -1282,9 +1481,11 @@ git commit -m "feat(cv): add Accordion component (one instance per CV section)"
 ## Task 6: `EntryCard` component
 
 **Files:**
+
 - Create: `src/components/cv/EntryCard.astro`
 
 **Interfaces:**
+
 - Consumes: `LocalizedEntry` from Task 3 (`../../lib/notion/translate`).
 - Produces: an Astro component rendering one entry's title, meta line, description, chips, and (Projects only) a link to the Portfolio index.
 
@@ -1318,7 +1519,9 @@ const dateRange = dates?.start
 	? `${formatYear(dates.start)} – ${dates.ongoing || !dates.end ? presentLabel : formatYear(dates.end)}`
 	: null;
 
-const metaLine = [entry.displayCategory, entry.displayLocation, dateRange].filter(Boolean).join(" · ");
+const metaLine = [entry.displayCategory, entry.displayLocation, dateRange]
+	.filter(Boolean)
+	.join(" · ");
 
 const techStack = entry.metadata.techStack ?? [];
 const allChips = [...chips, ...techStack];
@@ -1327,9 +1530,21 @@ const isProject = entry.contentType === "Project";
 ---
 
 <div class="border-slate-mist bg-deep-blue/30 rounded-xl border p-4">
-	<h3 class="font-display text-ion text-base font-semibold">{entry.displayTitle}</h3>
-	{metaLine && <p class="text-signal-cyan/70 mt-1 font-mono text-xs">{metaLine}</p>}
-	{entry.displayDescription && <p class="font-body text-ion/80 mt-2 text-sm">{entry.displayDescription}</p>}
+	<h3 class="font-display text-ion text-base font-semibold">
+		{entry.displayTitle}
+	</h3>
+	{
+		metaLine && (
+			<p class="text-signal-cyan/70 mt-1 font-mono text-xs">{metaLine}</p>
+		)
+	}
+	{
+		entry.displayDescription && (
+			<p class="font-body text-ion/80 mt-2 text-sm">
+				{entry.displayDescription}
+			</p>
+		)
+	}
 	{
 		allChips.length > 0 && (
 			<div class="mt-3 flex flex-wrap gap-1.5">
@@ -1345,7 +1560,7 @@ const isProject = entry.contentType === "Project";
 		isProject && (
 			<a
 				href={`/${lang}/portfolio`}
-				class="text-signal-cyan mt-3 inline-block text-sm underline hover:text-signal-cyan/80"
+				class="text-signal-cyan hover:text-signal-cyan/80 mt-3 inline-block text-sm underline"
 			>
 				{viewProjectsLabel}
 			</a>
@@ -1371,6 +1586,7 @@ git commit -m "feat(cv): add EntryCard component"
 ## Task 7: Rewrite `CvView.astro` and wire up prerendering
 
 **Files:**
+
 - Modify: `src/views/CvView.astro` (full rewrite)
 - Modify: `src/pages/en/cv.astro`
 - Modify: `src/pages/es/cv.astro`
@@ -1378,6 +1594,7 @@ git commit -m "feat(cv): add EntryCard component"
 - Create: `src/env.d.ts`
 
 **Interfaces:**
+
 - Consumes: `fetchKnowledgeBaseEntries` (Task 1), `selectCvEntries`/`groupBySection`/`skillChipsFor`/`CV_SECTIONS`/`CvSection` (Task 2), `translateForLocale`/`LocalizedEntry` (Task 3), the new `Dictionary["cv"]` shape (Task 4), `Accordion` (Task 5), `EntryCard` (Task 6).
 
 - [ ] **Step 1: Add build-time env var types**
@@ -1410,7 +1627,10 @@ import EntryCard from "../components/cv/EntryCard.astro";
 import { getDictionary, type Locale } from "../i18n";
 import { fetchKnowledgeBaseEntries } from "../lib/notion/knowledgeBase";
 import { translateForLocale } from "../lib/notion/translate";
-import { loadTranslationCache, saveTranslationCache } from "../lib/notion/translationCache";
+import {
+	loadTranslationCache,
+	saveTranslationCache,
+} from "../lib/notion/translationCache";
 import {
 	CV_SECTIONS,
 	groupBySection,
@@ -1447,12 +1667,20 @@ const sectionLabel: Record<CvSection, string> = {
 };
 ---
 
-<Layout title={`${t.cv.title} — Daniel Peraza`} description={t.meta.description} lang={lang}>
+<Layout
+	title={`${t.cv.title} — Daniel Peraza`}
+	description={t.meta.description}
+	lang={lang}
+>
 	<main class="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-24">
 		<header class="text-center">
-			<h1 class="font-display text-ion text-3xl font-semibold">Daniel Peraza</h1>
+			<h1 class="font-display text-ion text-3xl font-semibold">
+				Daniel Peraza
+			</h1>
 			<p class="text-signal-cyan mt-2 text-sm">{t.cv.tagline}</p>
-			<p class="font-body text-ion/70 mx-auto mt-4 max-w-xl text-sm">{t.cv.summary}</p>
+			<p class="font-body text-ion/70 mx-auto mt-4 max-w-xl text-sm">
+				{t.cv.summary}
+			</p>
 		</header>
 
 		<div class="flex flex-col gap-3">
@@ -1551,6 +1779,7 @@ on each entry."
 - [ ] **Step 1: Confirm with Daniel, then set the Cloudflare Pages build environment variables**
 
 Using the Cloudflare dashboard (Pages project → Settings → Environment variables → Production, and Preview if used) or `wrangler pages secret put` for the Pages project, add:
+
 - `NOTION_TOKEN` — same value as the local `.env` (Notion internal integration token).
 - `GOOGLE_API_KEY_LLM` — same value as the local `.env`.
 
@@ -1565,6 +1794,7 @@ Push the merged branch (or trigger a redeploy) so Cloudflare Pages runs `astro b
 - [ ] **Step 3: Manual verification checklist**
 
 Against the live deployed site:
+
 1. Visit `/en/cv`, `/es/cv`, `/fr/cv` — confirm the header (name, tagline, summary) and all four section headers render.
 2. Click each section header — confirm it expands independently (multiple sections can be open at once) and the chevron rotates.
 3. Confirm entries within a section are sorted most-recent-first.

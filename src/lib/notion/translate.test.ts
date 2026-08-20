@@ -1,8 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
-import { cacheKey, hashFields, translateFields, translateForLocale } from "./translate";
+import {
+	cacheKey,
+	hashFields,
+	translateFields,
+	translateForLocale,
+} from "./translate";
 import type { KnowledgeBaseEntry } from "./knowledgeBase";
 
-function entry(overrides: Partial<KnowledgeBaseEntry> = {}): KnowledgeBaseEntry {
+function entry(
+	overrides: Partial<KnowledgeBaseEntry> = {},
+): KnowledgeBaseEntry {
 	return {
 		pageId: "p1",
 		title: "Ingeniero de Software",
@@ -23,24 +30,43 @@ function fakeFetch(jsonText: string) {
 	return vi.fn().mockResolvedValue({
 		ok: true,
 		status: 200,
-		json: async () => ({ candidates: [{ content: { parts: [{ text: jsonText }] } }] }),
+		json: async () => ({
+			candidates: [{ content: { parts: [{ text: jsonText }] } }],
+		}),
 		text: async () => "",
 	});
 }
 
 describe("hashFields / cacheKey", () => {
 	it("produces the same hash for identical fields", () => {
-		const fields = { title: "A", category: "B", location: "C", description: "D" };
+		const fields = {
+			title: "A",
+			category: "B",
+			location: "C",
+			description: "D",
+		};
 		expect(hashFields(fields)).toBe(hashFields({ ...fields }));
 	});
 
 	it("produces a different hash when a field changes", () => {
-		const fields = { title: "A", category: "B", location: "C", description: "D" };
-		expect(hashFields(fields)).not.toBe(hashFields({ ...fields, description: "changed" }));
+		const fields = {
+			title: "A",
+			category: "B",
+			location: "C",
+			description: "D",
+		};
+		expect(hashFields(fields)).not.toBe(
+			hashFields({ ...fields, description: "changed" }),
+		);
 	});
 
 	it("builds a cache key from pageId, locale, and the field hash", () => {
-		const fields = { title: "A", category: "B", location: "C", description: "D" };
+		const fields = {
+			title: "A",
+			category: "B",
+			location: "C",
+			description: "D",
+		};
 		expect(cacheKey("p1", "en", fields)).toBe(`p1:en:${hashFields(fields)}`);
 	});
 });
@@ -56,7 +82,12 @@ describe("translateFields", () => {
 			}),
 		);
 		const result = await translateFields(
-			{ title: "Ingeniero de Software", category: "Full-time Role", location: "Remoto", description: "Construí sistemas de IA." },
+			{
+				title: "Ingeniero de Software",
+				category: "Full-time Role",
+				location: "Remoto",
+				description: "Construí sistemas de IA.",
+			},
 			"en",
 			{ apiKey: "key", fetchImpl },
 		);
@@ -77,7 +108,10 @@ describe("translateFields", () => {
 					{
 						content: {
 							parts: [
-								{ text: "Let me work through this translation step by step...", thought: true },
+								{
+									text: "Let me work through this translation step by step...",
+									thought: true,
+								},
 								{
 									text: JSON.stringify({
 										title: "Software Engineer",
@@ -94,38 +128,58 @@ describe("translateFields", () => {
 			text: async () => "",
 		});
 
-		const result = await translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-			apiKey: "key",
-			fetchImpl,
-		});
+		const result = await translateFields(
+			{ title: "A", category: "", location: "", description: "" },
+			"en",
+			{
+				apiKey: "key",
+				fetchImpl,
+			},
+		);
 
 		expect(result.title).toBe("Software Engineer");
 	});
 
 	it("throws if the response is not ok", async () => {
-		const fetchImpl = vi
-			.fn()
-			.mockResolvedValue({ ok: false, status: 500, json: async () => ({}), text: async () => "server error" });
+		const fetchImpl = vi.fn().mockResolvedValue({
+			ok: false,
+			status: 500,
+			json: async () => ({}),
+			text: async () => "server error",
+		});
 		await expect(
-			translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-				apiKey: "key",
-				fetchImpl,
-			}),
+			translateFields(
+				{ title: "A", category: "", location: "", description: "" },
+				"en",
+				{
+					apiKey: "key",
+					fetchImpl,
+				},
+			),
 		).rejects.toThrow("Translation request failed (500)");
 	});
 
 	it("throws if the response text isn't valid TranslatableFields JSON", async () => {
 		const fetchImpl = fakeFetch(JSON.stringify({ oops: "wrong shape" }));
 		await expect(
-			translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-				apiKey: "key",
-				fetchImpl,
-			}),
+			translateFields(
+				{ title: "A", category: "", location: "", description: "" },
+				"en",
+				{
+					apiKey: "key",
+					fetchImpl,
+				},
+			),
 		).rejects.toThrow("not valid TranslatableFields JSON");
 	});
 
 	it("falls through to the next model in the chain on a 429", async () => {
-		const rateLimited = { ok: false, status: 429, json: async () => ({}), text: async () => "rate limited" };
+		const rateLimited = {
+			ok: false,
+			status: 429,
+			json: async () => ({}),
+			text: async () => "rate limited",
+		};
 		const ok = {
 			ok: true,
 			status: 200,
@@ -149,12 +203,19 @@ describe("translateFields", () => {
 			}),
 			text: async () => "",
 		};
-		const fetchImpl = vi.fn().mockResolvedValueOnce(rateLimited).mockResolvedValueOnce(ok);
+		const fetchImpl = vi
+			.fn()
+			.mockResolvedValueOnce(rateLimited)
+			.mockResolvedValueOnce(ok);
 
-		const result = await translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-			apiKey: "key",
-			fetchImpl,
-		});
+		const result = await translateFields(
+			{ title: "A", category: "", location: "", description: "" },
+			"en",
+			{
+				apiKey: "key",
+				fetchImpl,
+			},
+		);
 
 		expect(fetchImpl).toHaveBeenCalledTimes(2);
 		expect(fetchImpl.mock.calls[0][0]).toContain("gemma-4-26b-a4b-it");
@@ -174,17 +235,37 @@ describe("translateFields", () => {
 			status: 200,
 			json: async () => ({
 				candidates: [
-					{ content: { parts: [{ text: JSON.stringify({ title: "C", category: "", location: "", description: "" }) }] } },
+					{
+						content: {
+							parts: [
+								{
+									text: JSON.stringify({
+										title: "C",
+										category: "",
+										location: "",
+										description: "",
+									}),
+								},
+							],
+						},
+					},
 				],
 			}),
 			text: async () => "",
 		};
-		const fetchImpl = vi.fn().mockResolvedValueOnce(overloaded).mockResolvedValueOnce(ok);
+		const fetchImpl = vi
+			.fn()
+			.mockResolvedValueOnce(overloaded)
+			.mockResolvedValueOnce(ok);
 
-		const result = await translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-			apiKey: "key",
-			fetchImpl,
-		});
+		const result = await translateFields(
+			{ title: "A", category: "", location: "", description: "" },
+			"en",
+			{
+				apiKey: "key",
+				fetchImpl,
+			},
+		);
 
 		expect(fetchImpl).toHaveBeenCalledTimes(2);
 		expect(result.title).toBe("C");
@@ -196,17 +277,37 @@ describe("translateFields", () => {
 			status: 200,
 			json: async () => ({
 				candidates: [
-					{ content: { parts: [{ text: JSON.stringify({ title: "D", category: "", location: "", description: "" }) }] } },
+					{
+						content: {
+							parts: [
+								{
+									text: JSON.stringify({
+										title: "D",
+										category: "",
+										location: "",
+										description: "",
+									}),
+								},
+							],
+						},
+					},
 				],
 			}),
 			text: async () => "",
 		};
-		const fetchImpl = vi.fn().mockRejectedValueOnce(new Error("fetch failed")).mockResolvedValueOnce(ok);
+		const fetchImpl = vi
+			.fn()
+			.mockRejectedValueOnce(new Error("fetch failed"))
+			.mockResolvedValueOnce(ok);
 
-		const result = await translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-			apiKey: "key",
-			fetchImpl,
-		});
+		const result = await translateFields(
+			{ title: "A", category: "", location: "", description: "" },
+			"en",
+			{
+				apiKey: "key",
+				fetchImpl,
+			},
+		);
 
 		expect(fetchImpl).toHaveBeenCalledTimes(2);
 		expect(result.title).toBe("D");
@@ -215,13 +316,21 @@ describe("translateFields", () => {
 	it("throws the last network error if every model fails with a thrown error on both passes", async () => {
 		vi.useFakeTimers();
 		try {
-			const fetchImpl = vi.fn().mockRejectedValue(new Error("fetch failed: Headers Timeout Error"));
+			const fetchImpl = vi
+				.fn()
+				.mockRejectedValue(new Error("fetch failed: Headers Timeout Error"));
 
-			const promise = translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-				apiKey: "key",
-				fetchImpl,
-			});
-			const assertion = expect(promise).rejects.toThrow("Headers Timeout Error");
+			const promise = translateFields(
+				{ title: "A", category: "", location: "", description: "" },
+				"en",
+				{
+					apiKey: "key",
+					fetchImpl,
+				},
+			);
+			const assertion = expect(promise).rejects.toThrow(
+				"Headers Timeout Error",
+			);
 			await vi.runAllTimersAsync();
 			await assertion;
 
@@ -234,13 +343,31 @@ describe("translateFields", () => {
 	it("waits and retries the whole chain once if every model is rate-limited, then succeeds", async () => {
 		vi.useFakeTimers();
 		try {
-			const rateLimited = { ok: false, status: 429, json: async () => ({}), text: async () => "rate limited" };
+			const rateLimited = {
+				ok: false,
+				status: 429,
+				json: async () => ({}),
+				text: async () => "rate limited",
+			};
 			const ok = {
 				ok: true,
 				status: 200,
 				json: async () => ({
 					candidates: [
-						{ content: { parts: [{ text: JSON.stringify({ title: "B", category: "", location: "", description: "" }) }] } },
+						{
+							content: {
+								parts: [
+									{
+										text: JSON.stringify({
+											title: "B",
+											category: "",
+											location: "",
+											description: "",
+										}),
+									},
+								],
+							},
+						},
 					],
 				}),
 				text: async () => "",
@@ -254,10 +381,14 @@ describe("translateFields", () => {
 				.mockResolvedValueOnce(rateLimited)
 				.mockResolvedValueOnce(ok);
 
-			const promise = translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-				apiKey: "key",
-				fetchImpl,
-			});
+			const promise = translateFields(
+				{ title: "A", category: "", location: "", description: "" },
+				"en",
+				{
+					apiKey: "key",
+					fetchImpl,
+				},
+			);
 			await vi.runAllTimersAsync();
 			const result = await promise;
 
@@ -279,11 +410,17 @@ describe("translateFields", () => {
 			};
 			const fetchImpl = vi.fn().mockResolvedValue(rateLimited);
 
-			const promise = translateFields({ title: "A", category: "", location: "", description: "" }, "en", {
-				apiKey: "key",
-				fetchImpl,
-			});
-			const assertion = expect(promise).rejects.toThrow("Translation request failed (429)");
+			const promise = translateFields(
+				{ title: "A", category: "", location: "", description: "" },
+				"en",
+				{
+					apiKey: "key",
+					fetchImpl,
+				},
+			);
+			const assertion = expect(promise).rejects.toThrow(
+				"Translation request failed (429)",
+			);
 			await vi.runAllTimersAsync();
 			await assertion;
 
@@ -297,11 +434,15 @@ describe("translateFields", () => {
 describe("translateForLocale", () => {
 	it("passes an entry through unchanged when it's already in the target locale", async () => {
 		const fetchImpl = vi.fn();
-		const [result] = await translateForLocale([entry({ language: "ES" })], "es", {
-			apiKey: "key",
-			cache: {},
-			fetchImpl,
-		});
+		const [result] = await translateForLocale(
+			[entry({ language: "ES" })],
+			"es",
+			{
+				apiKey: "key",
+				cache: {},
+				fetchImpl,
+			},
+		);
 		expect(fetchImpl).not.toHaveBeenCalled();
 		expect(result.displayTitle).toBe("Ingeniero de Software");
 		expect(result.displayDescription).toBe("Construí sistemas de IA.");
@@ -316,12 +457,19 @@ describe("translateForLocale", () => {
 				description: "Built AI systems.",
 			}),
 		);
-		const cache: Record<string, { title: string; category: string; location: string; description: string }> = {};
-		const [result] = await translateForLocale([entry({ language: "ES" })], "en", {
-			apiKey: "key",
-			cache,
-			fetchImpl,
-		});
+		const cache: Record<
+			string,
+			{ title: string; category: string; location: string; description: string }
+		> = {};
+		const [result] = await translateForLocale(
+			[entry({ language: "ES" })],
+			"en",
+			{
+				apiKey: "key",
+				cache,
+				fetchImpl,
+			},
+		);
 		expect(fetchImpl).toHaveBeenCalledTimes(1);
 		expect(result.displayTitle).toBe("Software Engineer");
 		expect(Object.keys(cache)).toHaveLength(1);
@@ -338,10 +486,19 @@ describe("translateForLocale", () => {
 		};
 		const key = cacheKey(source.pageId, "en", fields);
 		const cache = {
-			[key]: { title: "Cached Title", category: "Cached Cat", location: "Cached Loc", description: "Cached Desc" },
+			[key]: {
+				title: "Cached Title",
+				category: "Cached Cat",
+				location: "Cached Loc",
+				description: "Cached Desc",
+			},
 		};
 
-		const [result] = await translateForLocale([source], "en", { apiKey: "key", cache, fetchImpl });
+		const [result] = await translateForLocale([source], "en", {
+			apiKey: "key",
+			cache,
+			fetchImpl,
+		});
 
 		expect(fetchImpl).not.toHaveBeenCalled();
 		expect(result.displayTitle).toBe("Cached Title");

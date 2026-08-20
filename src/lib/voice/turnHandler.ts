@@ -1,5 +1,10 @@
 import { buildVisitorIdCookie, resolveVisitorId } from "../history/cookies";
-import { buildTitle, getConversation, putConversation, type ConversationKV } from "../history/kv";
+import {
+	buildTitle,
+	getConversation,
+	putConversation,
+	type ConversationKV,
+} from "../history/kv";
 import type { ChatMessage, StoredConversation } from "../history/types";
 import type { RateLimiter } from "../chat/handler";
 
@@ -61,7 +66,10 @@ export async function handleVoiceTurnRequest(
 		);
 	}
 	if (body.persist && body.conversationId !== undefined) {
-		if (typeof body.conversationId !== "string" || !UUID_PATTERN.test(body.conversationId)) {
+		if (
+			typeof body.conversationId !== "string" ||
+			!UUID_PATTERN.test(body.conversationId)
+		) {
 			return jsonError(400, "conversationId must be a UUID");
 		}
 	}
@@ -110,7 +118,8 @@ export async function handleVoiceTurnRequest(
 	}
 
 	const responseHeaders = new Headers({ "Content-Type": "application/json" });
-	if (resolved.isNew) responseHeaders.set("Set-Cookie", buildVisitorIdCookie(visitorId));
+	if (resolved.isNew)
+		responseHeaders.set("Set-Cookie", buildVisitorIdCookie(visitorId));
 
 	return new Response(JSON.stringify({ conversationId }), {
 		status: 200,

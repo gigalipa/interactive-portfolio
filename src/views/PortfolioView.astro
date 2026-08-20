@@ -16,14 +16,23 @@ const t = getDictionary(lang);
 // Pre-fetched and pre-translated by `pnpm portfolio:sync` (scripts/sync-portfolio.ts)
 // and committed — the build never calls Notion/Gemini itself. Re-run that script
 // and commit the result whenever Portfolio-relevant Notion content changes.
-const localizedEntries = (portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)[lang] ?? [];
+const localizedEntries =
+	(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)[
+		lang
+	] ?? [];
 const groups = groupByCategory(localizedEntries);
 ---
 
-<Layout title={`${t.portfolio.title} — Daniel Peraza`} description={t.meta.description} lang={lang}>
+<Layout
+	title={`${t.portfolio.title} — Daniel Peraza`}
+	description={t.meta.description}
+	lang={lang}
+>
 	<main class="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-24">
 		<header class="text-center">
-			<h1 class="font-display text-ion text-3xl font-semibold">{t.portfolio.title}</h1>
+			<h1 class="font-display text-ion text-3xl font-semibold">
+				{t.portfolio.title}
+			</h1>
 			<p class="font-body text-ion/70 mt-2 text-sm">{t.portfolio.intro}</p>
 		</header>
 
@@ -34,10 +43,16 @@ const groups = groupByCategory(localizedEntries);
 				<div class="flex flex-col gap-10">
 					{groups.map((group) => (
 						<section class="flex flex-col gap-4">
-							<h2 class="text-signal-cyan font-mono text-xs tracking-[0.2em] uppercase">{group.category}</h2>
+							<h2 class="text-signal-cyan font-mono text-xs tracking-[0.2em] uppercase">
+								{group.category}
+							</h2>
 							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 								{group.entries.map((entry) => (
-									<ProjectCard entry={entry} lang={lang} presentLabel={t.cv.present} />
+									<ProjectCard
+										entry={entry}
+										lang={lang}
+										presentLabel={t.cv.present}
+									/>
 								))}
 							</div>
 						</section>

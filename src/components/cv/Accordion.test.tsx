@@ -54,7 +54,10 @@ describe("Accordion", () => {
 			</Accordion>,
 		);
 		expect(screen.getByText("Project list")).toBeInTheDocument();
-		expect(screen.getByRole("button", { name: "Projects" })).toHaveAttribute("aria-expanded", "true");
+		expect(screen.getByRole("button", { name: "Projects" })).toHaveAttribute(
+			"aria-expanded",
+			"true",
+		);
 	});
 
 	it("keeps two independent Accordion instances open/closed independently", () => {

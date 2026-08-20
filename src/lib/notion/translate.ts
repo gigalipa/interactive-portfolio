@@ -42,7 +42,11 @@ const TARGET_LANGUAGE_NAME: Record<Locale, string> = {
  * Deliberately separate from `localeLabels` (the site's language-switcher UI
  * labels) even though the values currently coincide — they serve different
  * concerns and shouldn't be coupled by accident. */
-const NOTION_LANGUAGE_CODE: Record<Locale, string> = { en: "EN", es: "ES", fr: "FR" };
+const NOTION_LANGUAGE_CODE: Record<Locale, string> = {
+	en: "EN",
+	es: "ES",
+	fr: "FR",
+};
 
 export interface TranslatableFields {
 	title: string;
@@ -62,7 +66,10 @@ export interface LocalizedEntry extends KnowledgeBaseEntry {
 
 /** Narrow structural subset of `fetch` — real `fetch` satisfies this. */
 export interface FetchLike {
-	(url: string, init: RequestInit): Promise<{
+	(
+		url: string,
+		init: RequestInit,
+	): Promise<{
 		ok: boolean;
 		status: number;
 		json(): Promise<unknown>;
@@ -81,10 +88,17 @@ function extractTranslatable(entry: KnowledgeBaseEntry): TranslatableFields {
 
 /** Deterministic content hash so an unchanged entry reuses its cached translation. */
 export function hashFields(fields: TranslatableFields): string {
-	return createHash("sha256").update(JSON.stringify(fields)).digest("hex").slice(0, 16);
+	return createHash("sha256")
+		.update(JSON.stringify(fields))
+		.digest("hex")
+		.slice(0, 16);
 }
 
-export function cacheKey(pageId: string, targetLocale: Locale, fields: TranslatableFields): string {
+export function cacheKey(
+	pageId: string,
+	targetLocale: Locale,
+	fields: TranslatableFields,
+): string {
 	return `${pageId}:${targetLocale}:${hashFields(fields)}`;
 }
 
@@ -205,11 +219,15 @@ export async function translateFields(
 	);
 
 	if (!response.ok) {
-		throw new Error(`Translation request failed (${response.status}): ${await response.text()}`);
+		throw new Error(
+			`Translation request failed (${response.status}): ${await response.text()}`,
+		);
 	}
 
 	const body = (await response.json()) as {
-		candidates?: Array<{ content?: { parts?: Array<{ text?: string; thought?: boolean }> } }>;
+		candidates?: Array<{
+			content?: { parts?: Array<{ text?: string; thought?: boolean }> };
+		}>;
 	};
 	// Thinking-enabled models (e.g. gemma-4-26b-a4b-it) emit a `thought: true`
 	// part before the real answer — same pattern already handled in
@@ -221,7 +239,9 @@ export async function translateFields(
 
 	const parsed: unknown = JSON.parse(text);
 	if (!isTranslatableFields(parsed)) {
-		throw new Error(`Translation response was not valid TranslatableFields JSON: ${text}`);
+		throw new Error(
+			`Translation response was not valid TranslatableFields JSON: ${text}`,
+		);
 	}
 
 	return parsed;
@@ -249,7 +269,10 @@ export async function translateForLocale(
 			if (cached) {
 				localized = cached;
 			} else {
-				localized = await translateFields(source, targetLocale, { apiKey, fetchImpl });
+				localized = await translateFields(source, targetLocale, {
+					apiKey,
+					fetchImpl,
+				});
 				cache[key] = localized;
 			}
 		}

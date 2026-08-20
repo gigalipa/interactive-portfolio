@@ -23,10 +23,12 @@
 ## Task 1: Add `media` to `EntryMetadata`
 
 **Files:**
+
 - Modify: `src/lib/notion/knowledgeBase.ts`
 - Test: `src/lib/notion/knowledgeBase.test.ts`
 
 **Interfaces:**
+
 - Produces: `MetadataMedia` interface (`{ type: "image" | "video"; url: string; alt?: string; caption?: string; cover?: boolean }`), and `EntryMetadata.media?: MetadataMedia[]`, both exported from `src/lib/notion/knowledgeBase.ts`.
 
 - [ ] **Step 1: Write the failing test**
@@ -34,36 +36,45 @@
 Add to `src/lib/notion/knowledgeBase.test.ts`, inside the existing `describe("parseMetadata", ...)` block:
 
 ```ts
-	it("parses a media array", () => {
-		expect(
-			parseMetadata(
-				'{"media":[{"type":"image","url":"https://example.com/a.png","alt":"Screenshot","cover":true}]}',
-			),
-		).toEqual({
-			media: [{ type: "image", url: "https://example.com/a.png", alt: "Screenshot", cover: true }],
-		});
+it("parses a media array", () => {
+	expect(
+		parseMetadata(
+			'{"media":[{"type":"image","url":"https://example.com/a.png","alt":"Screenshot","cover":true}]}',
+		),
+	).toEqual({
+		media: [
+			{
+				type: "image",
+				url: "https://example.com/a.png",
+				alt: "Screenshot",
+				cover: true,
+			},
+		],
 	});
+});
 ```
 
 And inside the existing `describe("extractEntry", ...)` block:
 
 ```ts
-	it("includes a media array when present in Metadata", () => {
-		const entry = extractEntry(
-			fakePage({
-				Metadata: {
-					type: "rich_text",
-					rich_text: [
-						{
-							plain_text:
-								'{"category":"Web App","media":[{"type":"video","url":"https://example.com/demo.mp4"}]}',
-						},
-					],
-				} as never,
-			}),
-		);
-		expect(entry.metadata.media).toEqual([{ type: "video", url: "https://example.com/demo.mp4" }]);
-	});
+it("includes a media array when present in Metadata", () => {
+	const entry = extractEntry(
+		fakePage({
+			Metadata: {
+				type: "rich_text",
+				rich_text: [
+					{
+						plain_text:
+							'{"category":"Web App","media":[{"type":"video","url":"https://example.com/demo.mp4"}]}',
+					},
+				],
+			} as never,
+		}),
+	);
+	expect(entry.metadata.media).toEqual([
+		{ type: "video", url: "https://example.com/demo.mp4" },
+	]);
+});
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -116,10 +127,12 @@ git commit -m "feat(portfolio): add media field to EntryMetadata"
 ## Task 2: `slugify` utility
 
 **Files:**
+
 - Create: `src/lib/portfolio/slug.ts`
 - Test: `src/lib/portfolio/slug.test.ts`
 
 **Interfaces:**
+
 - Produces: `slugify(title: string): string`, exported from `src/lib/portfolio/slug.ts`.
 
 - [ ] **Step 1: Write the failing test**
@@ -130,11 +143,15 @@ import { slugify } from "./slug";
 
 describe("slugify", () => {
 	it("lowercases and hyphenates a normal title", () => {
-		expect(slugify("Language Quest AI Widget")).toBe("language-quest-ai-widget");
+		expect(slugify("Language Quest AI Widget")).toBe(
+			"language-quest-ai-widget",
+		);
 	});
 
 	it("strips punctuation", () => {
-		expect(slugify("Asset Foundry: Automated Pipelines!")).toBe("asset-foundry-automated-pipelines");
+		expect(slugify("Asset Foundry: Automated Pipelines!")).toBe(
+			"asset-foundry-automated-pipelines",
+		);
 	});
 
 	it("collapses repeated separators into one hyphen", () => {
@@ -191,11 +208,13 @@ git commit -m "feat(portfolio): add slugify utility"
 ## Task 3: Extract shared `dateSortKey` and refactor `groupEntries.ts` to use it
 
 **Files:**
+
 - Create: `src/lib/shared/sortByDate.ts`
 - Test: `src/lib/shared/sortByDate.test.ts`
 - Modify: `src/lib/cv/groupEntries.ts`
 
 **Interfaces:**
+
 - Produces: `dateSortKey(entry: DatedEntryLike): number` and `DatedEntryLike` interface (`{ metadata: { dates?: { start?: string } }; priority?: number | null }`), exported from `src/lib/shared/sortByDate.ts`. Used by Task 6.
 
 - [ ] **Step 1: Write the failing test**
@@ -211,7 +230,9 @@ describe("dateSortKey", () => {
 	});
 
 	it("falls back to a priority-based key (below any real timestamp) when there's no start date", () => {
-		const withDate = dateSortKey({ metadata: { dates: { start: "2020-01-01" } } });
+		const withDate = dateSortKey({
+			metadata: { dates: { start: "2020-01-01" } },
+		});
 		const withoutDate = dateSortKey({ metadata: {}, priority: 9 });
 		expect(withoutDate).toBeLessThan(withDate);
 	});
@@ -223,7 +244,10 @@ describe("dateSortKey", () => {
 	});
 
 	it("treats an unparseable start date the same as no date", () => {
-		const key = dateSortKey({ metadata: { dates: { start: "not-a-date" } }, priority: 0 });
+		const key = dateSortKey({
+			metadata: { dates: { start: "not-a-date" } },
+			priority: 0,
+		});
 		expect(key).toBe(-1_000_000_000_000);
 	});
 });
@@ -287,9 +311,9 @@ import { dateSortKey } from "../shared/sortByDate";
 And update the one call site (in `groupBySection`):
 
 ```ts
-	for (const section of CV_SECTIONS) {
-		grouped[section].sort((a, b) => dateSortKey(b) - dateSortKey(a));
-	}
+for (const section of CV_SECTIONS) {
+	grouped[section].sort((a, b) => dateSortKey(b) - dateSortKey(a));
+}
 ```
 
 - [ ] **Step 6: Run the full CV test suite to verify no regression**
@@ -309,10 +333,12 @@ git commit -m "refactor: extract dateSortKey into src/lib/shared for reuse by Po
 ## Task 4: `downloadEntryMedia` utility
 
 **Files:**
+
 - Create: `src/lib/portfolio/downloadMedia.ts`
 - Test: `src/lib/portfolio/downloadMedia.test.ts`
 
 **Interfaces:**
+
 - Consumes: `MetadataMedia` from `src/lib/notion/knowledgeBase.ts` (Task 1).
 - Produces: `downloadEntryMedia(slug: string, media: MetadataMedia[], options?: { fetchImpl?: FetchLike; publicDir?: string }): Promise<MetadataMedia[]>`, exported from `src/lib/portfolio/downloadMedia.ts`. Used by Task 8's sync script.
 
@@ -336,13 +362,26 @@ afterEach(() => {
 });
 
 function fakeResponse(
-	overrides: Partial<{ ok: boolean; status: number; contentType: string; body: string }> = {},
+	overrides: Partial<{
+		ok: boolean;
+		status: number;
+		contentType: string;
+		body: string;
+	}> = {},
 ) {
-	const { ok = true, status = 200, contentType = "image/png", body = "fake-image-bytes" } = overrides;
+	const {
+		ok = true,
+		status = 200,
+		contentType = "image/png",
+		body = "fake-image-bytes",
+	} = overrides;
 	return {
 		ok,
 		status,
-		headers: { get: (name: string) => (name.toLowerCase() === "content-type" ? contentType : null) },
+		headers: {
+			get: (name: string) =>
+				name.toLowerCase() === "content-type" ? contentType : null,
+		},
 		arrayBuffer: async () => new TextEncoder().encode(body).buffer,
 	};
 }
@@ -352,20 +391,39 @@ describe("downloadEntryMedia", () => {
 		const fetchImpl = vi.fn().mockResolvedValue(fakeResponse());
 		const result = await downloadEntryMedia(
 			"my-project",
-			[{ type: "image", url: "https://notion.so/fake.png", alt: "Screenshot", cover: true }],
+			[
+				{
+					type: "image",
+					url: "https://notion.so/fake.png",
+					alt: "Screenshot",
+					cover: true,
+				},
+			],
 			{ fetchImpl, publicDir },
 		);
 		expect(result).toEqual([
-			{ type: "image", url: "/portfolio/my-project/0.png", alt: "Screenshot", cover: true },
+			{
+				type: "image",
+				url: "/portfolio/my-project/0.png",
+				alt: "Screenshot",
+				cover: true,
+			},
 		]);
-		expect(existsSync(join(publicDir, "portfolio", "my-project", "0.png"))).toBe(true);
-		expect(readFileSync(join(publicDir, "portfolio", "my-project", "0.png"), "utf-8")).toBe(
-			"fake-image-bytes",
-		);
+		expect(
+			existsSync(join(publicDir, "portfolio", "my-project", "0.png")),
+		).toBe(true);
+		expect(
+			readFileSync(
+				join(publicDir, "portfolio", "my-project", "0.png"),
+				"utf-8",
+			),
+		).toBe("fake-image-bytes");
 	});
 
 	it("skips (without throwing) a media item whose download returns a non-ok response", async () => {
-		const fetchImpl = vi.fn().mockResolvedValue(fakeResponse({ ok: false, status: 404 }));
+		const fetchImpl = vi
+			.fn()
+			.mockResolvedValue(fakeResponse({ ok: false, status: 404 }));
 		const result = await downloadEntryMedia(
 			"my-project",
 			[{ type: "image", url: "https://notion.so/gone.png" }],
@@ -385,16 +443,26 @@ describe("downloadEntryMedia", () => {
 	});
 
 	it("skips a media item with an unrecognized content-type", async () => {
-		const fetchImpl = vi.fn().mockResolvedValue(fakeResponse({ contentType: "application/octet-stream" }));
-		const result = await downloadEntryMedia("my-project", [{ type: "image", url: "https://notion.so/weird" }], {
-			fetchImpl,
-			publicDir,
-		});
+		const fetchImpl = vi
+			.fn()
+			.mockResolvedValue(
+				fakeResponse({ contentType: "application/octet-stream" }),
+			);
+		const result = await downloadEntryMedia(
+			"my-project",
+			[{ type: "image", url: "https://notion.so/weird" }],
+			{
+				fetchImpl,
+				publicDir,
+			},
+		);
 		expect(result).toEqual([]);
 	});
 
 	it("indexes multiple media items sequentially in the filename", async () => {
-		const fetchImpl = vi.fn().mockResolvedValue(fakeResponse({ contentType: "image/jpeg" }));
+		const fetchImpl = vi
+			.fn()
+			.mockResolvedValue(fakeResponse({ contentType: "image/jpeg" }));
 		const result = await downloadEntryMedia(
 			"my-project",
 			[
@@ -453,20 +521,27 @@ export async function downloadEntryMedia(
 	media: MetadataMedia[],
 	options: { fetchImpl?: FetchLike; publicDir?: string } = {},
 ): Promise<MetadataMedia[]> {
-	const { fetchImpl = fetch as unknown as FetchLike, publicDir = "public" } = options;
+	const { fetchImpl = fetch as unknown as FetchLike, publicDir = "public" } =
+		options;
 	const results: MetadataMedia[] = [];
 
 	for (const [index, item] of media.entries()) {
 		try {
 			const response = await fetchImpl(item.url);
 			if (!response.ok) {
-				console.warn(`Skipping media for "${slug}" (HTTP ${response.status}): ${item.url}`);
+				console.warn(
+					`Skipping media for "${slug}" (HTTP ${response.status}): ${item.url}`,
+				);
 				continue;
 			}
-			const contentType = (response.headers.get("content-type") ?? "").split(";")[0].trim();
+			const contentType = (response.headers.get("content-type") ?? "")
+				.split(";")[0]
+				.trim();
 			const extension = EXTENSION_BY_CONTENT_TYPE[contentType];
 			if (!extension) {
-				console.warn(`Skipping media for "${slug}" (unrecognized content-type "${contentType}"): ${item.url}`);
+				console.warn(
+					`Skipping media for "${slug}" (unrecognized content-type "${contentType}"): ${item.url}`,
+				);
 				continue;
 			}
 			const relativePath = `portfolio/${slug}/${index}.${extension}`;
@@ -475,7 +550,9 @@ export async function downloadEntryMedia(
 			writeFileSync(absolutePath, Buffer.from(await response.arrayBuffer()));
 			results.push({ ...item, url: `/${relativePath}` });
 		} catch (error) {
-			console.warn(`Skipping media for "${slug}" (download failed): ${item.url} — ${String(error)}`);
+			console.warn(
+				`Skipping media for "${slug}" (download failed): ${item.url} — ${String(error)}`,
+			);
 		}
 	}
 
@@ -500,10 +577,12 @@ git commit -m "feat(portfolio): add best-effort media download utility"
 ## Task 5: Portfolio entry selection, slug assignment, and `LocalizedPortfolioEntry`
 
 **Files:**
+
 - Create: `src/lib/portfolio/portfolioEntries.ts`
 - Test: `src/lib/portfolio/portfolioEntries.test.ts`
 
 **Interfaces:**
+
 - Consumes: `slugify` from `src/lib/portfolio/slug.ts` (Task 2), `KnowledgeBaseEntry` from `src/lib/notion/knowledgeBase.ts`, `LocalizedEntry` from `src/lib/notion/translate.ts`.
 - Produces: `LocalizedPortfolioEntry` type (`LocalizedEntry & { slug: string }`), `selectPortfolioEntries(entries: KnowledgeBaseEntry[]): KnowledgeBaseEntry[]`, `assignSlugs(entries: KnowledgeBaseEntry[]): Map<string, string>` (keyed by `pageId`), all exported from `src/lib/portfolio/portfolioEntries.ts`. Used by Task 6 and Task 8.
 
@@ -514,7 +593,9 @@ import { describe, expect, it } from "vitest";
 import { assignSlugs, selectPortfolioEntries } from "./portfolioEntries";
 import type { KnowledgeBaseEntry } from "../notion/knowledgeBase";
 
-function kbEntry(overrides: Partial<KnowledgeBaseEntry> = {}): KnowledgeBaseEntry {
+function kbEntry(
+	overrides: Partial<KnowledgeBaseEntry> = {},
+): KnowledgeBaseEntry {
 	return {
 		pageId: "p1",
 		title: "Title",
@@ -536,7 +617,11 @@ describe("selectPortfolioEntries", () => {
 		const entries = [
 			kbEntry({ pageId: "a", status: "Published", contentType: "Project" }),
 			kbEntry({ pageId: "b", status: "Draft", contentType: "Project" }),
-			kbEntry({ pageId: "c", status: "Published", contentType: "Professional Experience" }),
+			kbEntry({
+				pageId: "c",
+				status: "Published",
+				contentType: "Professional Experience",
+			}),
 		];
 		expect(selectPortfolioEntries(entries).map((e) => e.pageId)).toEqual(["a"]);
 	});
@@ -544,7 +629,10 @@ describe("selectPortfolioEntries", () => {
 
 describe("assignSlugs", () => {
 	it("assigns a slug per entry keyed by pageId", () => {
-		const entries = [kbEntry({ pageId: "a", title: "Asset Foundry" }), kbEntry({ pageId: "b", title: "Language Quest" })];
+		const entries = [
+			kbEntry({ pageId: "a", title: "Asset Foundry" }),
+			kbEntry({ pageId: "b", title: "Language Quest" }),
+		];
 		const slugs = assignSlugs(entries);
 		expect(slugs.get("a")).toBe("asset-foundry");
 		expect(slugs.get("b")).toBe("language-quest");
@@ -582,15 +670,21 @@ export interface LocalizedPortfolioEntry extends LocalizedEntry {
 }
 
 /** Entries eligible for the Portfolio build: Published Project-type entries. */
-export function selectPortfolioEntries(entries: KnowledgeBaseEntry[]): KnowledgeBaseEntry[] {
-	return entries.filter((entry) => entry.status === "Published" && entry.contentType === "Project");
+export function selectPortfolioEntries(
+	entries: KnowledgeBaseEntry[],
+): KnowledgeBaseEntry[] {
+	return entries.filter(
+		(entry) => entry.status === "Published" && entry.contentType === "Project",
+	);
 }
 
 /** Assigns one slug per entry (keyed by pageId), derived from its English
  * title via `slugify`. Throws if two different entries produce the same
  * slug — resolved by editing one of the source titles in Notion, not
  * auto-disambiguated (see the Phase 6 design spec). */
-export function assignSlugs(entries: KnowledgeBaseEntry[]): Map<string, string> {
+export function assignSlugs(
+	entries: KnowledgeBaseEntry[],
+): Map<string, string> {
 	const slugs = new Map<string, string>();
 	const titleBySlug = new Map<string, string>();
 
@@ -627,10 +721,12 @@ git commit -m "feat(portfolio): add entry selection and slug assignment"
 ## Task 6: `groupByCategory`
 
 **Files:**
+
 - Create: `src/lib/portfolio/groupByCategory.ts`
 - Test: `src/lib/portfolio/groupByCategory.test.ts`
 
 **Interfaces:**
+
 - Consumes: `dateSortKey` from `src/lib/shared/sortByDate.ts` (Task 3), `LocalizedPortfolioEntry` from `src/lib/portfolio/portfolioEntries.ts` (Task 5).
 - Produces: `PortfolioCategoryGroup` type (`{ category: string; entries: LocalizedPortfolioEntry[] }`), `groupByCategory(entries: LocalizedPortfolioEntry[]): PortfolioCategoryGroup[]`, exported from `src/lib/portfolio/groupByCategory.ts`. Used by Task 10's `PortfolioView.astro`.
 
@@ -641,7 +737,9 @@ import { describe, expect, it } from "vitest";
 import { groupByCategory } from "./groupByCategory";
 import type { LocalizedPortfolioEntry } from "./portfolioEntries";
 
-function entry(overrides: Partial<LocalizedPortfolioEntry> = {}): LocalizedPortfolioEntry {
+function entry(
+	overrides: Partial<LocalizedPortfolioEntry> = {},
+): LocalizedPortfolioEntry {
 	return {
 		pageId: "p1",
 		title: "Title",
@@ -671,7 +769,11 @@ describe("groupByCategory", () => {
 			entry({ pageId: "c", displayCategory: "Web App" }),
 		]);
 		expect(groups.map((g) => g.category)).toEqual(["AI Automation", "Web App"]);
-		expect(groups.find((g) => g.category === "Web App")?.entries.map((e) => e.pageId)).toEqual(["a", "c"]);
+		expect(
+			groups
+				.find((g) => g.category === "Web App")
+				?.entries.map((e) => e.pageId),
+		).toEqual(["a", "c"]);
 	});
 
 	it("collects entries with no category under Other, always last", () => {
@@ -680,13 +782,23 @@ describe("groupByCategory", () => {
 			entry({ pageId: "b", displayCategory: "" }),
 		]);
 		expect(groups.map((g) => g.category)).toEqual(["Web App", "Other"]);
-		expect(groups.find((g) => g.category === "Other")?.entries.map((e) => e.pageId)).toEqual(["b"]);
+		expect(
+			groups.find((g) => g.category === "Other")?.entries.map((e) => e.pageId),
+		).toEqual(["b"]);
 	});
 
 	it("sorts entries within a category most-recent-first", () => {
 		const groups = groupByCategory([
-			entry({ pageId: "old", displayCategory: "Web App", metadata: { dates: { start: "2020-01-01" } } }),
-			entry({ pageId: "new", displayCategory: "Web App", metadata: { dates: { start: "2024-01-01" } } }),
+			entry({
+				pageId: "old",
+				displayCategory: "Web App",
+				metadata: { dates: { start: "2020-01-01" } },
+			}),
+			entry({
+				pageId: "new",
+				displayCategory: "Web App",
+				metadata: { dates: { start: "2024-01-01" } },
+			}),
 		]);
 		expect(groups[0].entries.map((e) => e.pageId)).toEqual(["new", "old"]);
 	});
@@ -718,7 +830,9 @@ export interface PortfolioCategoryGroup {
 /** Groups entries by their (already-localized) display category, sorted
  * alphabetically with entries lacking a category collected under "Other"
  * (always last). Entries within each group are sorted most-recent-first. */
-export function groupByCategory(entries: LocalizedPortfolioEntry[]): PortfolioCategoryGroup[] {
+export function groupByCategory(
+	entries: LocalizedPortfolioEntry[],
+): PortfolioCategoryGroup[] {
 	const groups = new Map<string, LocalizedPortfolioEntry[]>();
 
 	for (const entry of entries) {
@@ -734,11 +848,15 @@ export function groupByCategory(entries: LocalizedPortfolioEntry[]): PortfolioCa
 	const namedCategories = [...groups.keys()]
 		.filter((category) => category !== OTHER_CATEGORY)
 		.sort((a, b) => a.localeCompare(b));
-	const orderedCategories = groups.has(OTHER_CATEGORY) ? [...namedCategories, OTHER_CATEGORY] : namedCategories;
+	const orderedCategories = groups.has(OTHER_CATEGORY)
+		? [...namedCategories, OTHER_CATEGORY]
+		: namedCategories;
 
 	return orderedCategories.map((category) => ({
 		category,
-		entries: [...(groups.get(category) ?? [])].sort((a, b) => dateSortKey(b) - dateSortKey(a)),
+		entries: [...(groups.get(category) ?? [])].sort(
+			(a, b) => dateSortKey(b) - dateSortKey(a),
+		),
 	}));
 }
 ```
@@ -760,12 +878,14 @@ git commit -m "feat(portfolio): add category grouping"
 ## Task 7: Dictionary updates (Portfolio copy + CV project-link copy)
 
 **Files:**
+
 - Modify: `src/i18n/dictionary.ts`
 - Modify: `src/i18n/dictionaries/en.ts`
 - Modify: `src/i18n/dictionaries/es.ts`
 - Modify: `src/i18n/dictionaries/fr.ts`
 
 **Interfaces:**
+
 - Produces: new `Dictionary["portfolio"]` shape (`title`, `intro`, `emptyState`, `backToPortfolio`, `linkLabels: { demo, repo, company, certificate, article, other }`) and an updated `Dictionary["cv"]["viewProjects"]` copy string. Consumed by Task 9, 10, 11, 12.
 
 This task is copy/type-only — no new runtime logic, so no dedicated test file. Correctness is enforced by `satisfies Dictionary` (compile-time completeness) in each dictionary file, verified by typecheck in Step 3.
@@ -775,20 +895,20 @@ This task is copy/type-only — no new runtime logic, so no dedicated test file.
 In `src/i18n/dictionary.ts`, replace the `portfolio` block:
 
 ```ts
-	portfolio: {
-		title: string;
-		intro: string;
-		emptyState: string;
-		backToPortfolio: string;
-		linkLabels: {
-			demo: string;
-			repo: string;
-			company: string;
-			certificate: string;
-			article: string;
-			other: string;
-		};
-	};
+portfolio: {
+	title: string;
+	intro: string;
+	emptyState: string;
+	backToPortfolio: string;
+	linkLabels: {
+		demo: string;
+		repo: string;
+		company: string;
+		certificate: string;
+		article: string;
+		other: string;
+	}
+}
 ```
 
 (This replaces the old `{ phase: string; title: string; body: string }` shape.)
@@ -881,11 +1001,13 @@ git commit -m "feat(portfolio): add Portfolio page copy, update CV project-link 
 ## Task 8: `sync-portfolio.ts` script + placeholder `content.json`
 
 **Files:**
+
 - Create: `scripts/sync-portfolio.ts`
 - Create: `src/lib/portfolio/content.json`
 - Modify: `package.json`
 
 **Interfaces:**
+
 - Consumes: `fetchKnowledgeBaseEntries` (`src/lib/notion/knowledgeBase.ts`), `translateForLocale` (`src/lib/notion/translate.ts`), `loadTranslationCache`/`saveTranslationCache` (`src/lib/notion/translationCache.ts`), `selectPortfolioEntries`/`assignSlugs`/`LocalizedPortfolioEntry` (Task 5), `downloadEntryMedia` (Task 4), `locales`/`Locale` (`src/i18n/locales.ts`).
 - Produces: `src/lib/portfolio/content.json` shaped as `Partial<Record<Locale, LocalizedPortfolioEntry[]>>`. Consumed by Task 10 and 11.
 
@@ -923,7 +1045,10 @@ import { Client } from "@notionhq/client";
 import { locales, type Locale } from "../src/i18n/locales";
 import { fetchKnowledgeBaseEntries } from "../src/lib/notion/knowledgeBase";
 import { translateForLocale } from "../src/lib/notion/translate";
-import { loadTranslationCache, saveTranslationCache } from "../src/lib/notion/translationCache";
+import {
+	loadTranslationCache,
+	saveTranslationCache,
+} from "../src/lib/notion/translationCache";
 import { downloadEntryMedia } from "../src/lib/portfolio/downloadMedia";
 import {
 	assignSlugs,
@@ -965,7 +1090,10 @@ async function run() {
 		const slug = slugs.get(entry.pageId);
 		const media = entry.metadata.media ?? [];
 		if (!slug || media.length === 0) continue;
-		entry.metadata = { ...entry.metadata, media: await downloadEntryMedia(slug, media) };
+		entry.metadata = {
+			...entry.metadata,
+			media: await downloadEntryMedia(slug, media),
+		};
 	}
 
 	const cache = loadTranslationCache();
@@ -973,8 +1101,14 @@ async function run() {
 
 	for (const locale of locales) {
 		console.log(`Translating for locale "${locale}"...`);
-		const localized = await translateForLocale(portfolioEntries, locale, { apiKey: googleApiKey, cache });
-		content[locale] = localized.map((entry) => ({ ...entry, slug: slugs.get(entry.pageId) ?? "" }));
+		const localized = await translateForLocale(portfolioEntries, locale, {
+			apiKey: googleApiKey,
+			cache,
+		});
+		content[locale] = localized.map((entry) => ({
+			...entry,
+			slug: slugs.get(entry.pageId) ?? "",
+		}));
 	}
 
 	saveTranslationCache(cache);
@@ -1015,9 +1149,11 @@ git commit -m "feat(portfolio): add sync-portfolio.ts script and placeholder con
 ## Task 9: `ProjectCard.astro` component
 
 **Files:**
+
 - Create: `src/components/portfolio/ProjectCard.astro`
 
 **Interfaces:**
+
 - Consumes: `LocalizedPortfolioEntry` (Task 5), `Locale` (`src/i18n/locales.ts`).
 - Produces: `ProjectCard` Astro component with `Props { entry: LocalizedPortfolioEntry; lang: Locale; presentLabel: string }`. Consumed by Task 10.
 
@@ -1048,7 +1184,8 @@ const dateRange = dates?.start
 	? `${formatYear(dates.start)} – ${dates.ongoing || !dates.end ? presentLabel : formatYear(dates.end)}`
 	: null;
 
-const cover = entry.metadata.media?.find((item) => item.cover) ?? entry.metadata.media?.[0];
+const cover =
+	entry.metadata.media?.find((item) => item.cover) ?? entry.metadata.media?.[0];
 const metaLine = [entry.displayCategory, dateRange].filter(Boolean).join(" · ");
 ---
 
@@ -1058,12 +1195,22 @@ const metaLine = [entry.displayCategory, dateRange].filter(Boolean).join(" · ")
 >
 	{
 		cover && (
-			<img src={cover.url} alt={cover.alt ?? entry.displayTitle} class="aspect-video w-full object-cover" />
+			<img
+				src={cover.url}
+				alt={cover.alt ?? entry.displayTitle}
+				class="aspect-video w-full object-cover"
+			/>
 		)
 	}
 	<div class="flex flex-col gap-1 p-4">
-		<h3 class="font-display text-ion text-base font-semibold">{entry.displayTitle}</h3>
-		{metaLine && <p class="text-signal-cyan/70 font-mono text-xs">{metaLine}</p>}
+		<h3 class="font-display text-ion text-base font-semibold">
+			{entry.displayTitle}
+		</h3>
+		{
+			metaLine && (
+				<p class="text-signal-cyan/70 font-mono text-xs">{metaLine}</p>
+			)
+		}
 	</div>
 </a>
 ```
@@ -1080,12 +1227,14 @@ git commit -m "feat(portfolio): add ProjectCard component"
 ## Task 10: `PortfolioView.astro` grid + wire up `portfolio.astro` pages
 
 **Files:**
+
 - Modify: `src/views/PortfolioView.astro` (currently a Phase 6 placeholder)
 - Modify: `src/pages/en/portfolio.astro`
 - Modify: `src/pages/es/portfolio.astro`
 - Modify: `src/pages/fr/portfolio.astro`
 
 **Interfaces:**
+
 - Consumes: `groupByCategory` (Task 6), `ProjectCard` (Task 9), `LocalizedPortfolioEntry` (Task 5), `content.json` (Task 8), `getDictionary`/`Locale` (`src/i18n`).
 
 - [ ] **Step 1: Rewrite `src/views/PortfolioView.astro`**
@@ -1111,14 +1260,23 @@ const t = getDictionary(lang);
 // Pre-fetched and pre-translated by `pnpm portfolio:sync` (scripts/sync-portfolio.ts)
 // and committed — the build never calls Notion/Gemini itself. Re-run that script
 // and commit the result whenever Portfolio-relevant Notion content changes.
-const localizedEntries = (portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)[lang] ?? [];
+const localizedEntries =
+	(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)[
+		lang
+	] ?? [];
 const groups = groupByCategory(localizedEntries);
 ---
 
-<Layout title={`${t.portfolio.title} — Daniel Peraza`} description={t.meta.description} lang={lang}>
+<Layout
+	title={`${t.portfolio.title} — Daniel Peraza`}
+	description={t.meta.description}
+	lang={lang}
+>
 	<main class="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-24">
 		<header class="text-center">
-			<h1 class="font-display text-ion text-3xl font-semibold">{t.portfolio.title}</h1>
+			<h1 class="font-display text-ion text-3xl font-semibold">
+				{t.portfolio.title}
+			</h1>
 			<p class="font-body text-ion/70 mt-2 text-sm">{t.portfolio.intro}</p>
 		</header>
 
@@ -1129,10 +1287,16 @@ const groups = groupByCategory(localizedEntries);
 				<div class="flex flex-col gap-10">
 					{groups.map((group) => (
 						<section class="flex flex-col gap-4">
-							<h2 class="text-signal-cyan font-mono text-xs tracking-[0.2em] uppercase">{group.category}</h2>
+							<h2 class="text-signal-cyan font-mono text-xs tracking-[0.2em] uppercase">
+								{group.category}
+							</h2>
 							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 								{group.entries.map((entry) => (
-									<ProjectCard entry={entry} lang={lang} presentLabel={t.cv.present} />
+									<ProjectCard
+										entry={entry}
+										lang={lang}
+										presentLabel={t.cv.present}
+									/>
 								))}
 							</div>
 						</section>
@@ -1182,12 +1346,14 @@ git commit -m "feat(portfolio): build the Portfolio grid view"
 ## Task 11: `PortfolioDetailView.astro` + `[slug].astro` dynamic routes
 
 **Files:**
+
 - Create: `src/views/PortfolioDetailView.astro`
 - Create: `src/pages/en/portfolio/[slug].astro`
 - Create: `src/pages/es/portfolio/[slug].astro`
 - Create: `src/pages/fr/portfolio/[slug].astro`
 
 **Interfaces:**
+
 - Consumes: `LocalizedPortfolioEntry` (Task 5), `content.json` (Task 8), `getDictionary`/`Locale` (`src/i18n`), `Dictionary["portfolio"]["linkLabels"]` (Task 7).
 
 - [ ] **Step 1: Implement `src/views/PortfolioDetailView.astro`**
@@ -1216,7 +1382,9 @@ const dateRange = dates?.start
 	? `${formatYear(dates.start)} – ${dates.ongoing || !dates.end ? t.cv.present : formatYear(dates.end)}`
 	: null;
 
-const metaLine = [entry.displayCategory, entry.displayLocation, dateRange].filter(Boolean).join(" · ");
+const metaLine = [entry.displayCategory, entry.displayLocation, dateRange]
+	.filter(Boolean)
+	.join(" · ");
 
 const techStack = entry.metadata.techStack ?? [];
 const links = entry.metadata.links ?? [];
@@ -1224,7 +1392,8 @@ const media = entry.metadata.media ?? [];
 
 const linkLabels = t.portfolio.linkLabels;
 function labelForLinkType(type: string | undefined): string {
-	if (type && type in linkLabels) return linkLabels[type as keyof typeof linkLabels];
+	if (type && type in linkLabels)
+		return linkLabels[type as keyof typeof linkLabels];
 	return linkLabels.other;
 }
 ---
@@ -1235,13 +1404,22 @@ function labelForLinkType(type: string | undefined): string {
 	lang={lang}
 >
 	<main class="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-24">
-		<a href={`/${lang}/portfolio`} class="text-signal-cyan w-fit text-sm hover:text-signal-cyan/80">
+		<a
+			href={`/${lang}/portfolio`}
+			class="text-signal-cyan hover:text-signal-cyan/80 w-fit text-sm"
+		>
 			{t.portfolio.backToPortfolio}
 		</a>
 
 		<header>
-			<h1 class="font-display text-ion text-3xl font-semibold">{entry.displayTitle}</h1>
-			{metaLine && <p class="text-signal-cyan/70 mt-2 font-mono text-xs">{metaLine}</p>}
+			<h1 class="font-display text-ion text-3xl font-semibold">
+				{entry.displayTitle}
+			</h1>
+			{
+				metaLine && (
+					<p class="text-signal-cyan/70 mt-2 font-mono text-xs">{metaLine}</p>
+				)
+			}
 		</header>
 
 		{
@@ -1249,7 +1427,11 @@ function labelForLinkType(type: string | undefined): string {
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 					{media.map((item) =>
 						item.type === "video" ? (
-							<video src={item.url} controls class="border-slate-mist w-full rounded-xl border" />
+							<video
+								src={item.url}
+								controls
+								class="border-slate-mist w-full rounded-xl border"
+							/>
 						) : (
 							<figure>
 								<img
@@ -1257,7 +1439,11 @@ function labelForLinkType(type: string | undefined): string {
 									alt={item.alt ?? entry.displayTitle}
 									class="border-slate-mist w-full rounded-xl border"
 								/>
-								{item.caption && <figcaption class="text-ion/60 mt-1 text-xs">{item.caption}</figcaption>}
+								{item.caption && (
+									<figcaption class="text-ion/60 mt-1 text-xs">
+										{item.caption}
+									</figcaption>
+								)}
 							</figure>
 						),
 					)}
@@ -1265,7 +1451,11 @@ function labelForLinkType(type: string | undefined): string {
 			)
 		}
 
-		{entry.displayDescription && <p class="font-body text-ion/80 text-sm">{entry.displayDescription}</p>}
+		{
+			entry.displayDescription && (
+				<p class="font-body text-ion/80 text-sm">{entry.displayDescription}</p>
+			)
+		}
 
 		{
 			techStack.length > 0 && (
@@ -1287,7 +1477,7 @@ function labelForLinkType(type: string | undefined): string {
 							href={link.url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="text-signal-cyan text-sm underline hover:text-signal-cyan/80"
+							class="text-signal-cyan hover:text-signal-cyan/80 text-sm underline"
 						>
 							{link.label} ({labelForLinkType(link.type)})
 						</a>
@@ -1316,7 +1506,8 @@ interface Props {
 
 export async function getStaticPaths() {
 	const entries =
-		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>).en ?? [];
+		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)
+			.en ?? [];
 	return entries.map((entry) => ({
 		params: { slug: entry.slug },
 		props: { entry },
@@ -1348,7 +1539,8 @@ interface Props {
 
 export async function getStaticPaths() {
 	const entries =
-		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>).es ?? [];
+		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)
+			.es ?? [];
 	return entries.map((entry) => ({
 		params: { slug: entry.slug },
 		props: { entry },
@@ -1380,7 +1572,8 @@ interface Props {
 
 export async function getStaticPaths() {
 	const entries =
-		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>).fr ?? [];
+		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)
+			.fr ?? [];
 	return entries.map((entry) => ({
 		params: { slug: entry.slug },
 		props: { entry },
@@ -1410,9 +1603,11 @@ git commit -m "feat(portfolio): build the Portfolio detail page and dynamic rout
 ## Task 12: CV → Portfolio cross-link
 
 **Files:**
+
 - Modify: `src/components/cv/EntryCard.astro`
 
 **Interfaces:**
+
 - Consumes: `slugify` (Task 2), `Dictionary["cv"]["viewProjects"]` (already updated copy from Task 7).
 
 - [ ] **Step 1: Update `EntryCard.astro`'s Project link**
@@ -1420,20 +1615,20 @@ git commit -m "feat(portfolio): build the Portfolio detail page and dynamic rout
 In `src/components/cv/EntryCard.astro`, add the import at the top of the frontmatter:
 
 ```astro
-import { slugify } from "../../lib/portfolio/slug";
+import {slugify} from "../../lib/portfolio/slug";
 ```
 
 Then replace the existing link `href`:
 
 ```astro
-			isProject && (
-				<a
-					href={`/${lang}/portfolio/${slugify(entry.title)}`}
-					class="text-signal-cyan mt-3 inline-block text-sm underline hover:text-signal-cyan/80"
-				>
-					{viewProjectsLabel}
-				</a>
-			)
+isProject && (
+<a
+	href={`/${lang}/portfolio/${slugify(entry.title)}`}
+	class="text-signal-cyan hover:text-signal-cyan/80 mt-3 inline-block text-sm underline"
+>
+	{viewProjectsLabel}
+</a>
+)
 ```
 
 (`entry.title` is the entry's original English Notion title — unchanged across locales, and the same field `assignSlugs` slugifies in `scripts/sync-portfolio.ts`, so both sides independently compute the identical slug with no shared lookup needed.)

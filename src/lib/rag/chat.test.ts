@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { parseGeminiSseStream, streamChatCompletion, type FetchLike } from "./chat";
+import {
+	parseGeminiSseStream,
+	streamChatCompletion,
+	type FetchLike,
+} from "./chat";
 
 function streamFromChunks(chunks: string[]): ReadableStream<Uint8Array> {
 	const encoder = new TextEncoder();
@@ -37,7 +41,10 @@ describe("parseGeminiSseStream", () => {
 			'data: {"candidates":[{"content":{"parts":[{"text":" there"}]}}]}\n\n',
 		]);
 
-		expect(await collect(parseGeminiSseStream(body))).toEqual(["Hello", " there"]);
+		expect(await collect(parseGeminiSseStream(body))).toEqual([
+			"Hello",
+			" there",
+		]);
 	});
 
 	it("handles events delimited by CRLF (\\r\\n\\r\\n), as preserved by the Workers runtime's fetch", async () => {
@@ -46,7 +53,10 @@ describe("parseGeminiSseStream", () => {
 			'data: {"candidates":[{"content":{"parts":[{"text":" there"}]}}]}\r\n\r\n',
 		]);
 
-		expect(await collect(parseGeminiSseStream(body))).toEqual(["Hello", " there"]);
+		expect(await collect(parseGeminiSseStream(body))).toEqual([
+			"Hello",
+			" there",
+		]);
 	});
 
 	it("handles a chunk split across two reads", async () => {
@@ -73,18 +83,24 @@ describe("parseGeminiSseStream", () => {
 			'data: {"candidates":[{"content":{"parts":[{"text":"Hello! I am Daniel\'s avatar."}]}}]}\n\n',
 		]);
 
-		expect(await collect(parseGeminiSseStream(body))).toEqual(["Hello! I am Daniel's avatar."]);
+		expect(await collect(parseGeminiSseStream(body))).toEqual([
+			"Hello! I am Daniel's avatar.",
+		]);
 	});
 });
 
 describe("streamChatCompletion", () => {
 	it("posts the system prompt and message history, then yields streamed text", async () => {
-		const fetchImpl = vi.fn().mockImplementation(
-			fakeFetch(
-				200,
-				streamFromChunks(['data: {"candidates":[{"content":{"parts":[{"text":"Hi!"}]}}]}\n\n']),
-			),
-		);
+		const fetchImpl = vi
+			.fn()
+			.mockImplementation(
+				fakeFetch(
+					200,
+					streamFromChunks([
+						'data: {"candidates":[{"content":{"parts":[{"text":"Hi!"}]}}]}\n\n',
+					]),
+				),
+			);
 
 		const result = await collect(
 			streamChatCompletion({
@@ -104,12 +120,18 @@ describe("streamChatCompletion", () => {
 		);
 		const [, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
 		const body = JSON.parse(init.body as string);
-		expect(body.systemInstruction).toEqual({ parts: [{ text: "You are Daniel's avatar." }] });
-		expect(body.contents).toEqual([{ role: "user", parts: [{ text: "Hello" }] }]);
+		expect(body.systemInstruction).toEqual({
+			parts: [{ text: "You are Daniel's avatar." }],
+		});
+		expect(body.contents).toEqual([
+			{ role: "user", parts: [{ text: "Hello" }] },
+		]);
 	});
 
 	it("throws with status and body text on a non-ok response", async () => {
-		const fetchImpl = vi.fn().mockImplementation(fakeFetch(429, null, "quota exceeded"));
+		const fetchImpl = vi
+			.fn()
+			.mockImplementation(fakeFetch(429, null, "quota exceeded"));
 
 		await expect(
 			collect(

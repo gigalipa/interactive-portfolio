@@ -1,8 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
-import { deleteAllHistory, deleteConversation, fetchConversation, fetchHistoryList } from "./historyApi";
+import {
+	deleteAllHistory,
+	deleteConversation,
+	fetchConversation,
+	fetchHistoryList,
+} from "./historyApi";
 import type { StoredConversation } from "../history/types";
 
-function mockFetchOnce(response: { ok: boolean; status?: number; json?: () => Promise<unknown> }) {
+function mockFetchOnce(response: {
+	ok: boolean;
+	status?: number;
+	json?: () => Promise<unknown>;
+}) {
 	return vi.fn().mockResolvedValue({
 		ok: response.ok,
 		status: response.status ?? (response.ok ? 200 : 500),
@@ -12,7 +21,13 @@ function mockFetchOnce(response: { ok: boolean; status?: number; json?: () => Pr
 
 describe("fetchHistoryList", () => {
 	it("returns the parsed list on success", async () => {
-		const list = [{ conversationId: "c-1", title: "Hi", updatedAt: "2026-08-06T00:00:00.000Z" }];
+		const list = [
+			{
+				conversationId: "c-1",
+				title: "Hi",
+				updatedAt: "2026-08-06T00:00:00.000Z",
+			},
+		];
 		vi.stubGlobal("fetch", mockFetchOnce({ ok: true, json: async () => list }));
 		expect(await fetchHistoryList()).toEqual(list);
 		vi.unstubAllGlobals();
@@ -27,8 +42,15 @@ describe("fetchHistoryList", () => {
 
 describe("fetchConversation", () => {
 	it("returns the conversation on success", async () => {
-		const conversation: StoredConversation = { messages: [], updatedAt: "2026-08-06T00:00:00.000Z", title: "Hi" };
-		vi.stubGlobal("fetch", mockFetchOnce({ ok: true, json: async () => conversation }));
+		const conversation: StoredConversation = {
+			messages: [],
+			updatedAt: "2026-08-06T00:00:00.000Z",
+			title: "Hi",
+		};
+		vi.stubGlobal(
+			"fetch",
+			mockFetchOnce({ ok: true, json: async () => conversation }),
+		);
 		expect(await fetchConversation("c-1")).toEqual(conversation);
 		vi.unstubAllGlobals();
 	});
@@ -45,7 +67,9 @@ describe("deleteConversation", () => {
 		const fetchImpl = mockFetchOnce({ ok: true, status: 204 });
 		vi.stubGlobal("fetch", fetchImpl);
 		expect(await deleteConversation("c-1")).toBe(true);
-		expect(fetchImpl).toHaveBeenCalledWith("/api/history/c-1", { method: "DELETE" });
+		expect(fetchImpl).toHaveBeenCalledWith("/api/history/c-1", {
+			method: "DELETE",
+		});
 		vi.unstubAllGlobals();
 	});
 });
@@ -55,7 +79,9 @@ describe("deleteAllHistory", () => {
 		const fetchImpl = mockFetchOnce({ ok: true, status: 204 });
 		vi.stubGlobal("fetch", fetchImpl);
 		expect(await deleteAllHistory()).toBe(true);
-		expect(fetchImpl).toHaveBeenCalledWith("/api/history", { method: "DELETE" });
+		expect(fetchImpl).toHaveBeenCalledWith("/api/history", {
+			method: "DELETE",
+		});
 		vi.unstubAllGlobals();
 	});
 });

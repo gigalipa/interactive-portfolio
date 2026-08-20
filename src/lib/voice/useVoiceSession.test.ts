@@ -20,7 +20,10 @@ import { setPresenceState, setVoiceMode } from "../chat/presenceRingBridge";
 import { useVoiceSession } from "./useVoiceSession";
 
 function fakeAnalyser() {
-	return { frequencyBinCount: 8, getByteFrequencyData: vi.fn() } as unknown as AnalyserNode;
+	return {
+		frequencyBinCount: 8,
+		getByteFrequencyData: vi.fn(),
+	} as unknown as AnalyserNode;
 }
 
 function baseOptions() {
@@ -35,13 +38,18 @@ function baseOptions() {
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	vi.mocked(mintVoiceToken).mockResolvedValue({ token: "t", expiresAt: "x", model: "m" });
+	vi.mocked(mintVoiceToken).mockResolvedValue({
+		token: "t",
+		expiresAt: "x",
+		model: "m",
+	});
 	vi.mocked(persistVoiceTurn).mockResolvedValue({ conversationId: "c1" });
 });
 
 describe("useVoiceSession", () => {
 	it("goes idle -> connecting -> listening on a successful start, and sets voice mode on", async () => {
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
 			return Promise.resolve({
@@ -66,7 +74,8 @@ describe("useVoiceSession", () => {
 	});
 
 	it("moves to speaking/listening as onSpeakingChange fires", async () => {
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
 			return Promise.resolve({
@@ -90,7 +99,8 @@ describe("useVoiceSession", () => {
 	});
 
 	it("calls persistVoiceTurn and onTurnPersisted when a turn completes", async () => {
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
 			return Promise.resolve({
@@ -99,14 +109,21 @@ describe("useVoiceSession", () => {
 				close: vi.fn(),
 			});
 		});
-		const options = { ...baseOptions(), persist: true, conversationId: "existing" };
+		const options = {
+			...baseOptions(),
+			persist: true,
+			conversationId: "existing",
+		};
 
 		const { result } = renderHook(() => useVoiceSession(options));
 		act(() => result.current.start());
 		await waitFor(() => expect(capturedCallbacks).not.toBeUndefined());
 
 		await act(async () => {
-			await capturedCallbacks?.onTurnComplete({ userText: "Hi", modelText: "Hello" });
+			await capturedCallbacks?.onTurnComplete({
+				userText: "Hi",
+				modelText: "Hello",
+			});
 		});
 
 		expect(persistVoiceTurn).toHaveBeenCalledWith({
@@ -123,7 +140,8 @@ describe("useVoiceSession", () => {
 	});
 
 	it("reuses the conversationId returned by the first turn for a second turn in the same session, even as the caller keeps passing conversationId: undefined", async () => {
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
 			return Promise.resolve({
@@ -132,7 +150,9 @@ describe("useVoiceSession", () => {
 				close: vi.fn(),
 			});
 		});
-		vi.mocked(persistVoiceTurn).mockResolvedValueOnce({ conversationId: "new-conv-1" });
+		vi.mocked(persistVoiceTurn).mockResolvedValueOnce({
+			conversationId: "new-conv-1",
+		});
 		// options.conversationId stays undefined for the whole test, exactly as
 		// ChatWidget always passes it — this is the regression this test guards.
 		const options = { ...baseOptions(), persist: true };
@@ -147,7 +167,10 @@ describe("useVoiceSession", () => {
 		await waitFor(() => expect(capturedCallbacks).not.toBeUndefined());
 
 		await act(async () => {
-			await capturedCallbacks?.onTurnComplete({ userText: "First", modelText: "Reply one" });
+			await capturedCallbacks?.onTurnComplete({
+				userText: "First",
+				modelText: "Reply one",
+			});
 		});
 		expect(persistVoiceTurn).toHaveBeenNthCalledWith(1, {
 			persist: true,
@@ -159,7 +182,10 @@ describe("useVoiceSession", () => {
 		rerender({ ...options });
 
 		await act(async () => {
-			await capturedCallbacks?.onTurnComplete({ userText: "Second", modelText: "Reply two" });
+			await capturedCallbacks?.onTurnComplete({
+				userText: "Second",
+				modelText: "Reply two",
+			});
 		});
 		expect(persistVoiceTurn).toHaveBeenNthCalledWith(2, {
 			persist: true,
@@ -170,7 +196,8 @@ describe("useVoiceSession", () => {
 	});
 
 	it("seeds the first turn's conversationId from options.conversationId when starting mid-conversation (e.g. after prior text turns)", async () => {
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
 			return Promise.resolve({
@@ -179,15 +206,24 @@ describe("useVoiceSession", () => {
 				close: vi.fn(),
 			});
 		});
-		vi.mocked(persistVoiceTurn).mockResolvedValueOnce({ conversationId: "already-active-conv" });
-		const options = { ...baseOptions(), persist: true, conversationId: "already-active-conv" };
+		vi.mocked(persistVoiceTurn).mockResolvedValueOnce({
+			conversationId: "already-active-conv",
+		});
+		const options = {
+			...baseOptions(),
+			persist: true,
+			conversationId: "already-active-conv",
+		};
 
 		const { result } = renderHook(() => useVoiceSession(options));
 		act(() => result.current.start());
 		await waitFor(() => expect(capturedCallbacks).not.toBeUndefined());
 
 		await act(async () => {
-			await capturedCallbacks?.onTurnComplete({ userText: "Hi", modelText: "Hello" });
+			await capturedCallbacks?.onTurnComplete({
+				userText: "Hi",
+				modelText: "Hello",
+			});
 		});
 
 		expect(persistVoiceTurn).toHaveBeenCalledWith({
@@ -211,7 +247,10 @@ describe("useVoiceSession", () => {
 	});
 
 	it("goes to error and calls onError with voice_mic_denied when startLiveSession rejects with a permission error", async () => {
-		const permissionError = new DOMException("Permission denied", "NotAllowedError");
+		const permissionError = new DOMException(
+			"Permission denied",
+			"NotAllowedError",
+		);
 		vi.mocked(startLiveSession).mockRejectedValue(permissionError);
 		const options = baseOptions();
 
@@ -225,15 +264,24 @@ describe("useVoiceSession", () => {
 	it("reconnects once with a freshly minted token on an unexpected close, then falls back to error on a second failure", async () => {
 		const closeA = vi.fn();
 		const closeB = vi.fn();
-		const callSequence: Parameters<typeof startLiveSession>[0]["callbacks"][] = [];
+		const callSequence: Parameters<typeof startLiveSession>[0]["callbacks"][] =
+			[];
 		vi.mocked(startLiveSession)
 			.mockImplementationOnce((opts) => {
 				callSequence.push(opts.callbacks);
-				return Promise.resolve({ micAnalyser: fakeAnalyser(), outputAnalyser: fakeAnalyser(), close: closeA });
+				return Promise.resolve({
+					micAnalyser: fakeAnalyser(),
+					outputAnalyser: fakeAnalyser(),
+					close: closeA,
+				});
 			})
 			.mockImplementationOnce((opts) => {
 				callSequence.push(opts.callbacks);
-				return Promise.resolve({ micAnalyser: fakeAnalyser(), outputAnalyser: fakeAnalyser(), close: closeB });
+				return Promise.resolve({
+					micAnalyser: fakeAnalyser(),
+					outputAnalyser: fakeAnalyser(),
+					close: closeB,
+				});
 			});
 		const options = baseOptions();
 
@@ -262,10 +310,15 @@ describe("useVoiceSession", () => {
 
 	it("does not attempt to reconnect when the close was caused by end()", async () => {
 		const close = vi.fn();
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
-			return Promise.resolve({ micAnalyser: fakeAnalyser(), outputAnalyser: fakeAnalyser(), close });
+			return Promise.resolve({
+				micAnalyser: fakeAnalyser(),
+				outputAnalyser: fakeAnalyser(),
+				close,
+			});
 		});
 
 		const { result } = renderHook(() => useVoiceSession(baseOptions()));
@@ -285,10 +338,15 @@ describe("useVoiceSession", () => {
 
 	it("end() closes the session, clears voice mode, and returns to idle", async () => {
 		const close = vi.fn();
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
-			return Promise.resolve({ micAnalyser: fakeAnalyser(), outputAnalyser: fakeAnalyser(), close });
+			return Promise.resolve({
+				micAnalyser: fakeAnalyser(),
+				outputAnalyser: fakeAnalyser(),
+				close,
+			});
 		});
 
 		const { result } = renderHook(() => useVoiceSession(baseOptions()));

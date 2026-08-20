@@ -14,8 +14,14 @@ import { Client } from "@notionhq/client";
 import { locales, type Locale } from "../src/i18n/locales";
 import { selectCvEntries } from "../src/lib/cv/groupEntries";
 import { fetchKnowledgeBaseEntries } from "../src/lib/notion/knowledgeBase";
-import { translateForLocale, type LocalizedEntry } from "../src/lib/notion/translate";
-import { loadTranslationCache, saveTranslationCache } from "../src/lib/notion/translationCache";
+import {
+	translateForLocale,
+	type LocalizedEntry,
+} from "../src/lib/notion/translate";
+import {
+	loadTranslationCache,
+	saveTranslationCache,
+} from "../src/lib/notion/translationCache";
 
 function requireEnv(name: string): string {
 	const value = process.env[name];
@@ -34,7 +40,9 @@ async function run() {
 	console.log("Querying Knowledge Base for CV-eligible entries...");
 	const allEntries = await fetchKnowledgeBaseEntries(notion);
 	const cvEntries = selectCvEntries(allEntries);
-	console.log(`Found ${cvEntries.length} CV-eligible entries (Published, relevant Content Type).`);
+	console.log(
+		`Found ${cvEntries.length} CV-eligible entries (Published, relevant Content Type).`,
+	);
 
 	if (cvEntries.length === 0) {
 		throw new Error(
@@ -47,7 +55,10 @@ async function run() {
 
 	for (const locale of locales) {
 		console.log(`Translating for locale "${locale}"...`);
-		content[locale] = await translateForLocale(cvEntries, locale, { apiKey: googleApiKey, cache });
+		content[locale] = await translateForLocale(cvEntries, locale, {
+			apiKey: googleApiKey,
+			cache,
+		});
 	}
 
 	saveTranslationCache(cache);

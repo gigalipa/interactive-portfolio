@@ -1,23 +1,43 @@
 import { describe, expect, it, vi } from "vitest";
-import { extractEntry, fetchKnowledgeBaseEntries, parseMetadata } from "./knowledgeBase";
+import {
+	extractEntry,
+	fetchKnowledgeBaseEntries,
+	parseMetadata,
+} from "./knowledgeBase";
 import type { PageObjectResponse } from "@notionhq/client";
 
-function fakePage(overrides: Partial<PageObjectResponse["properties"]> = {}): PageObjectResponse {
+function fakePage(
+	overrides: Partial<PageObjectResponse["properties"]> = {},
+): PageObjectResponse {
 	return {
 		id: "page-1",
 		properties: {
 			Title: { type: "title", title: [{ plain_text: "Senior Engineer" }] },
-			Summary: { type: "rich_text", rich_text: [{ plain_text: "A short summary." }] },
-			Description: { type: "rich_text", rich_text: [{ plain_text: "A longer description." }] },
-			"Content Type": { type: "select", select: { name: "Professional Experience" } },
-			Tags: { type: "multi_select", multi_select: [{ name: "backend" }, { name: "ai" }] },
+			Summary: {
+				type: "rich_text",
+				rich_text: [{ plain_text: "A short summary." }],
+			},
+			Description: {
+				type: "rich_text",
+				rich_text: [{ plain_text: "A longer description." }],
+			},
+			"Content Type": {
+				type: "select",
+				select: { name: "Professional Experience" },
+			},
+			Tags: {
+				type: "multi_select",
+				multi_select: [{ name: "backend" }, { name: "ai" }],
+			},
 			Priority: { type: "number", number: 5 },
 			Status: { type: "select", select: { name: "Published" } },
 			Language: { type: "select", select: { name: "ES" } },
 			"Related To": { type: "relation", relation: [{ id: "skill-1" }] },
 			Metadata: {
 				type: "rich_text",
-				rich_text: [{ plain_text: '{"category":"Full-time Role","location":"Remote"}' }],
+				rich_text: [
+					{ plain_text: '{"category":"Full-time Role","location":"Remote"}' },
+				],
 			},
 			...overrides,
 		} as unknown as PageObjectResponse["properties"],
@@ -26,7 +46,9 @@ function fakePage(overrides: Partial<PageObjectResponse["properties"]> = {}): Pa
 
 describe("parseMetadata", () => {
 	it("parses a valid JSON metadata string", () => {
-		expect(parseMetadata('{"category":"Web App","techStack":["Astro"]}')).toEqual({
+		expect(
+			parseMetadata('{"category":"Web App","techStack":["Astro"]}'),
+		).toEqual({
 			category: "Web App",
 			techStack: ["Astro"],
 		});
@@ -50,7 +72,14 @@ describe("parseMetadata", () => {
 				'{"media":[{"type":"image","url":"https://example.com/a.png","alt":"Screenshot","cover":true}]}',
 			),
 		).toEqual({
-			media: [{ type: "image", url: "https://example.com/a.png", alt: "Screenshot", cover: true }],
+			media: [
+				{
+					type: "image",
+					url: "https://example.com/a.png",
+					alt: "Screenshot",
+					cover: true,
+				},
+			],
 		});
 	});
 });
@@ -74,7 +103,10 @@ describe("extractEntry", () => {
 
 	it("parses the Metadata JSON property into structured fields", () => {
 		const entry = extractEntry(fakePage());
-		expect(entry.metadata).toEqual({ category: "Full-time Role", location: "Remote" });
+		expect(entry.metadata).toEqual({
+			category: "Full-time Role",
+			location: "Remote",
+		});
 	});
 
 	it("defaults metadata to an empty object when the Metadata property is absent", () => {
@@ -96,7 +128,9 @@ describe("extractEntry", () => {
 				} as never,
 			}),
 		);
-		expect(entry.metadata.media).toEqual([{ type: "video", url: "https://example.com/demo.mp4" }]);
+		expect(entry.metadata.media).toEqual([
+			{ type: "video", url: "https://example.com/demo.mp4" },
+		]);
 	});
 });
 
@@ -105,12 +139,20 @@ describe("fetchKnowledgeBaseEntries", () => {
 		const query = vi
 			.fn()
 			.mockResolvedValueOnce({
-				results: [fakePage({ Title: { type: "title", title: [{ plain_text: "First" }] } } as never)],
+				results: [
+					fakePage({
+						Title: { type: "title", title: [{ plain_text: "First" }] },
+					} as never),
+				],
 				has_more: true,
 				next_cursor: "cursor-2",
 			})
 			.mockResolvedValueOnce({
-				results: [fakePage({ Title: { type: "title", title: [{ plain_text: "Second" }] } } as never)],
+				results: [
+					fakePage({
+						Title: { type: "title", title: [{ plain_text: "Second" }] },
+					} as never),
+				],
 				has_more: false,
 				next_cursor: null,
 			});

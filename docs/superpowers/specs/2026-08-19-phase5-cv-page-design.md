@@ -7,6 +7,7 @@ Status: approved (2026-08-19)
 The CV page (`/en|es|fr/cv`) currently renders a "coming soon" placeholder via `CvView.astro`. Per `project-roadmap.md`'s Phase 5, it needs a quick-overview header plus glass-styled accordion sections (Professional Experience, Projects, Academic Experience & Certifications, Personal Interests & Background), populated from the same Notion "📚 Knowledge Base" database that already feeds the RAG pipeline (`scripts/ingest.ts`, Phase 2.2).
 
 Two structural facts shaped this design:
+
 - The site's Astro config is `output: "server"` (SSR by default via the Cloudflare adapter) — pages must opt into prerendering with `export const prerender = true` to be built statically, which the CV page does, matching the "build-time over runtime" preference already recorded in the roadmap's Phase 6 notes.
 - Knowledge Base entries are single-language (a `Language` select property, mostly Spanish) — there is no per-entry EN/ES/FR variant, unlike the site's static UI strings which already have hand-written dictionaries per locale.
 
@@ -32,13 +33,13 @@ Two structural facts shaped this design:
 
 Section grouping is a fixed map:
 
-| Content Type | Section |
-|---|---|
-| Professional Experience | Professional Experience |
-| Project | Projects |
-| Academic Experience | Academic Experience & Certifications |
-| Personal Interest | Personal Interests & Background |
-| Skill | *(no section — relation-derived chips only)* |
+| Content Type            | Section                                      |
+| ----------------------- | -------------------------------------------- |
+| Professional Experience | Professional Experience                      |
+| Project                 | Projects                                     |
+| Academic Experience     | Academic Experience & Certifications         |
+| Personal Interest       | Personal Interests & Background              |
+| Skill                   | _(no section — relation-derived chips only)_ |
 
 Within each section, entries sort by `Metadata.dates.start` descending; entries without dates fall back to `Priority` (covers e.g. some Personal Interest entries with no meaningful date).
 
@@ -76,6 +77,7 @@ Uses `GOOGLE_API_KEY_LLM` (same key tier as the existing chat model), called fro
 ## Delivery plan
 
 One implementation plan:
+
 - `src/lib/notion/knowledgeBase.ts` (extracted from `ingest.ts`) + unit tests; update `ingest.ts` to import from it.
 - `src/lib/notion/translate.ts` (translation + cache) + unit tests.
 - `src/components/cv/Accordion.tsx` + unit tests.

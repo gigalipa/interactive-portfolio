@@ -27,10 +27,12 @@
 The already-shipped `mintEphemeralToken` sets `liveConnectConstraints` with only `systemInstruction`. Per `@google/genai`'s own documented semantics (`node_modules/@google/genai/dist/web/web.d.ts`, `Tokens.create`'s doc comment, "Case 2"): **setting `liveConnectConstraints` at all locks the entire `LiveConnectConfig`** — any field the browser's own `connect()` call tries to set afterward (like `responseModalities` or the transcription flags this plan's History integration depends on) is silently ignored by the API. This must be fixed before any client code can work.
 
 **Files:**
+
 - Modify: `src/lib/voice/ephemeralToken.ts`
 - Test: `src/lib/voice/ephemeralToken.test.ts`
 
 **Interfaces:**
+
 - No signature changes — `mintEphemeralToken`'s options/return type are unchanged. Only the config passed to `ai.authTokens.create(...)` changes.
 
 - [ ] **Step 1: Write the failing test**
@@ -49,8 +51,9 @@ it("locks audio response modality and transcription into the token, not just sys
 	});
 
 	const [config] = create.mock.calls[0];
-	const liveConfig = (config as { liveConnectConstraints: { config: Record<string, unknown> } })
-		.liveConnectConstraints.config;
+	const liveConfig = (
+		config as { liveConnectConstraints: { config: Record<string, unknown> } }
+	).liveConnectConstraints.config;
 	expect(liveConfig.responseModalities).toEqual(["AUDIO"]);
 	expect(liveConfig.inputAudioTranscription).toEqual({});
 	expect(liveConfig.outputAudioTranscription).toEqual({});
@@ -123,12 +126,14 @@ git commit -m "fix(voice): lock audio modality and transcription into the epheme
 ### Task 2: Voice-mode design tokens and PresenceRing state
 
 **Files:**
+
 - Modify: `src/styles/global.css`
 - Modify: `src/components/ui/PresenceRing.astro`
 - Modify: `src/lib/chat/presenceRingBridge.ts`
 - Test: `src/lib/chat/presenceRingBridge.test.ts` (new file — none exists yet for this module)
 
 **Interfaces:**
+
 - Produces: `setVoiceMode(active: boolean): void`, `setVoicePulseRate(level: number): void` — exported from `presenceRingBridge.ts`, consumed by Task 7's hook.
 
 - [ ] **Step 1: Add the design tokens**
@@ -136,11 +141,11 @@ git commit -m "fix(voice): lock audio modality and transcription into the epheme
 In `src/styles/global.css`, find the existing token block (it has `--color-void`, `--color-deep-blue`, `--color-electric-blue`, `--color-electric-blue-soft`, `--color-signal-cyan`, `--color-ion`, `--color-slate-mist`, `--color-slate-mist-strong`, then `--shadow-glow-blue`, `--shadow-glow-blue-lg`, `--shadow-glow-cyan`). Add two new lines immediately after `--color-signal-cyan` and after `--shadow-glow-cyan` respectively:
 
 ```css
-	--color-voice-violet: #a78bfa;
+--color-voice-violet: #a78bfa;
 ```
 
 ```css
-	--shadow-glow-violet: 0 0 24px 2px rgb(167 139 250 / 0.35);
+--shadow-glow-violet: 0 0 24px 2px rgb(167 139 250 / 0.35);
 ```
 
 - [ ] **Step 2: Write the failing test for the bridge functions**
@@ -149,7 +154,11 @@ Create `src/lib/chat/presenceRingBridge.test.ts`:
 
 ```ts
 import { afterEach, describe, expect, it } from "vitest";
-import { setPresenceState, setVoiceMode, setVoicePulseRate } from "./presenceRingBridge";
+import {
+	setPresenceState,
+	setVoiceMode,
+	setVoicePulseRate,
+} from "./presenceRingBridge";
 
 function renderRing(): HTMLDivElement {
 	const div = document.createElement("div");
@@ -198,7 +207,9 @@ describe("setVoicePulseRate", () => {
 	it("never goes below the 0.5s floor", () => {
 		const ring = renderRing();
 		setVoicePulseRate(1);
-		expect(parseFloat(ring.style.getPropertyValue("--pulse-rate"))).toBeGreaterThanOrEqual(0.5);
+		expect(
+			parseFloat(ring.style.getPropertyValue("--pulse-rate")),
+		).toBeGreaterThanOrEqual(0.5);
 	});
 
 	it("does nothing if no ring is present", () => {
@@ -219,7 +230,9 @@ In `src/lib/chat/presenceRingBridge.ts`, add below the existing `setPresenceStat
 ```ts
 export function setVoiceMode(active: boolean): void {
 	if (typeof document === "undefined") return;
-	document.querySelector(".presence-ring")?.setAttribute("data-voice", String(active));
+	document
+		.querySelector(".presence-ring")
+		?.setAttribute("data-voice", String(active));
 }
 
 /** level: 0-1 output amplitude. Only meaningful while the ring is in the
@@ -243,62 +256,67 @@ Expected: PASS (all cases)
 In `src/components/ui/PresenceRing.astro`, find the `.ping` rule:
 
 ```css
-	.ping {
-		position: absolute;
-		inset: 0;
-		border-radius: 9999px;
-		border: 1px solid var(--color-electric-blue);
-		opacity: 0;
-		animation: ping-out 3.2s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
-	}
+.ping {
+	position: absolute;
+	inset: 0;
+	border-radius: 9999px;
+	border: 1px solid var(--color-electric-blue);
+	opacity: 0;
+	animation: ping-out 3.2s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+}
 ```
 
 Change its `animation` line to fall back to the existing fixed duration when `--pulse-rate` isn't set:
 
 ```css
-		animation: ping-out var(--pulse-rate, 3.2s) cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+animation: ping-out var(--pulse-rate, 3.2s) cubic-bezier(0.2, 0.7, 0.3, 1)
+	infinite;
 ```
 
 Then find the "Speaking" block:
 
 ```css
-	.presence-ring[data-state="speaking"] .ping {
-		animation-duration: 1.1s;
-	}
+.presence-ring[data-state="speaking"] .ping {
+	animation-duration: 1.1s;
+}
 ```
 
 Change it to respect `--pulse-rate` when set (voice mode), otherwise keep the existing fixed `1.1s`:
 
 ```css
-	.presence-ring[data-state="speaking"] .ping {
-		animation-duration: var(--pulse-rate, 1.1s);
-	}
+.presence-ring[data-state="speaking"] .ping {
+	animation-duration: var(--pulse-rate, 1.1s);
+}
 ```
 
 Finally, add a new rule at the end of the `<style>` block for the voice-mode color, layered independently of `data-state`:
 
 ```css
-	/* Voice mode: distinct color for the whole call, independent of idle/listening/speaking */
-	.presence-ring[data-voice="true"] .core {
-		background: radial-gradient(
-			circle at 35% 30%,
-			var(--color-voice-violet),
-			var(--color-deep-blue) 70%
-		);
-		box-shadow: var(--shadow-glow-violet);
-	}
+/* Voice mode: distinct color for the whole call, independent of idle/listening/speaking */
+.presence-ring[data-voice="true"] .core {
+	background: radial-gradient(
+		circle at 35% 30%,
+		var(--color-voice-violet),
+		var(--color-deep-blue) 70%
+	);
+	box-shadow: var(--shadow-glow-violet);
+}
 ```
 
 - [ ] **Step 6: Manual visual check**
 
 Run: `astro dev --background`, then in a browser console on the Main page run:
+
 ```js
 document.querySelector(".presence-ring").dataset.voice = "true";
 ```
+
 Expected: the ring's core shifts to a violet gradient/glow. Then:
+
 ```js
 document.querySelector(".presence-ring").dataset.voice = "false";
 ```
+
 Expected: reverts to the normal idle color. Run `astro dev stop` after.
 
 - [ ] **Step 7: Commit**
@@ -313,12 +331,14 @@ git commit -m "feat(voice): add PresenceRing voice-mode color and output-amplitu
 ### Task 3: Voice UI copy + fix the stale Phase-3 hero tagline
 
 **Files:**
+
 - Modify: `src/i18n/dictionary.ts`
 - Modify: `src/i18n/dictionaries/en.ts`
 - Modify: `src/i18n/dictionaries/es.ts`
 - Modify: `src/i18n/dictionaries/fr.ts`
 
 **Interfaces:**
+
 - Produces: `Dictionary["chat"]["voice"]` block, consumed by Task 9's `ChatWidget`/`VoiceVisor` wiring.
 
 - [ ] **Step 1: Extend the `Dictionary` type**
@@ -455,10 +475,12 @@ git commit -m "feat(voice): add voice UI copy, fix stale Phase-3 hero tagline in
 Pure, dependency-free functions — the only part of the audio pipeline that's fully unit-testable without mocking Web Audio APIs.
 
 **Files:**
+
 - Create: `src/lib/voice/audioUtils.ts`
 - Test: `src/lib/voice/audioUtils.test.ts`
 
 **Interfaces:**
+
 - Produces: `floatTo16BitPCM`, `int16ToBase64`, `base64ToInt16`, `int16ToFloat32`, `computeRmsLevel`, `computeBarHeights` — all consumed by Task 6 (`liveSession.ts`), Task 7 (`useVoiceSession.ts`), and Task 8 (`VoiceVisor.tsx`).
 
 - [ ] **Step 1: Write the failing tests**
@@ -581,7 +603,8 @@ export function int16ToFloat32(pcm: Int16Array): Float32Array {
 export function int16ToBase64(pcm: Int16Array): string {
 	const bytes = new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength);
 	let binary = "";
-	for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+	for (let i = 0; i < bytes.length; i++)
+		binary += String.fromCharCode(bytes[i]);
 	return btoa(binary);
 }
 
@@ -604,7 +627,10 @@ export function computeRmsLevel(frequencyData: Uint8Array): number {
 }
 
 /** Buckets byte-frequency data into `barCount` averaged, normalized (0-1) bar heights. */
-export function computeBarHeights(frequencyData: Uint8Array, barCount: number): number[] {
+export function computeBarHeights(
+	frequencyData: Uint8Array,
+	barCount: number,
+): number[] {
 	const bucketSize = Math.max(1, Math.floor(frequencyData.length / barCount));
 	const heights: number[] = [];
 	for (let i = 0; i < barCount; i++) {
@@ -636,24 +662,36 @@ git commit -m "feat(voice): add audio PCM/base64/level pure helper functions"
 ### Task 5: Voice API client (token mint + turn persistence fetch wrappers)
 
 **Files:**
+
 - Create: `src/lib/voice/voiceApi.ts`
 - Test: `src/lib/voice/voiceApi.test.ts`
 
 **Interfaces:**
+
 - Consumes: nothing beyond global `fetch`.
 - Produces:
+
   ```ts
-  interface VoiceTokenResponse { token: string; expiresAt: string; model: string }
-  function mintVoiceToken(language: string): Promise<VoiceTokenResponse> // throws on failure
+  interface VoiceTokenResponse {
+  	token: string;
+  	expiresAt: string;
+  	model: string;
+  }
+  function mintVoiceToken(language: string): Promise<VoiceTokenResponse>; // throws on failure
   interface PersistVoiceTurnOptions {
   	persist: boolean;
   	conversationId?: string;
   	userText: string;
   	modelText: string;
   }
-  interface PersistVoiceTurnResult { conversationId?: string }
-  function persistVoiceTurn(options: PersistVoiceTurnOptions): Promise<PersistVoiceTurnResult> // degrades to {} on failure, never throws
+  interface PersistVoiceTurnResult {
+  	conversationId?: string;
+  }
+  function persistVoiceTurn(
+  	options: PersistVoiceTurnOptions,
+  ): Promise<PersistVoiceTurnResult>; // degrades to {} on failure, never throws
   ```
+
   Both consumed by Task 7's `useVoiceSession.ts`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -674,12 +712,20 @@ describe("mintVoiceToken", () => {
 	it("returns the parsed token response on success", async () => {
 		global.fetch = vi.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ({ token: "t", expiresAt: "2026-01-01T00:00:00.000Z", model: "m" }),
+			json: async () => ({
+				token: "t",
+				expiresAt: "2026-01-01T00:00:00.000Z",
+				model: "m",
+			}),
 		}) as unknown as typeof fetch;
 
 		const result = await mintVoiceToken("EN");
 
-		expect(result).toEqual({ token: "t", expiresAt: "2026-01-01T00:00:00.000Z", model: "m" });
+		expect(result).toEqual({
+			token: "t",
+			expiresAt: "2026-01-01T00:00:00.000Z",
+			model: "m",
+		});
 		expect(global.fetch).toHaveBeenCalledWith(
 			"/api/voice/token",
 			expect.objectContaining({
@@ -690,13 +736,17 @@ describe("mintVoiceToken", () => {
 	});
 
 	it("throws on a non-ok response", async () => {
-		global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 429 }) as unknown as typeof fetch;
+		global.fetch = vi
+			.fn()
+			.mockResolvedValue({ ok: false, status: 429 }) as unknown as typeof fetch;
 
 		await expect(mintVoiceToken("EN")).rejects.toThrow();
 	});
 
 	it("throws when fetch itself rejects", async () => {
-		global.fetch = vi.fn().mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
+		global.fetch = vi
+			.fn()
+			.mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
 
 		await expect(mintVoiceToken("EN")).rejects.toThrow();
 	});
@@ -720,7 +770,9 @@ describe("persistVoiceTurn", () => {
 	});
 
 	it("degrades to an empty object on a non-ok response, without throwing", async () => {
-		global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 }) as unknown as typeof fetch;
+		global.fetch = vi
+			.fn()
+			.mockResolvedValue({ ok: false, status: 500 }) as unknown as typeof fetch;
 
 		await expect(
 			persistVoiceTurn({ persist: true, userText: "Hi", modelText: "Hello" }),
@@ -728,7 +780,9 @@ describe("persistVoiceTurn", () => {
 	});
 
 	it("degrades to an empty object when fetch itself rejects, without throwing", async () => {
-		global.fetch = vi.fn().mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
+		global.fetch = vi
+			.fn()
+			.mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
 
 		await expect(
 			persistVoiceTurn({ persist: false, userText: "Hi", modelText: "Hello" }),
@@ -755,7 +809,9 @@ export interface VoiceTokenResponse {
 
 /** Mints a Live API ephemeral token. Throws on failure — a failed mint must
  * abort the connect attempt in useVoiceSession, not silently proceed. */
-export async function mintVoiceToken(language: string): Promise<VoiceTokenResponse> {
+export async function mintVoiceToken(
+	language: string,
+): Promise<VoiceTokenResponse> {
 	const response = await fetch("/api/voice/token", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -816,12 +872,15 @@ git commit -m "feat(voice): add mintVoiceToken/persistVoiceTurn fetch wrappers"
 The only file that touches the raw Web Audio API and the `@google/genai` browser `Live` client. Everything here is real, verified-against-the-installed-SDK code — see the `.d.ts` reading that grounded this plan: `ai.live.connect({ model, config, callbacks })` returns a `Session` with `sendRealtimeInput({ audio: { data, mimeType } })` and `close()`; server messages arrive via `callbacks.onmessage(message: LiveServerMessage)`, where `message.serverContent` carries `inputTranscription`/`outputTranscription` (each `{ text?: string }`), `modelTurn` (a `Content` whose `parts` carry `inlineData: { data: string /* base64 PCM */ }` for audio), and `turnComplete: boolean`.
 
 **Files:**
+
 - Create: `src/lib/voice/liveSession.ts`
 - Test: `src/lib/voice/liveSession.test.ts`
 
 **Interfaces:**
+
 - Consumes: `floatTo16BitPCM`, `int16ToBase64`, `base64ToInt16`, `int16ToFloat32` from `./audioUtils` (Task 4).
 - Produces:
+
   ```ts
   interface LiveSessionCallbacks {
   	onOpen?: () => void;
@@ -836,8 +895,12 @@ The only file that touches the raw Web Audio API and the `@google/genai` browser
   	callbacks: LiveSessionCallbacks;
   }
   interface LiveSessionDeps {
-  	genAiFactory?: (apiKey: string) => { live: { connect(params: unknown): Promise<LiveSessionLike> } };
-  	getUserMedia?: (constraints: MediaStreamConstraints) => Promise<MediaStream>;
+  	genAiFactory?: (apiKey: string) => {
+  		live: { connect(params: unknown): Promise<LiveSessionLike> };
+  	};
+  	getUserMedia?: (
+  		constraints: MediaStreamConstraints,
+  	) => Promise<MediaStream>;
   	audioContextFactory?: (options?: { sampleRate: number }) => AudioContext;
   }
   interface LiveSession {
@@ -845,8 +908,12 @@ The only file that touches the raw Web Audio API and the `@google/genai` browser
   	outputAnalyser: AnalyserNode;
   	close: () => void;
   }
-  function startLiveSession(options: StartLiveSessionOptions, deps?: LiveSessionDeps): Promise<LiveSession>
+  function startLiveSession(
+  	options: StartLiveSessionOptions,
+  	deps?: LiveSessionDeps,
+  ): Promise<LiveSession>;
   ```
+
   Consumed by Task 7's `useVoiceSession.ts`. `micAnalyser` is consumed directly by Task 8's `VoiceVisor.tsx` (passed through the hook's return value).
 
 - [ ] **Step 1: Write the failing tests**
@@ -872,7 +939,10 @@ function createFakeAudioContext() {
 	const context = {
 		currentTime: 0,
 		destination: {},
-		createMediaStreamSource: vi.fn(() => ({ connect: vi.fn(), disconnect: vi.fn() })),
+		createMediaStreamSource: vi.fn(() => ({
+			connect: vi.fn(),
+			disconnect: vi.fn(),
+		})),
 		createAnalyser: vi.fn(() => {
 			const analyser = createFakeAnalyser();
 			analysers.push(analyser);
@@ -898,7 +968,9 @@ function createFakeAudioContext() {
 }
 
 function createFakeMediaStream() {
-	return { getTracks: vi.fn(() => [{ stop: vi.fn() }]) } as unknown as MediaStream;
+	return {
+		getTracks: vi.fn(() => [{ stop: vi.fn() }]),
+	} as unknown as MediaStream;
 }
 
 describe("startLiveSession", () => {
@@ -908,7 +980,10 @@ describe("startLiveSession", () => {
 		onclose?: (e: unknown) => void;
 		onmessage?: (message: unknown) => void;
 	};
-	let fakeSession: { sendRealtimeInput: ReturnType<typeof vi.fn>; close: ReturnType<typeof vi.fn> };
+	let fakeSession: {
+		sendRealtimeInput: ReturnType<typeof vi.fn>;
+		close: ReturnType<typeof vi.fn>;
+	};
 	let connect: ReturnType<typeof vi.fn>;
 
 	beforeEach(() => {
@@ -927,7 +1002,9 @@ describe("startLiveSession", () => {
 		return {
 			genAiFactory: vi.fn(() => ({ live: { connect } })),
 			getUserMedia: vi.fn().mockResolvedValue(createFakeMediaStream()),
-			audioContextFactory: vi.fn(() => contexts.shift() as unknown as AudioContext),
+			audioContextFactory: vi.fn(
+				() => contexts.shift() as unknown as AudioContext,
+			),
 			input,
 			output,
 		};
@@ -938,12 +1015,22 @@ describe("startLiveSession", () => {
 		const onOpen = vi.fn();
 
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onOpen, onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: {
+					onOpen,
+					onSpeakingChange: vi.fn(),
+					onTurnComplete: vi.fn(),
+				},
+			},
 			deps,
 		);
 
 		expect(deps.genAiFactory).toHaveBeenCalledWith("tok");
-		expect(connect).toHaveBeenCalledWith(expect.objectContaining({ model: "m" }));
+		expect(connect).toHaveBeenCalledWith(
+			expect.objectContaining({ model: "m" }),
+		);
 		liveCallbacks.onopen?.();
 		expect(onOpen).toHaveBeenCalledTimes(1);
 	});
@@ -951,11 +1038,16 @@ describe("startLiveSession", () => {
 	it("streams mic PCM via sendRealtimeInput on each audio-process tick", async () => {
 		const deps = baseDeps();
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() },
+			},
 			deps,
 		);
 
-		const processor = deps.input.context.createScriptProcessor.mock.results[0].value as {
+		const processor = deps.input.context.createScriptProcessor.mock.results[0]
+			.value as {
 			onaudioprocess: (event: unknown) => void;
 		};
 		processor.onaudioprocess({
@@ -975,7 +1067,11 @@ describe("startLiveSession", () => {
 		const onSpeakingChange = vi.fn();
 
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange, onTurnComplete } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange, onTurnComplete },
+			},
 			deps,
 		);
 
@@ -992,7 +1088,10 @@ describe("startLiveSession", () => {
 			serverContent: { turnComplete: true },
 		});
 
-		expect(onTurnComplete).toHaveBeenCalledWith({ userText: "Hello there", modelText: "Hi!" });
+		expect(onTurnComplete).toHaveBeenCalledWith({
+			userText: "Hello there",
+			modelText: "Hi!",
+		});
 	});
 
 	it("calls onSpeakingChange(true) on the first audio chunk of a turn, then (false) at turnComplete", async () => {
@@ -1000,7 +1099,11 @@ describe("startLiveSession", () => {
 		const onSpeakingChange = vi.fn();
 
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange, onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange, onTurnComplete: vi.fn() },
+			},
 			deps,
 		);
 
@@ -1020,7 +1123,11 @@ describe("startLiveSession", () => {
 		const onTurnComplete = vi.fn();
 
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange: vi.fn(), onTurnComplete } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange: vi.fn(), onTurnComplete },
+			},
 			deps,
 		);
 
@@ -1035,12 +1142,18 @@ describe("startLiveSession", () => {
 		deps.getUserMedia.mockResolvedValue(mediaStream);
 
 		const session = await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() },
+			},
 			deps,
 		);
 		session.close();
 
-		expect((mediaStream.getTracks() as { stop: ReturnType<typeof vi.fn> }[])[0].stop).toBeDefined();
+		expect(
+			(mediaStream.getTracks() as { stop: ReturnType<typeof vi.fn> }[])[0].stop,
+		).toBeDefined();
 		expect(deps.input.context.close).toHaveBeenCalledTimes(1);
 		expect(deps.output.context.close).toHaveBeenCalledTimes(1);
 		expect(fakeSession.close).toHaveBeenCalledTimes(1);
@@ -1050,7 +1163,11 @@ describe("startLiveSession", () => {
 		const deps = baseDeps();
 
 		const session = await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() },
+			},
 			deps,
 		);
 
@@ -1071,7 +1188,12 @@ Create `src/lib/voice/liveSession.ts`:
 
 ```ts
 import { GoogleGenAI, Modality } from "@google/genai";
-import { base64ToInt16, floatTo16BitPCM, int16ToBase64, int16ToFloat32 } from "./audioUtils";
+import {
+	base64ToInt16,
+	floatTo16BitPCM,
+	int16ToBase64,
+	int16ToFloat32,
+} from "./audioUtils";
 
 const INPUT_SAMPLE_RATE = 16000;
 const OUTPUT_SAMPLE_RATE = 24000;
@@ -1094,12 +1216,16 @@ export interface StartLiveSessionOptions {
 }
 
 interface LiveSessionLike {
-	sendRealtimeInput(params: { audio: { data: string; mimeType: string } }): void;
+	sendRealtimeInput(params: {
+		audio: { data: string; mimeType: string };
+	}): void;
 	close(): void;
 }
 
 export interface LiveSessionDeps {
-	genAiFactory?: (apiKey: string) => { live: { connect(params: unknown): Promise<LiveSessionLike> } };
+	genAiFactory?: (apiKey: string) => {
+		live: { connect(params: unknown): Promise<LiveSessionLike> };
+	};
 	getUserMedia?: (constraints: MediaStreamConstraints) => Promise<MediaStream>;
 	audioContextFactory?: (options?: { sampleRate: number }) => AudioContext;
 }
@@ -1167,7 +1293,11 @@ export async function startLiveSession(
 	function playPcmChunk(base64Data: string) {
 		const pcm = base64ToInt16(base64Data);
 		const float32 = int16ToFloat32(pcm);
-		const buffer = outputContext.createBuffer(1, float32.length, OUTPUT_SAMPLE_RATE);
+		const buffer = outputContext.createBuffer(
+			1,
+			float32.length,
+			OUTPUT_SAMPLE_RATE,
+		);
 		buffer.copyToChannel(float32, 0);
 
 		const source = outputContext.createBufferSource();
@@ -1186,7 +1316,8 @@ export async function startLiveSession(
 		callbacks: {
 			onopen: () => options.callbacks.onOpen?.(),
 			onerror: (e: unknown) => options.callbacks.onError?.(e),
-			onclose: (e: { reason?: string }) => options.callbacks.onClose?.(e?.reason),
+			onclose: (e: { reason?: string }) =>
+				options.callbacks.onClose?.(e?.reason),
 			onmessage: (message: ServerMessage) => {
 				const content = message.serverContent;
 				if (!content) return;
@@ -1198,7 +1329,9 @@ export async function startLiveSession(
 					currentModelText += content.outputTranscription.text;
 				}
 
-				const audioPart = content.modelTurn?.parts?.find((part) => part.inlineData?.data);
+				const audioPart = content.modelTurn?.parts?.find(
+					(part) => part.inlineData?.data,
+				);
 				if (audioPart?.inlineData?.data) {
 					if (!turnHasAudio) {
 						turnHasAudio = true;
@@ -1224,14 +1357,21 @@ export async function startLiveSession(
 		},
 	});
 
-	const processor = inputContext.createScriptProcessor(CAPTURE_BUFFER_SIZE, 1, 1);
+	const processor = inputContext.createScriptProcessor(
+		CAPTURE_BUFFER_SIZE,
+		1,
+		1,
+	);
 	micSource.connect(processor);
 	processor.connect(inputContext.destination);
 	processor.onaudioprocess = (event: AudioProcessingEvent) => {
 		const input = event.inputBuffer.getChannelData(0);
 		const pcm = floatTo16BitPCM(input);
 		session.sendRealtimeInput({
-			audio: { data: int16ToBase64(pcm), mimeType: `audio/pcm;rate=${INPUT_SAMPLE_RATE}` },
+			audio: {
+				data: int16ToBase64(pcm),
+				mimeType: `audio/pcm;rate=${INPUT_SAMPLE_RATE}`,
+			},
 		});
 	};
 
@@ -1270,20 +1410,29 @@ git commit -m "feat(voice): add Live API session wrapper (mic capture, playback,
 ### Task 7: `useVoiceSession` React hook
 
 **Files:**
+
 - Create: `src/lib/voice/useVoiceSession.ts`
 - Test: `src/lib/voice/useVoiceSession.test.ts`
 
 **Interfaces:**
+
 - Consumes: `startLiveSession`, `type LiveSession` from `./liveSession` (Task 6); `mintVoiceToken`, `persistVoiceTurn` from `./voiceApi` (Task 5); `computeRmsLevel` from `./audioUtils` (Task 4); `setPresenceState` (pre-existing), `setVoiceMode`, `setVoicePulseRate` from `../chat/presenceRingBridge` (Task 2).
 - Produces:
+
   ```ts
   type VoiceStatus = "idle" | "connecting" | "listening" | "speaking" | "error";
   interface UseVoiceSessionOptions {
   	language: string;
   	persist: boolean;
   	conversationId: string | undefined;
-  	onTurnPersisted: (turn: { conversationId?: string; userText: string; modelText: string }) => void;
-  	onError: (messageKey: "voice_connection_failed" | "voice_mic_denied") => void;
+  	onTurnPersisted: (turn: {
+  		conversationId?: string;
+  		userText: string;
+  		modelText: string;
+  	}) => void;
+  	onError: (
+  		messageKey: "voice_connection_failed" | "voice_mic_denied",
+  	) => void;
   }
   interface UseVoiceSessionResult {
   	status: VoiceStatus;
@@ -1291,8 +1440,11 @@ git commit -m "feat(voice): add Live API session wrapper (mic capture, playback,
   	start: () => void;
   	end: () => void;
   }
-  function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessionResult
+  function useVoiceSession(
+  	options: UseVoiceSessionOptions,
+  ): UseVoiceSessionResult;
   ```
+
   Consumed by Task 9's `ChatWidget.tsx`. `micAnalyser` is passed straight through to Task 8's `VoiceVisor`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -1322,7 +1474,10 @@ import { setPresenceState, setVoiceMode } from "../chat/presenceRingBridge";
 import { useVoiceSession } from "./useVoiceSession";
 
 function fakeAnalyser() {
-	return { frequencyBinCount: 8, getByteFrequencyData: vi.fn() } as unknown as AnalyserNode;
+	return {
+		frequencyBinCount: 8,
+		getByteFrequencyData: vi.fn(),
+	} as unknown as AnalyserNode;
 }
 
 function baseOptions() {
@@ -1337,13 +1492,18 @@ function baseOptions() {
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	vi.mocked(mintVoiceToken).mockResolvedValue({ token: "t", expiresAt: "x", model: "m" });
+	vi.mocked(mintVoiceToken).mockResolvedValue({
+		token: "t",
+		expiresAt: "x",
+		model: "m",
+	});
 	vi.mocked(persistVoiceTurn).mockResolvedValue({ conversationId: "c1" });
 });
 
 describe("useVoiceSession", () => {
 	it("goes idle -> connecting -> listening on a successful start, and sets voice mode on", async () => {
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
 			return Promise.resolve({
@@ -1368,7 +1528,8 @@ describe("useVoiceSession", () => {
 	});
 
 	it("moves to speaking/listening as onSpeakingChange fires", async () => {
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
 			return Promise.resolve({
@@ -1392,7 +1553,8 @@ describe("useVoiceSession", () => {
 	});
 
 	it("calls persistVoiceTurn and onTurnPersisted when a turn completes", async () => {
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
 			return Promise.resolve({
@@ -1401,13 +1563,20 @@ describe("useVoiceSession", () => {
 				close: vi.fn(),
 			});
 		});
-		const options = { ...baseOptions(), persist: true, conversationId: "existing" };
+		const options = {
+			...baseOptions(),
+			persist: true,
+			conversationId: "existing",
+		};
 
 		renderHook(() => useVoiceSession(options));
 		await waitFor(() => capturedCallbacks !== undefined);
 
 		await act(async () => {
-			await capturedCallbacks?.onTurnComplete({ userText: "Hi", modelText: "Hello" });
+			await capturedCallbacks?.onTurnComplete({
+				userText: "Hi",
+				modelText: "Hello",
+			});
 		});
 
 		expect(persistVoiceTurn).toHaveBeenCalledWith({
@@ -1436,7 +1605,10 @@ describe("useVoiceSession", () => {
 	});
 
 	it("goes to error and calls onError with voice_mic_denied when startLiveSession rejects with a permission error", async () => {
-		const permissionError = new DOMException("Permission denied", "NotAllowedError");
+		const permissionError = new DOMException(
+			"Permission denied",
+			"NotAllowedError",
+		);
 		vi.mocked(startLiveSession).mockRejectedValue(permissionError);
 		const options = baseOptions();
 
@@ -1450,15 +1622,24 @@ describe("useVoiceSession", () => {
 	it("reconnects once with a freshly minted token on an unexpected close, then falls back to error on a second failure", async () => {
 		const closeA = vi.fn();
 		const closeB = vi.fn();
-		let callSequence: Parameters<typeof startLiveSession>[0]["callbacks"][] = [];
+		let callSequence: Parameters<typeof startLiveSession>[0]["callbacks"][] =
+			[];
 		vi.mocked(startLiveSession)
 			.mockImplementationOnce((opts) => {
 				callSequence.push(opts.callbacks);
-				return Promise.resolve({ micAnalyser: fakeAnalyser(), outputAnalyser: fakeAnalyser(), close: closeA });
+				return Promise.resolve({
+					micAnalyser: fakeAnalyser(),
+					outputAnalyser: fakeAnalyser(),
+					close: closeA,
+				});
 			})
 			.mockImplementationOnce((opts) => {
 				callSequence.push(opts.callbacks);
-				return Promise.resolve({ micAnalyser: fakeAnalyser(), outputAnalyser: fakeAnalyser(), close: closeB });
+				return Promise.resolve({
+					micAnalyser: fakeAnalyser(),
+					outputAnalyser: fakeAnalyser(),
+					close: closeB,
+				});
 			});
 		const options = baseOptions();
 
@@ -1487,10 +1668,15 @@ describe("useVoiceSession", () => {
 
 	it("does not attempt to reconnect when the close was caused by end()", async () => {
 		const close = vi.fn();
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
-			return Promise.resolve({ micAnalyser: fakeAnalyser(), outputAnalyser: fakeAnalyser(), close });
+			return Promise.resolve({
+				micAnalyser: fakeAnalyser(),
+				outputAnalyser: fakeAnalyser(),
+				close,
+			});
 		});
 
 		const { result } = renderHook(() => useVoiceSession(baseOptions()));
@@ -1510,10 +1696,15 @@ describe("useVoiceSession", () => {
 
 	it("end() closes the session, clears voice mode, and returns to idle", async () => {
 		const close = vi.fn();
-		let capturedCallbacks: Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
+		let capturedCallbacks:
+			Parameters<typeof startLiveSession>[0]["callbacks"] | undefined;
 		vi.mocked(startLiveSession).mockImplementation((opts) => {
 			capturedCallbacks = opts.callbacks;
-			return Promise.resolve({ micAnalyser: fakeAnalyser(), outputAnalyser: fakeAnalyser(), close });
+			return Promise.resolve({
+				micAnalyser: fakeAnalyser(),
+				outputAnalyser: fakeAnalyser(),
+				close,
+			});
 		});
 
 		const { result } = renderHook(() => useVoiceSession(baseOptions()));
@@ -1546,15 +1737,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { startLiveSession, type LiveSession } from "./liveSession";
 import { mintVoiceToken, persistVoiceTurn } from "./voiceApi";
 import { computeRmsLevel } from "./audioUtils";
-import { setPresenceState, setVoiceMode, setVoicePulseRate } from "../chat/presenceRingBridge";
+import {
+	setPresenceState,
+	setVoiceMode,
+	setVoicePulseRate,
+} from "../chat/presenceRingBridge";
 
-export type VoiceStatus = "idle" | "connecting" | "listening" | "speaking" | "error";
+export type VoiceStatus =
+	"idle" | "connecting" | "listening" | "speaking" | "error";
 
 export interface UseVoiceSessionOptions {
 	language: string;
 	persist: boolean;
 	conversationId: string | undefined;
-	onTurnPersisted: (turn: { conversationId?: string; userText: string; modelText: string }) => void;
+	onTurnPersisted: (turn: {
+		conversationId?: string;
+		userText: string;
+		modelText: string;
+	}) => void;
 	onError: (messageKey: "voice_connection_failed" | "voice_mic_denied") => void;
 }
 
@@ -1573,7 +1773,9 @@ function isPermissionError(error: unknown): boolean {
 	return error instanceof DOMException && error.name === "NotAllowedError";
 }
 
-export function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessionResult {
+export function useVoiceSession(
+	options: UseVoiceSessionOptions,
+): UseVoiceSessionResult {
 	const { language, onTurnPersisted, onError } = options;
 	const [status, setStatus] = useState<VoiceStatus>("idle");
 	const [micAnalyser, setMicAnalyser] = useState<AnalyserNode | null>(null);
@@ -1618,12 +1820,19 @@ export function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessio
 		async (turn: { userText: string; modelText: string }) => {
 			const result = await persistVoiceTurn({
 				persist: persistRef.current,
-				conversationId: persistRef.current ? conversationIdRef.current : undefined,
+				conversationId: persistRef.current
+					? conversationIdRef.current
+					: undefined,
 				userText: turn.userText,
 				modelText: turn.modelText,
 			});
-			if (result.conversationId) conversationIdRef.current = result.conversationId;
-			onTurnPersisted({ ...result, userText: turn.userText, modelText: turn.modelText });
+			if (result.conversationId)
+				conversationIdRef.current = result.conversationId;
+			onTurnPersisted({
+				...result,
+				userText: turn.userText,
+				modelText: turn.modelText,
+			});
 		},
 		[onTurnPersisted],
 	);
@@ -1694,10 +1903,21 @@ export function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessio
 				startOutputMetering(session);
 			} catch (error) {
 				setStatus("error");
-				onError(isPermissionError(error) ? "voice_mic_denied" : "voice_connection_failed");
+				onError(
+					isPermissionError(error)
+						? "voice_mic_denied"
+						: "voice_connection_failed",
+				);
 			}
 		})();
-	}, [language, handleTurnComplete, onError, startOutputMetering, endLocally, stopMetering]);
+	}, [
+		language,
+		handleTurnComplete,
+		onError,
+		startOutputMetering,
+		endLocally,
+		stopMetering,
+	]);
 
 	const start = useCallback(() => {
 		endingRef.current = false;
@@ -1744,20 +1964,24 @@ git commit -m "feat(voice): add useVoiceSession hook (state machine, turn persis
 ### Task 8: `VoiceVisor` component
 
 **Files:**
+
 - Create: `src/components/chat/VoiceVisor.tsx`
 - Test: `src/components/chat/VoiceVisor.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `computeBarHeights` from `../../lib/voice/audioUtils` (Task 4).
 - Produces:
+
   ```ts
   interface VoiceVisorProps {
   	analyser: AnalyserNode | null;
   	endCallLabel: string;
   	onEndCall: () => void;
   }
-  function VoiceVisor(props: VoiceVisorProps): JSX.Element
+  function VoiceVisor(props: VoiceVisorProps): JSX.Element;
   ```
+
   Consumed by Task 9's `ChatWidget.tsx`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -1850,8 +2074,14 @@ export interface VoiceVisorProps {
 	onEndCall: () => void;
 }
 
-export function VoiceVisor({ analyser, endCallLabel, onEndCall }: VoiceVisorProps) {
-	const [heights, setHeights] = useState<number[]>(() => new Array(BAR_COUNT).fill(0));
+export function VoiceVisor({
+	analyser,
+	endCallLabel,
+	onEndCall,
+}: VoiceVisorProps) {
+	const [heights, setHeights] = useState<number[]>(() =>
+		new Array(BAR_COUNT).fill(0),
+	);
 	const rafRef = useRef<number | null>(null);
 
 	useEffect(() => {
@@ -1893,7 +2123,13 @@ export function VoiceVisor({ analyser, endCallLabel, onEndCall }: VoiceVisorProp
 				title={endCallLabel}
 				className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-500/60 bg-red-500/15 text-red-400 hover:bg-red-500/25"
 			>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					className="h-4 w-4"
+				>
 					<path
 						strokeLinecap="round"
 						strokeLinejoin="round"
@@ -1925,6 +2161,7 @@ git commit -m "feat(voice): add VoiceVisor soundwave component"
 ### Task 9: Wire it into `ChatWidget` + voice-tag history
 
 **Files:**
+
 - Modify: `src/lib/chat/useChatSession.ts`
 - Modify: `src/components/chat/ChatBubble.tsx`
 - Modify: `src/components/chat/ChatBox.tsx`
@@ -1934,6 +2171,7 @@ git commit -m "feat(voice): add VoiceVisor soundwave component"
 - Test: `src/components/chat/ChatWidget.test.tsx` (new — none exists yet)
 
 **Interfaces:**
+
 - Consumes: `useVoiceSession` (Task 7), `VoiceVisor` (Task 8), `t.chat.voice*` dictionary keys (Task 3).
 - Produces: `DisplayMessage.mode?: "voice"`; `ChatBubbleProps.mode?: "voice"`; `ChatBoxProps.onStartVoice: () => void`.
 - `HistorySidebar` (`src/components/chat/HistorySidebar.tsx`) is explicitly NOT modified in this task — its `ConversationSummary` type doesn't carry per-message mode, so a mic glyph there isn't achievable without a server-side schema change; see Step 6 for why this is an intentional, documented scope cut rather than an oversight.
@@ -1977,18 +2215,28 @@ function toDisplayMessages(messages: ChatMessage[]): DisplayMessage[] {
 Add a new function, exported alongside `sendMessage`/`retryLast` etc. in the hook's returned object, that appends a completed voice turn's two messages directly to `messages` state (bypassing the SSE/RAG pipeline entirely, since voice turns are already fully-formed by the time `onTurnPersisted` fires). Add this new function in the same file, and export it from the hook:
 
 ```ts
-	const appendVoiceTurn = useCallback(
-		(turn: { conversationId?: string; userText: string; modelText: string }) => {
-			if (turn.conversationId) setConversationId(turn.conversationId);
-			setMessages((prev) => [
-				...prev,
-				{ id: crypto.randomUUID(), role: "user", text: turn.userText, mode: "voice" },
-				{ id: crypto.randomUUID(), role: "model", text: turn.modelText, mode: "voice" },
-			]);
-			if (consent === "accepted") refreshHistory();
-		},
-		[consent, refreshHistory],
-	);
+const appendVoiceTurn = useCallback(
+	(turn: { conversationId?: string; userText: string; modelText: string }) => {
+		if (turn.conversationId) setConversationId(turn.conversationId);
+		setMessages((prev) => [
+			...prev,
+			{
+				id: crypto.randomUUID(),
+				role: "user",
+				text: turn.userText,
+				mode: "voice",
+			},
+			{
+				id: crypto.randomUUID(),
+				role: "model",
+				text: turn.modelText,
+				mode: "voice",
+			},
+		]);
+		if (consent === "accepted") refreshHistory();
+	},
+	[consent, refreshHistory],
+);
 ```
 
 Add `appendVoiceTurn` to both the `UseChatSessionResult` interface and the hook's final returned object (alongside the existing `sendMessage`, `retryLast`, etc.).
@@ -2234,29 +2482,29 @@ export function ChatBox({ inputPlaceholder, sendLabel, voiceLabel, disabled, onS
 And change the waves button from:
 
 ```tsx
-			<button
-				type="button"
-				disabled
-				aria-label={voiceLabel}
-				title={voiceLabel}
-				className="border-slate-mist-strong text-ion/40 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border"
-			>
-				~
-			</button>
+<button
+	type="button"
+	disabled
+	aria-label={voiceLabel}
+	title={voiceLabel}
+	className="border-slate-mist-strong text-ion/40 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border"
+>
+	~
+</button>
 ```
 
 to:
 
 ```tsx
-			<button
-				type="button"
-				onClick={onStartVoice}
-				aria-label={voiceLabel}
-				title={voiceLabel}
-				className="border-electric-blue/70 bg-electric-blue/15 text-ion shadow-glow-blue hover:bg-electric-blue/25 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border backdrop-blur-lg"
-			>
-				~
-			</button>
+<button
+	type="button"
+	onClick={onStartVoice}
+	aria-label={voiceLabel}
+	title={voiceLabel}
+	className="border-electric-blue/70 bg-electric-blue/15 text-ion shadow-glow-blue hover:bg-electric-blue/25 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border backdrop-blur-lg"
+>
+	~
+</button>
 ```
 
 This will break the two existing `ChatBox.test.tsx` cases that reference `voiceLabel="Voice chat (coming soon)"` and assert the button is disabled — fix those in the same commit: change `baseProps` to include `onStartVoice: vi.fn()`, change the "renders a disabled voice button" test to instead assert it's clickable:
@@ -2277,59 +2525,66 @@ it("calls onStartVoice when the waves button is clicked", () => {
 Read the current `src/components/chat/ChatWidget.tsx` in full before editing — it renders `ChatBox` inside a flex column alongside `ChatMessages` and `ConsentBanner`. Make these changes:
 
 1. Add imports:
+
    ```ts
    import { useVoiceSession } from "../../lib/voice/useVoiceSession";
    import { VoiceVisor } from "./VoiceVisor";
    ```
 
 2. Add a `useState` import if not already present (`ChatWidget.tsx` already imports `useState` for `preferencesOpen`). Inside the `ChatWidget` function body, after the existing `const session = useChatSession({...})` call, add:
+
    ```ts
-   	const [voiceErrorKey, setVoiceErrorKey] = useState<"voice_connection_failed" | "voice_mic_denied" | null>(
-   		null,
-   	);
-   	const voiceSession = useVoiceSession({
-   		language: lang.toUpperCase(),
-   		persist: session.consent === "accepted",
-   		conversationId: undefined,
-   		onTurnPersisted: (turn) => session.appendVoiceTurn(turn),
-   		onError: (key) => setVoiceErrorKey(key),
-   	});
-   	const voiceActive = voiceSession.status !== "idle" && voiceSession.status !== "error";
-   	const voiceErrorMessage =
-   		voiceSession.status === "error" && voiceErrorKey
-   			? voiceErrorKey === "voice_mic_denied"
-   				? t.voiceMicDenied
-   				: t.voiceErrorGeneric
-   			: null;
+   const [voiceErrorKey, setVoiceErrorKey] = useState<
+   	"voice_connection_failed" | "voice_mic_denied" | null
+   >(null);
+   const voiceSession = useVoiceSession({
+   	language: lang.toUpperCase(),
+   	persist: session.consent === "accepted",
+   	conversationId: undefined,
+   	onTurnPersisted: (turn) => session.appendVoiceTurn(turn),
+   	onError: (key) => setVoiceErrorKey(key),
+   });
+   const voiceActive =
+   	voiceSession.status !== "idle" && voiceSession.status !== "error";
+   const voiceErrorMessage =
+   	voiceSession.status === "error" && voiceErrorKey
+   		? voiceErrorKey === "voice_mic_denied"
+   			? t.voiceMicDenied
+   			: t.voiceErrorGeneric
+   		: null;
    ```
 
    (`conversationId: undefined` is deliberate for this pass — voice sessions currently always start a fresh conversation rather than continuing the text conversation in view; threading the active `conversationId` through is a reasonable follow-up but adds cross-mode state coupling not required by the approved spec. `voiceErrorKey` is intentionally never cleared explicitly — `voiceErrorMessage` only renders while `status === "error"`, and `start()` immediately moves `status` to `"connecting"`, so the old message disappears on its own the moment the visitor retries; a fresh `onError` call always overwrites the key before the message can reappear stale.)
 
 3. Find the existing `<ChatBox ... />` usage inside the widget's render (it's the last element in the inner flex column, after `<ChatMessages ... />`). Replace it with:
    ```tsx
-   					{voiceActive ? (
-   						<VoiceVisor
-   							analyser={voiceSession.micAnalyser}
-   							endCallLabel={t.voiceEndCall}
-   							onEndCall={voiceSession.end}
-   						/>
-   					) : (
-   						<>
-   							{voiceErrorMessage && (
-   								<p className="text-ion/70 px-2 text-center text-xs" role="alert">
-   									{voiceErrorMessage}
-   								</p>
-   							)}
-   							<ChatBox
-   								inputPlaceholder={t.inputPlaceholder}
-   								sendLabel={t.send}
-   								voiceLabel={t.voiceStart}
-   								disabled={session.status === "sending" || session.status === "streaming"}
-   								onSend={session.sendMessage}
-   								onStartVoice={voiceSession.start}
-   							/>
-   						</>
-   					)}
+   {
+   	voiceActive ? (
+   		<VoiceVisor
+   			analyser={voiceSession.micAnalyser}
+   			endCallLabel={t.voiceEndCall}
+   			onEndCall={voiceSession.end}
+   		/>
+   	) : (
+   		<>
+   			{voiceErrorMessage && (
+   				<p className="text-ion/70 px-2 text-center text-xs" role="alert">
+   					{voiceErrorMessage}
+   				</p>
+   			)}
+   			<ChatBox
+   				inputPlaceholder={t.inputPlaceholder}
+   				sendLabel={t.send}
+   				voiceLabel={t.voiceStart}
+   				disabled={
+   					session.status === "sending" || session.status === "streaming"
+   				}
+   				onSend={session.sendMessage}
+   				onStartVoice={voiceSession.start}
+   			/>
+   		</>
+   	);
+   }
    ```
 
 - [ ] **Step 11: Run tests to verify they pass**
@@ -2401,6 +2656,7 @@ Leave `- [ ] Handle multilingual voice (visitor speaks ES/FR/EN — confirm Live
 ```
 
 The multilingual item stays unchecked — this plan locks voice replies to the visitor's site locale rather than auto-detecting spoken language (an explicit, approved design decision, not a gap), so leave a note rather than checking it:
+
 ```
 - [ ] Handle multilingual voice (visitor speaks ES/FR/EN — confirm Live API auto language handling) — **resolved differently than originally scoped**: voice replies are locked to the visitor's site locale (EN/ES/FR) rather than auto-detected from speech, per the approved UI design spec (`docs/superpowers/specs/2026-08-13-phase4-voice-chat-ui-design.md`). Not planned to be revisited unless it proves limiting in practice.
 ```

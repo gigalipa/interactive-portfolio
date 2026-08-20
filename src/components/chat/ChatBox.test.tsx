@@ -25,7 +25,9 @@ describe("ChatBox", () => {
 	it("does not call onSend for an empty/whitespace-only message", () => {
 		const onSend = vi.fn();
 		render(<ChatBox {...baseProps} onSend={onSend} />);
-		fireEvent.change(screen.getByPlaceholderText("Ask me anything"), { target: { value: "   " } });
+		fireEvent.change(screen.getByPlaceholderText("Ask me anything"), {
+			target: { value: "   " },
+		});
 		fireEvent.click(screen.getByRole("button", { name: "Send" }));
 		expect(onSend).not.toHaveBeenCalled();
 	});
@@ -48,7 +50,9 @@ describe("ChatBox", () => {
 	it("calls onStartVoice when the waves button is clicked", () => {
 		const onStartVoice = vi.fn();
 		render(<ChatBox {...baseProps} onStartVoice={onStartVoice} />);
-		fireEvent.click(screen.getByRole("button", { name: "Voice chat (coming soon)" }));
+		fireEvent.click(
+			screen.getByRole("button", { name: "Voice chat (coming soon)" }),
+		);
 		expect(onStartVoice).toHaveBeenCalledTimes(1);
 	});
 });

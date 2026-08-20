@@ -11,7 +11,10 @@ export interface ChatRequestPayload {
 
 /** Narrow structural subset of `fetch` — real `fetch` satisfies this. */
 export interface FetchLike {
-	(url: string, init: RequestInit): Promise<{
+	(
+		url: string,
+		init: RequestInit,
+	): Promise<{
 		ok: boolean;
 		status: number;
 		body: ReadableStream<Uint8Array> | null;
@@ -92,7 +95,12 @@ function parseFrame(frame: string): ChatSseEvent | null {
 		return null;
 	}
 
-	if (eventName === "meta" || eventName === "delta" || eventName === "done" || eventName === "error") {
+	if (
+		eventName === "meta" ||
+		eventName === "delta" ||
+		eventName === "done" ||
+		eventName === "error"
+	) {
 		return { event: eventName, data } as ChatSseEvent;
 	}
 	return null;

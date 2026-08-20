@@ -21,7 +21,9 @@ describe("buildSystemPrompt", () => {
 
 		expect(prompt).toContain("first person");
 		expect(prompt).toContain("Boundaries:");
-		expect(prompt).toContain("[1] Language Quest AI Widget (Project | tags: ai, web-dev)");
+		expect(prompt).toContain(
+			"[1] Language Quest AI Widget (Project | tags: ai, web-dev)",
+		);
 		expect(prompt).toContain(chunk.document);
 	});
 
@@ -32,7 +34,10 @@ describe("buildSystemPrompt", () => {
 	});
 
 	it("mentions the visitor's language when provided", () => {
-		const prompt = buildSystemPrompt({ chunks: [chunk], visitorLanguage: "ES" });
+		const prompt = buildSystemPrompt({
+			chunks: [chunk],
+			visitorLanguage: "ES",
+		});
 
 		expect(prompt).toContain("visitor's UI language is ES");
 	});
@@ -58,7 +63,10 @@ describe("buildVoiceSystemPrompt", () => {
 			document: "Certified in AutoCAD.",
 		};
 
-		const prompt = buildVoiceSystemPrompt({ chunks: [voiceChunk], visitorLanguage: "EN" });
+		const prompt = buildVoiceSystemPrompt({
+			chunks: [voiceChunk],
+			visitorLanguage: "EN",
+		});
 
 		expect(prompt).toContain("AutoCAD");
 		expect(prompt).toContain("Certified in AutoCAD.");

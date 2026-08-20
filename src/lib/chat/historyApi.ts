@@ -25,9 +25,13 @@ export async function fetchConversation(
 	}
 }
 
-export async function deleteConversation(conversationId: string): Promise<boolean> {
+export async function deleteConversation(
+	conversationId: string,
+): Promise<boolean> {
 	try {
-		const response = await fetch(`/api/history/${conversationId}`, { method: "DELETE" });
+		const response = await fetch(`/api/history/${conversationId}`, {
+			method: "DELETE",
+		});
 		return response.ok;
 	} catch {
 		return false;

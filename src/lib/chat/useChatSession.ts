@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { streamChatResponse } from "./sseClient";
 import { getConsent, setConsent, type ConsentChoice } from "./consent";
-import { clearSessionMessages, loadSessionMessages, saveSessionMessages } from "./sessionHistory";
+import {
+	clearSessionMessages,
+	loadSessionMessages,
+	saveSessionMessages,
+} from "./sessionHistory";
 import {
 	deleteAllHistory,
 	deleteConversation,
@@ -46,7 +50,11 @@ export interface UseChatSessionResult {
 	selectConversation: (conversationId: string) => void;
 	deleteConversationById: (conversationId: string) => void;
 	startNewConversation: () => void;
-	appendVoiceTurn: (turn: { conversationId?: string; userText: string; modelText: string }) => void;
+	appendVoiceTurn: (turn: {
+		conversationId?: string;
+		userText: string;
+		modelText: string;
+	}) => void;
 }
 
 function toDisplayMessages(messages: ChatMessage[]): DisplayMessage[] {
@@ -58,20 +66,28 @@ function toDisplayMessages(messages: ChatMessage[]): DisplayMessage[] {
 	}));
 }
 
-function toWireMessages(messages: DisplayMessage[]): Array<Pick<ChatMessage, "role" | "text">> {
+function toWireMessages(
+	messages: DisplayMessage[],
+): Array<Pick<ChatMessage, "role" | "text">> {
 	return messages.map(({ role, text }) => ({ role, text }));
 }
 
-export function useChatSession(options: UseChatSessionOptions): UseChatSessionResult {
+export function useChatSession(
+	options: UseChatSessionOptions,
+): UseChatSessionResult {
 	const { language, errorGenericMessage, errorRateLimitedMessage } = options;
 
-	const [consent, setConsentState] = useState<ConsentChoice | null>(() => getConsent());
+	const [consent, setConsentState] = useState<ConsentChoice | null>(() =>
+		getConsent(),
+	);
 	const [messages, setMessages] = useState<DisplayMessage[]>(() =>
 		consent === "accepted" ? [] : toDisplayMessages(loadSessionMessages()),
 	);
 	const [status, setStatus] = useState<ChatStatus>("idle");
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-	const [conversationId, setConversationId] = useState<string | undefined>(undefined);
+	const [conversationId, setConversationId] = useState<string | undefined>(
+		undefined,
+	);
 	const [conversations, setConversations] = useState<ConversationSummary[]>([]);
 	const [historyOpen, setHistoryOpen] = useState(false);
 	const lastUserTextRef = useRef<string | null>(null);
@@ -81,7 +97,9 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 
 	const refreshHistory = useCallback(() => {
 		// Best-effort background refresh; a failure here doesn't block the chat itself.
-		fetchHistoryList().then(setConversations).catch(() => {});
+		fetchHistoryList()
+			.then(setConversations)
+			.catch(() => {});
 	}, []);
 
 	useEffect(() => {
@@ -103,7 +121,11 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	}, []);
 
 	const runStream = useCallback(
-		async (text: string, persist: boolean, historyForRequest: DisplayMessage[]) => {
+		async (
+			text: string,
+			persist: boolean,
+			historyForRequest: DisplayMessage[],
+		) => {
 			const runId = ++runIdRef.current;
 			const isCurrent = () => runId === runIdRef.current;
 
@@ -152,12 +174,17 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 							setPresenceState("speaking");
 							assistantMessageId = crypto.randomUUID();
 							const id = assistantMessageId;
-							setMessages((prev) => [...prev, { id, role: "model", text: event.data.text }]);
+							setMessages((prev) => [
+								...prev,
+								{ id, role: "model", text: event.data.text },
+							]);
 						} else {
 							const id = assistantMessageId;
 							setMessages((prev) =>
 								prev.map((message) =>
-									message.id === id ? { ...message, text: message.text + event.data.text } : message,
+									message.id === id
+										? { ...message, text: message.text + event.data.text }
+										: message,
 								),
 							);
 						}
@@ -179,7 +206,9 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 						}
 					} else if (event.event === "error") {
 						failWith(
-							event.data.message === "rate_limited" ? errorRateLimitedMessage : errorGenericMessage,
+							event.data.message === "rate_limited"
+								? errorRateLimitedMessage
+								: errorGenericMessage,
 						);
 					}
 				}
@@ -197,7 +226,13 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 			// whole stream has drained — not at the moment `done` was read.
 			if (persist && sawDone) refreshHistory();
 		},
-		[conversationId, language, errorGenericMessage, errorRateLimitedMessage, refreshHistory],
+		[
+			conversationId,
+			language,
+			errorGenericMessage,
+			errorRateLimitedMessage,
+			refreshHistory,
+		],
 	);
 
 	const sendMessage = useCallback(
@@ -205,7 +240,11 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 			const trimmed = text.trim();
 			if (!trimmed) return;
 			lastUserTextRef.current = trimmed;
-			const userMessage: DisplayMessage = { id: crypto.randomUUID(), role: "user", text: trimmed };
+			const userMessage: DisplayMessage = {
+				id: crypto.randomUUID(),
+				role: "user",
+				text: trimmed,
+			};
 			const historySnapshot = messages;
 			setMessages((prev) => [...prev, userMessage]);
 			runStream(trimmed, consent === "accepted", historySnapshot);
@@ -219,9 +258,13 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 		// The failed attempt's partial assistant bubble was already dropped, but
 		// locate the user message explicitly rather than assuming it's last:
 		// resending it as both `history` and `message` would duplicate it.
-		const lastUserIndex = messages.map((message) => message.role).lastIndexOf("user");
+		const lastUserIndex = messages
+			.map((message) => message.role)
+			.lastIndexOf("user");
 		const historyForRequest =
-			lastUserIndex === -1 ? messages : messages.filter((_, index) => index !== lastUserIndex);
+			lastUserIndex === -1
+				? messages
+				: messages.filter((_, index) => index !== lastUserIndex);
 		runStream(text, consent === "accepted", historyForRequest);
 	}, [consent, messages, runStream]);
 
@@ -251,7 +294,9 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 		async (id: string) => {
 			runIdRef.current++;
 			await deleteConversation(id);
-			setConversations((prev) => prev.filter((conversation) => conversation.conversationId !== id));
+			setConversations((prev) =>
+				prev.filter((conversation) => conversation.conversationId !== id),
+			);
 			if (id === conversationId) {
 				setMessages([]);
 				setConversationId(undefined);
@@ -271,12 +316,26 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	}, []);
 
 	const appendVoiceTurn = useCallback(
-		(turn: { conversationId?: string; userText: string; modelText: string }) => {
+		(turn: {
+			conversationId?: string;
+			userText: string;
+			modelText: string;
+		}) => {
 			if (turn.conversationId) setConversationId(turn.conversationId);
 			setMessages((prev) => [
 				...prev,
-				{ id: crypto.randomUUID(), role: "user", text: turn.userText, mode: "voice" },
-				{ id: crypto.randomUUID(), role: "model", text: turn.modelText, mode: "voice" },
+				{
+					id: crypto.randomUUID(),
+					role: "user",
+					text: turn.userText,
+					mode: "voice",
+				},
+				{
+					id: crypto.randomUUID(),
+					role: "model",
+					text: turn.modelText,
+					mode: "voice",
+				},
 			]);
 			if (consent === "accepted") refreshHistory();
 		},

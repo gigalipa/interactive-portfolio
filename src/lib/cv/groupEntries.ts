@@ -43,7 +43,9 @@ const SECTION_BY_CONTENT_TYPE: Record<string, CvSection> = {
 
 /** Entries eligible for the CV build: Published, one of the five relevant
  * Content Types (Skill included — needed for chip matching, not its own section). */
-export function selectCvEntries(entries: KnowledgeBaseEntry[]): KnowledgeBaseEntry[] {
+export function selectCvEntries(
+	entries: KnowledgeBaseEntry[],
+): KnowledgeBaseEntry[] {
 	return entries.filter(
 		(entry) =>
 			entry.status === "Published" &&
@@ -59,9 +61,13 @@ export function skillChipsFor(
 	entry: LocalizedEntryLike,
 	allEntries: LocalizedEntryLike[],
 ): string[] {
-	const skills = allEntries.filter((candidate) => candidate.contentType === "Skill");
+	const skills = allEntries.filter(
+		(candidate) => candidate.contentType === "Skill",
+	);
 	const matched = skills.filter(
-		(skill) => entry.relatedTo.includes(skill.pageId) || skill.relatedTo.includes(entry.pageId),
+		(skill) =>
+			entry.relatedTo.includes(skill.pageId) ||
+			skill.relatedTo.includes(entry.pageId),
 	);
 	return matched.map((skill) => skill.displayTitle);
 }

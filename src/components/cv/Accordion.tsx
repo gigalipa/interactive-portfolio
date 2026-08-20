@@ -6,7 +6,11 @@ export interface AccordionProps {
 	defaultOpen?: boolean;
 }
 
-export function Accordion({ title, children, defaultOpen = false }: AccordionProps) {
+export function Accordion({
+	title,
+	children,
+	defaultOpen = false,
+}: AccordionProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
 
 	return (
@@ -28,7 +32,9 @@ export function Accordion({ title, children, defaultOpen = false }: AccordionPro
 					<path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
 				</svg>
 			</button>
-			{isOpen && <div className="flex flex-col gap-3 px-5 pb-5">{children}</div>}
+			{isOpen && (
+				<div className="flex flex-col gap-3 px-5 pb-5">{children}</div>
+			)}
 		</div>
 	);
 }

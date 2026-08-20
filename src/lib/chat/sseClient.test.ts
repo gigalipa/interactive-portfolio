@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { parseSseStream, streamChatResponse, type FetchLike } from "./sseClient";
+import {
+	parseSseStream,
+	streamChatResponse,
+	type FetchLike,
+} from "./sseClient";
 
 function streamFromChunks(chunks: string[]): ReadableStream<Uint8Array> {
 	const encoder = new TextEncoder();
@@ -17,7 +21,11 @@ async function collect<T>(iterable: AsyncGenerator<T>): Promise<T[]> {
 	return result;
 }
 
-function fakeFetch(status: number, body: ReadableStream<Uint8Array> | null, text = ""): FetchLike {
+function fakeFetch(
+	status: number,
+	body: ReadableStream<Uint8Array> | null,
+	text = "",
+): FetchLike {
 	return async () => ({
 		ok: status >= 200 && status < 300,
 		status,
@@ -42,7 +50,10 @@ describe("parseSseStream", () => {
 	});
 
 	it("handles a frame split across two reads", async () => {
-		const body = streamFromChunks(['event: delta\ndata: {"text":"Hel', 'lo"}\n\n']);
+		const body = streamFromChunks([
+			'event: delta\ndata: {"text":"Hel',
+			'lo"}\n\n',
+		]);
 
 		expect(await collect(parseSseStream(body))).toEqual([
 			{ event: "delta", data: { text: "Hello" } },
@@ -52,9 +63,14 @@ describe("parseSseStream", () => {
 
 describe("streamChatResponse", () => {
 	it("posts the payload and yields parsed SSE events", async () => {
-		const fetchImpl = vi.fn().mockImplementation(
-			fakeFetch(200, streamFromChunks(['event: delta\ndata: {"text":"Hi"}\n\n'])),
-		);
+		const fetchImpl = vi
+			.fn()
+			.mockImplementation(
+				fakeFetch(
+					200,
+					streamFromChunks(['event: delta\ndata: {"text":"Hi"}\n\n']),
+				),
+			);
 
 		const result = await collect(
 			streamChatResponse({ persist: false, message: "Hello" }, fetchImpl),
@@ -66,17 +82,24 @@ describe("streamChatResponse", () => {
 			expect.objectContaining({ method: "POST" }),
 		);
 		const [, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
-		expect(JSON.parse(init.body as string)).toEqual({ persist: false, message: "Hello" });
+		expect(JSON.parse(init.body as string)).toEqual({
+			persist: false,
+			message: "Hello",
+		});
 	});
 
 	it("yields a rate_limited error event on a 429 response", async () => {
-		const fetchImpl = vi.fn().mockImplementation(fakeFetch(429, null, "Rate limit exceeded"));
+		const fetchImpl = vi
+			.fn()
+			.mockImplementation(fakeFetch(429, null, "Rate limit exceeded"));
 
 		const result = await collect(
 			streamChatResponse({ persist: false, message: "Hi" }, fetchImpl),
 		);
 
-		expect(result).toEqual([{ event: "error", data: { message: "rate_limited" } }]);
+		expect(result).toEqual([
+			{ event: "error", data: { message: "rate_limited" } },
+		]);
 	});
 
 	it("yields a request_failed error event on any other non-ok response", async () => {
@@ -86,6 +109,8 @@ describe("streamChatResponse", () => {
 			streamChatResponse({ persist: false, message: "Hi" }, fetchImpl),
 		);
 
-		expect(result).toEqual([{ event: "error", data: { message: "request_failed" } }]);
+		expect(result).toEqual([
+			{ event: "error", data: { message: "request_failed" } },
+		]);
 	});
 });

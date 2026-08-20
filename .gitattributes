@@ -1,0 +1,5 @@
+# Normalize all text files to LF in the repository, regardless of the
+# checkout platform's line-ending settings. Prevents CRLF (common on
+# Windows checkouts with core.autocrlf) from tripping `pnpm format:check`
+# (Prettier defaults to endOfLine: "lf") on CI (Linux runners).
+* text=auto eol=lf

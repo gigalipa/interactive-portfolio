@@ -23,9 +23,9 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 		errorRateLimitedMessage: t.errorRateLimited,
 	});
 
-	const [voiceErrorKey, setVoiceErrorKey] = useState<"voice_connection_failed" | "voice_mic_denied" | null>(
-		null,
-	);
+	const [voiceErrorKey, setVoiceErrorKey] = useState<
+		"voice_connection_failed" | "voice_mic_denied" | null
+	>(null);
 	const voiceSession = useVoiceSession({
 		language: lang.toUpperCase(),
 		persist: session.consent === "accepted",
@@ -38,7 +38,8 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 		onTurnPersisted: (turn) => session.appendVoiceTurn(turn),
 		onError: (key) => setVoiceErrorKey(key),
 	});
-	const voiceActive = voiceSession.status !== "idle" && voiceSession.status !== "error";
+	const voiceActive =
+		voiceSession.status !== "idle" && voiceSession.status !== "error";
 	const voiceErrorMessage =
 		voiceSession.status === "error" && voiceErrorKey
 			? voiceErrorKey === "voice_mic_denied"
@@ -120,7 +121,10 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 					) : (
 						<>
 							{voiceErrorMessage && (
-								<p className="text-ion/70 px-2 text-center text-xs" role="alert">
+								<p
+									className="text-ion/70 px-2 text-center text-xs"
+									role="alert"
+								>
 									{voiceErrorMessage}
 								</p>
 							)}
@@ -128,7 +132,9 @@ export function ChatWidget({ lang }: ChatWidgetProps) {
 								inputPlaceholder={t.inputPlaceholder}
 								sendLabel={t.send}
 								voiceLabel={t.voiceStart}
-								disabled={session.status === "sending" || session.status === "streaming"}
+								disabled={
+									session.status === "sending" || session.status === "streaming"
+								}
 								onSend={session.sendMessage}
 								onStartVoice={voiceSession.start}
 							/>

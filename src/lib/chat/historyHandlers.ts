@@ -39,7 +39,11 @@ export async function handleGetConversation(
 	const visitorId = requireVisitorId(options.request);
 	if (!visitorId) return jsonResponse(404, { message: "Not found" });
 
-	const conversation = await getConversation(options.kv, visitorId, options.conversationId);
+	const conversation = await getConversation(
+		options.kv,
+		visitorId,
+		options.conversationId,
+	);
 	if (!conversation) return jsonResponse(404, { message: "Not found" });
 
 	return jsonResponse(200, conversation);
@@ -51,7 +55,11 @@ export async function handleDeleteConversation(
 	const visitorId = requireVisitorId(options.request);
 	if (!visitorId) return new Response(null, { status: 404 });
 
-	const existing = await getConversation(options.kv, visitorId, options.conversationId);
+	const existing = await getConversation(
+		options.kv,
+		visitorId,
+		options.conversationId,
+	);
 	if (!existing) return new Response(null, { status: 404 });
 
 	await deleteConversation(options.kv, visitorId, options.conversationId);

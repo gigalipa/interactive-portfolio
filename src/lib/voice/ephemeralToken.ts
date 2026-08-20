@@ -21,9 +21,9 @@ const SESSION_TTL_MINUTES = 2;
 export interface MintEphemeralTokenOptions {
 	apiKey: string;
 	systemInstructions: string;
-	genAiFactory?: (
-		apiKey: string,
-	) => { authTokens: { create(args: unknown): Promise<{ name: string }> } };
+	genAiFactory?: (apiKey: string) => {
+		authTokens: { create(args: unknown): Promise<{ name: string }> };
+	};
 }
 
 export interface EphemeralToken {
@@ -43,7 +43,9 @@ export async function mintEphemeralToken(
 	const { apiKey, systemInstructions, genAiFactory = defaultFactory } = options;
 	const ai = genAiFactory(apiKey);
 
-	const expireTime = new Date(Date.now() + TOKEN_TTL_MINUTES * 60_000).toISOString();
+	const expireTime = new Date(
+		Date.now() + TOKEN_TTL_MINUTES * 60_000,
+	).toISOString();
 	const newSessionExpireTime = new Date(
 		Date.now() + SESSION_TTL_MINUTES * 60_000,
 	).toISOString();

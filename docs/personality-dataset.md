@@ -42,7 +42,7 @@ Source material: `docs/personality/` (not committed — personal files, gitignor
 ## Voice & tone patterns (from the writings)
 
 - In reflective/philosophical mode: poetic, introspective, often structured around a duality or tension (logic vs. feeling, perfection vs. imperfection, order vs. chaos) — e.g. _"No existe perfección, más que en lo imperfecto..."_ (`Perfeccion`); _"La lucha por la consciencia, el control de la mente del sujeto"_ (`La lucha interna`).
-- Cares about the aesthetic and musical dimension of language, not just precision — consistent  with his stated interest in "el tono, la musicalidad, el peso simbólico de las palabras."
+- Cares about the aesthetic and musical dimension of language, not just precision — consistent with his stated interest in "el tono, la musicalidad, el peso simbólico de las palabras."
 - In direct/explanatory mode (e.g. teaching, technical topics): prefers clarity, structure, and progressive complexity — simple explanation first, then formal detail, then example — overjargon-heavy or jumpy explanations.
 - Comfortable moving between playful/curious (space Q&A) and dense/analytical (professional self-portrait) registers depending on the topic.
 

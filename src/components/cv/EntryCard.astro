@@ -23,19 +23,35 @@ const dateRange = dates?.start
 	? `${formatYear(dates.start)} – ${dates.ongoing || !dates.end ? presentLabel : formatYear(dates.end)}`
 	: null;
 
-const metaLine = [entry.displayCategory, entry.displayLocation, dateRange].filter(Boolean).join(" · ");
+const metaLine = [entry.displayCategory, entry.displayLocation, dateRange]
+	.filter(Boolean)
+	.join(" · ");
 
 const techStack = entry.metadata.techStack ?? [];
 const skillChips = [...new Set(chips)];
-const techChips = [...new Set(techStack)].filter((chip) => !skillChips.includes(chip));
+const techChips = [...new Set(techStack)].filter(
+	(chip) => !skillChips.includes(chip),
+);
 
 const isProject = entry.contentType === "Project";
 ---
 
 <div class="border-slate-mist bg-deep-blue/30 rounded-xl border p-4">
-	<h3 class="font-display text-ion text-base font-semibold">{entry.displayTitle}</h3>
-	{metaLine && <p class="text-signal-cyan/70 mt-1 font-mono text-xs">{metaLine}</p>}
-	{entry.displayDescription && <p class="font-body text-ion/80 mt-2 text-sm">{entry.displayDescription}</p>}
+	<h3 class="font-display text-ion text-base font-semibold">
+		{entry.displayTitle}
+	</h3>
+	{
+		metaLine && (
+			<p class="text-signal-cyan/70 mt-1 font-mono text-xs">{metaLine}</p>
+		)
+	}
+	{
+		entry.displayDescription && (
+			<p class="font-body text-ion/80 mt-2 text-sm">
+				{entry.displayDescription}
+			</p>
+		)
+	}
 	{
 		skillChips.length > 0 && (
 			<div class="mt-3 flex flex-wrap gap-1.5">
@@ -62,7 +78,7 @@ const isProject = entry.contentType === "Project";
 		isProject && (
 			<a
 				href={`/${lang}/portfolio/${slugify(entry.title)}`}
-				class="text-signal-cyan mt-3 inline-block text-sm underline hover:text-signal-cyan/80"
+				class="text-signal-cyan hover:text-signal-cyan/80 mt-3 inline-block text-sm underline"
 			>
 				{viewProjectsLabel}
 			</a>

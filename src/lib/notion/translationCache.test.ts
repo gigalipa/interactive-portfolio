@@ -8,10 +8,16 @@ describe("saveTranslationCache", () => {
 
 	it("does not throw when the write fails (e.g. an unreachable path inside a build sandbox)", async () => {
 		const writeFileSync = vi.fn(() => {
-			throw new Error("ENOENT: no such file or directory, writeAll '/bundle/src/lib/notion/.cv-translation-cache.json'");
+			throw new Error(
+				"ENOENT: no such file or directory, writeAll '/bundle/src/lib/notion/.cv-translation-cache.json'",
+			);
 		});
 		vi.doMock("node:fs", () => ({
-			default: { existsSync: vi.fn().mockReturnValue(false), readFileSync: vi.fn(), writeFileSync },
+			default: {
+				existsSync: vi.fn().mockReturnValue(false),
+				readFileSync: vi.fn(),
+				writeFileSync,
+			},
 			existsSync: vi.fn().mockReturnValue(false),
 			readFileSync: vi.fn(),
 			writeFileSync,
@@ -21,7 +27,9 @@ describe("saveTranslationCache", () => {
 		const { saveTranslationCache } = await import("./translationCache");
 
 		expect(() => saveTranslationCache({})).not.toThrow();
-		expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("Could not persist"));
+		expect(warnSpy).toHaveBeenCalledWith(
+			expect.stringContaining("Could not persist"),
+		);
 
 		warnSpy.mockRestore();
 	});

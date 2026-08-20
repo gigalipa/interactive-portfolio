@@ -19,9 +19,10 @@ async function fetchWithRetry(
 			return response;
 		}
 		const retryAfterHeader = Number(response.headers.get("retry-after"));
-		const delayMs = Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
-			? retryAfterHeader * 1000
-			: BASE_RETRY_DELAY_MS * 2 ** attempt;
+		const delayMs =
+			Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
+				? retryAfterHeader * 1000
+				: BASE_RETRY_DELAY_MS * 2 ** attempt;
 		console.warn(
 			`  ! Rate limited (429), retrying in ${Math.round(delayMs / 1000)}s (attempt ${attempt + 1}/${MAX_RETRIES})…`,
 		);

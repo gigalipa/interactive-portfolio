@@ -8,7 +8,9 @@ import {
 } from "./groupEntries";
 import type { KnowledgeBaseEntry } from "../notion/knowledgeBase";
 
-function kbEntry(overrides: Partial<KnowledgeBaseEntry> = {}): KnowledgeBaseEntry {
+function kbEntry(
+	overrides: Partial<KnowledgeBaseEntry> = {},
+): KnowledgeBaseEntry {
 	return {
 		pageId: "p1",
 		title: "Title",
@@ -25,7 +27,9 @@ function kbEntry(overrides: Partial<KnowledgeBaseEntry> = {}): KnowledgeBaseEntr
 	};
 }
 
-function localized(overrides: Partial<LocalizedEntryLike> = {}): LocalizedEntryLike {
+function localized(
+	overrides: Partial<LocalizedEntryLike> = {},
+): LocalizedEntryLike {
 	const base = kbEntry(overrides);
 	return {
 		...base,
@@ -40,9 +44,21 @@ function localized(overrides: Partial<LocalizedEntryLike> = {}): LocalizedEntryL
 describe("selectCvEntries", () => {
 	it("keeps only Published entries with a relevant Content Type", () => {
 		const entries = [
-			kbEntry({ pageId: "a", status: "Published", contentType: "Professional Experience" }),
-			kbEntry({ pageId: "b", status: "Draft", contentType: "Professional Experience" }),
-			kbEntry({ pageId: "c", status: "Published", contentType: "Some Other Type" }),
+			kbEntry({
+				pageId: "a",
+				status: "Published",
+				contentType: "Professional Experience",
+			}),
+			kbEntry({
+				pageId: "b",
+				status: "Draft",
+				contentType: "Professional Experience",
+			}),
+			kbEntry({
+				pageId: "c",
+				status: "Published",
+				contentType: "Some Other Type",
+			}),
 			kbEntry({ pageId: "d", status: "Published", contentType: "Skill" }),
 		];
 		expect(selectCvEntries(entries).map((e) => e.pageId)).toEqual(["a", "d"]);
@@ -58,14 +74,22 @@ describe("groupBySection", () => {
 			localized({ pageId: "d", contentType: "Personal Interest" }),
 		];
 		const grouped = groupBySection(entries);
-		expect(grouped["Professional Experience"].map((e) => e.pageId)).toEqual(["a"]);
+		expect(grouped["Professional Experience"].map((e) => e.pageId)).toEqual([
+			"a",
+		]);
 		expect(grouped.Projects.map((e) => e.pageId)).toEqual(["b"]);
-		expect(grouped["Academic Experience & Certifications"].map((e) => e.pageId)).toEqual(["c"]);
-		expect(grouped["Personal Interests & Background"].map((e) => e.pageId)).toEqual(["d"]);
+		expect(
+			grouped["Academic Experience & Certifications"].map((e) => e.pageId),
+		).toEqual(["c"]);
+		expect(
+			grouped["Personal Interests & Background"].map((e) => e.pageId),
+		).toEqual(["d"]);
 	});
 
 	it("excludes Skill entries from every section", () => {
-		const grouped = groupBySection([localized({ pageId: "s", contentType: "Skill" })]);
+		const grouped = groupBySection([
+			localized({ pageId: "s", contentType: "Skill" }),
+		]);
 		for (const section of CV_SECTIONS) {
 			expect(grouped[section]).toEqual([]);
 		}
@@ -73,16 +97,29 @@ describe("groupBySection", () => {
 
 	it("sorts entries by start date descending", () => {
 		const entries = [
-			localized({ pageId: "old", metadata: { dates: { start: "2020-01-01" } } }),
-			localized({ pageId: "new", metadata: { dates: { start: "2024-01-01" } } }),
+			localized({
+				pageId: "old",
+				metadata: { dates: { start: "2020-01-01" } },
+			}),
+			localized({
+				pageId: "new",
+				metadata: { dates: { start: "2024-01-01" } },
+			}),
 		];
 		const grouped = groupBySection(entries);
-		expect(grouped["Professional Experience"].map((e) => e.pageId)).toEqual(["new", "old"]);
+		expect(grouped["Professional Experience"].map((e) => e.pageId)).toEqual([
+			"new",
+			"old",
+		]);
 	});
 
 	it("falls back to Priority (higher first) for entries with no date, sorted after all dated entries", () => {
 		const entries = [
-			localized({ pageId: "dated", metadata: { dates: { start: "2020-01-01" } }, priority: 0 }),
+			localized({
+				pageId: "dated",
+				metadata: { dates: { start: "2020-01-01" } },
+				priority: 0,
+			}),
 			localized({ pageId: "low-priority", metadata: {}, priority: 1 }),
 			localized({ pageId: "high-priority", metadata: {}, priority: 9 }),
 		];
@@ -108,14 +145,22 @@ describe("skillChipsFor", () => {
 	});
 
 	it("matches when the target entry itself lists the skill in relatedTo (the other relation direction)", () => {
-		const skill = localized({ pageId: "skill-1", contentType: "Skill", displayTitle: "Python" });
+		const skill = localized({
+			pageId: "skill-1",
+			contentType: "Skill",
+			displayTitle: "Python",
+		});
 		const target = localized({ pageId: "job", relatedTo: ["skill-1"] });
 		expect(skillChipsFor(target, [target, skill])).toEqual(["Python"]);
 	});
 
 	it("returns an empty array when no Skill entries relate to the target", () => {
 		const target = localized({ pageId: "job" });
-		const unrelatedSkill = localized({ pageId: "skill-1", contentType: "Skill", relatedTo: ["other"] });
+		const unrelatedSkill = localized({
+			pageId: "skill-1",
+			contentType: "Skill",
+			relatedTo: ["other"],
+		});
 		expect(skillChipsFor(target, [target, unrelatedSkill])).toEqual([]);
 	});
 });

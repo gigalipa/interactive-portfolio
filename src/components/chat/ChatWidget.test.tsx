@@ -49,16 +49,24 @@ describe("ChatWidget voice mode", () => {
 	it("shows ChatBox (not VoiceVisor) when the voice session is idle", () => {
 		voiceSessionState.status = "idle";
 		render(<ChatWidget lang="en" />);
-		expect(screen.getByPlaceholderText("Ask me about my work, background, or projects...")).toBeInTheDocument();
+		expect(
+			screen.getByPlaceholderText(
+				"Ask me about my work, background, or projects...",
+			),
+		).toBeInTheDocument();
 	});
 
 	it("shows VoiceVisor (not ChatBox) once the voice session is listening", () => {
 		voiceSessionState.status = "listening";
 		render(<ChatWidget lang="en" />);
 		expect(
-			screen.queryByPlaceholderText("Ask me about my work, background, or projects..."),
+			screen.queryByPlaceholderText(
+				"Ask me about my work, background, or projects...",
+			),
 		).not.toBeInTheDocument();
-		expect(screen.getByRole("button", { name: "End call" })).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "End call" }),
+		).toBeInTheDocument();
 	});
 
 	it("calls voiceSession.start() when the waves button is clicked while idle", () => {
@@ -82,9 +90,15 @@ describe("ChatWidget voice mode", () => {
 		act(() => capturedVoiceOptions?.onError("voice_mic_denied"));
 
 		expect(
-			screen.getByText("Microphone access was denied. You can still use text chat."),
+			screen.getByText(
+				"Microphone access was denied. You can still use text chat.",
+			),
 		).toBeInTheDocument();
-		expect(screen.getByPlaceholderText("Ask me about my work, background, or projects...")).toBeInTheDocument();
+		expect(
+			screen.getByPlaceholderText(
+				"Ask me about my work, background, or projects...",
+			),
+		).toBeInTheDocument();
 	});
 
 	it("shows the generic voice error message when onError fires with voice_connection_failed", () => {
@@ -94,7 +108,9 @@ describe("ChatWidget voice mode", () => {
 		act(() => capturedVoiceOptions?.onError("voice_connection_failed"));
 
 		expect(
-			screen.getByText("The voice session couldn't connect. Please try text chat instead."),
+			screen.getByText(
+				"The voice session couldn't connect. Please try text chat instead.",
+			),
 		).toBeInTheDocument();
 	});
 
@@ -102,7 +118,9 @@ describe("ChatWidget voice mode", () => {
 		voiceSessionState.status = "idle";
 		render(<ChatWidget lang="en" />);
 		expect(
-			screen.queryByText("The voice session couldn't connect. Please try text chat instead."),
+			screen.queryByText(
+				"The voice session couldn't connect. Please try text chat instead.",
+			),
 		).not.toBeInTheDocument();
 	});
 });

@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { setPresenceState, setVoiceMode, setVoicePulseRate } from "./presenceRingBridge";
+import {
+	setPresenceState,
+	setVoiceMode,
+	setVoicePulseRate,
+} from "./presenceRingBridge";
 
 function renderRing(): HTMLDivElement {
 	const div = document.createElement("div");
@@ -52,7 +56,9 @@ describe("setVoicePulseRate", () => {
 	it("never goes below the 0.5s floor", () => {
 		const ring = renderRing();
 		setVoicePulseRate(1);
-		expect(parseFloat(ring.style.getPropertyValue("--pulse-rate"))).toBeGreaterThanOrEqual(0.5);
+		expect(
+			parseFloat(ring.style.getPropertyValue("--pulse-rate")),
+		).toBeGreaterThanOrEqual(0.5);
 	});
 
 	it("does nothing if no ring is present", () => {

@@ -32,15 +32,23 @@ describe("ConsentBanner", () => {
 
 	it("toggles the info body text on info-toggle click", () => {
 		render(<ConsentBanner {...baseProps} />);
-		expect(screen.queryByText("Details about the cookie.")).not.toBeInTheDocument();
-		fireEvent.click(screen.getByRole("button", { name: "What's this cookie?" }));
+		expect(
+			screen.queryByText("Details about the cookie."),
+		).not.toBeInTheDocument();
+		fireEvent.click(
+			screen.getByRole("button", { name: "What's this cookie?" }),
+		);
 		expect(screen.getByText("Details about the cookie.")).toBeInTheDocument();
 	});
 
 	it("shows a delete-option checkbox and passes its value to onReject when showDeleteOption is true", () => {
 		const onReject = vi.fn();
-		render(<ConsentBanner {...baseProps} showDeleteOption onReject={onReject} />);
-		fireEvent.click(screen.getByRole("checkbox", { name: baseProps.deleteOptionLabel }));
+		render(
+			<ConsentBanner {...baseProps} showDeleteOption onReject={onReject} />,
+		);
+		fireEvent.click(
+			screen.getByRole("checkbox", { name: baseProps.deleteOptionLabel }),
+		);
 		fireEvent.click(screen.getByRole("button", { name: "Reject" }));
 		expect(onReject).toHaveBeenCalledWith(true);
 	});

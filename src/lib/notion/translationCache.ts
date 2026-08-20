@@ -14,7 +14,10 @@ import type { TranslationCache } from "./translate";
 // is committed but never write their own output back, since their filesystem
 // is ephemeral. That's an accepted tradeoff for a small, infrequently-edited
 // Knowledge Base — not a bug to fix with an auto-commit step or remote store.
-const CACHE_PATH = resolve(process.cwd(), "src/lib/notion/.cv-translation-cache.json");
+const CACHE_PATH = resolve(
+	process.cwd(),
+	"src/lib/notion/.cv-translation-cache.json",
+);
 
 /** Loads the committed translation cache. Never throws — a missing or
  * corrupted cache file just means every entry gets re-translated this build. */
@@ -37,8 +40,14 @@ export function loadTranslationCache(): TranslationCache {
  * here keeps it a build-speed optimization instead of a build-breaking one. */
 export function saveTranslationCache(cache: TranslationCache): void {
 	try {
-		writeFileSync(CACHE_PATH, `${JSON.stringify(cache, null, "\t")}\n`, "utf-8");
+		writeFileSync(
+			CACHE_PATH,
+			`${JSON.stringify(cache, null, "\t")}\n`,
+			"utf-8",
+		);
 	} catch (error) {
-		console.warn(`Could not persist the CV translation cache (non-fatal): ${String(error)}`);
+		console.warn(
+			`Could not persist the CV translation cache (non-fatal): ${String(error)}`,
+		);
 	}
 }

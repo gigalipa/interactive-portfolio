@@ -1,4 +1,7 @@
-import { EXCLUDED_GENERAL_CHAT_CONTENT_TYPES, type RateLimiter } from "../chat/handler";
+import {
+	EXCLUDED_GENERAL_CHAT_CONTENT_TYPES,
+	type RateLimiter,
+} from "../chat/handler";
 import { retrieveContext, type ChromaCredentials } from "../rag/retrieve";
 import { buildVoiceSystemPrompt } from "../rag/prompt";
 import { mintEphemeralToken, LIVE_MODEL } from "./ephemeralToken";
@@ -39,7 +42,8 @@ function jsonError(status: number, message: string): Response {
 export async function handleVoiceTokenRequest(
 	options: HandleVoiceTokenRequestOptions,
 ): Promise<Response> {
-	const { request, rateLimiter, chroma, googleApiKeyEmb, googleApiKeyLive } = options;
+	const { request, rateLimiter, chroma, googleApiKeyEmb, googleApiKeyLive } =
+		options;
 
 	let body: VoiceTokenRequestBody;
 	try {
@@ -89,10 +93,13 @@ export async function handleVoiceTokenRequest(
 			systemInstructions,
 		});
 
-		return new Response(JSON.stringify({ token, expiresAt, model: LIVE_MODEL }), {
-			status: 200,
-			headers: { "Content-Type": "application/json" },
-		});
+		return new Response(
+			JSON.stringify({ token, expiresAt, model: LIVE_MODEL }),
+			{
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			},
+		);
 	} catch (error) {
 		console.error("Voice token mint failed", error);
 		return jsonError(502, GENERIC_ERROR_MESSAGE);

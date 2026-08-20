@@ -115,7 +115,9 @@ export function rankChunks(
 			preferredLanguage && chunk.language === preferredLanguage
 				? LANGUAGE_SCORE_WEIGHT
 				: 0;
-		return chunk.distance - chunk.priority * PRIORITY_SCORE_WEIGHT - languageBonus;
+		return (
+			chunk.distance - chunk.priority * PRIORITY_SCORE_WEIGHT - languageBonus
+		);
 	};
 	return [...chunks].sort((a, b) => score(a) - score(b));
 }
@@ -128,8 +130,14 @@ export function rankChunks(
 export async function retrieveContext(
 	options: RetrieveContextOptions,
 ): Promise<RetrievedChunk[]> {
-	const { chroma, googleApiKey, query, language, contentType, excludeContentTypes } =
-		options;
+	const {
+		chroma,
+		googleApiKey,
+		query,
+		language,
+		contentType,
+		excludeContentTypes,
+	} = options;
 	const topK = options.topK ?? DEFAULT_TOP_K;
 
 	const client = new CloudClient({

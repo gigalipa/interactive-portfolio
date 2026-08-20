@@ -1,5 +1,8 @@
 import type { Client } from "@notionhq/client";
-import type { PageObjectResponse, RichTextItemResponse } from "@notionhq/client";
+import type {
+	PageObjectResponse,
+	RichTextItemResponse,
+} from "@notionhq/client";
 
 export const KNOWLEDGE_BASE_DATA_SOURCE_ID =
 	process.env.NOTION_KNOWLEDGE_BASE_DATA_SOURCE_ID ||
@@ -50,7 +53,9 @@ export interface KnowledgeBaseEntry {
 	metadata: EntryMetadata;
 }
 
-export function plainText(richText: RichTextItemResponse[] | undefined): string {
+export function plainText(
+	richText: RichTextItemResponse[] | undefined,
+): string {
 	return (richText ?? []).map((item) => item.plain_text).join("");
 }
 
@@ -70,28 +75,42 @@ export function parseMetadata(raw: string | undefined): EntryMetadata {
 export function extractEntry(page: PageObjectResponse): KnowledgeBaseEntry {
 	const props = page.properties;
 
-	const title = props.Title?.type === "title" ? plainText(props.Title.title) : "";
+	const title =
+		props.Title?.type === "title" ? plainText(props.Title.title) : "";
 	const summary =
-		props.Summary?.type === "rich_text" ? plainText(props.Summary.rich_text) : "";
+		props.Summary?.type === "rich_text"
+			? plainText(props.Summary.rich_text)
+			: "";
 	const description =
-		props.Description?.type === "rich_text" ? plainText(props.Description.rich_text) : "";
+		props.Description?.type === "rich_text"
+			? plainText(props.Description.rich_text)
+			: "";
 	const contentType =
 		props["Content Type"]?.type === "select"
 			? (props["Content Type"].select?.name ?? null)
 			: null;
 	const tags =
-		props.Tags?.type === "multi_select" ? props.Tags.multi_select.map((o) => o.name) : [];
-	const priority = props.Priority?.type === "number" ? props.Priority.number : null;
+		props.Tags?.type === "multi_select"
+			? props.Tags.multi_select.map((o) => o.name)
+			: [];
+	const priority =
+		props.Priority?.type === "number" ? props.Priority.number : null;
 	const status =
-		props.Status?.type === "select" ? (props.Status.select?.name ?? null) : null;
+		props.Status?.type === "select"
+			? (props.Status.select?.name ?? null)
+			: null;
 	const language =
-		props.Language?.type === "select" ? (props.Language.select?.name ?? null) : null;
+		props.Language?.type === "select"
+			? (props.Language.select?.name ?? null)
+			: null;
 	const relatedTo =
 		props["Related To"]?.type === "relation"
 			? props["Related To"].relation.map((r) => r.id)
 			: [];
 	const metadataRaw =
-		props.Metadata?.type === "rich_text" ? plainText(props.Metadata.rich_text) : undefined;
+		props.Metadata?.type === "rich_text"
+			? plainText(props.Metadata.rich_text)
+			: undefined;
 
 	return {
 		pageId: page.id,
@@ -135,7 +154,9 @@ export async function fetchKnowledgeBaseEntries(
 			}
 		}
 
-		cursor = response.has_more ? (response.next_cursor ?? undefined) : undefined;
+		cursor = response.has_more
+			? (response.next_cursor ?? undefined)
+			: undefined;
 		await sleep(NOTION_REQUEST_DELAY_MS);
 	} while (cursor);
 

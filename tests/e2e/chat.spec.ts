@@ -18,38 +18,56 @@ async function askAndAwaitReply(page: Page, question: string) {
 	const reply = page.getByTestId("chat-bubble-model").first();
 	await expect(reply).toBeVisible({ timeout: REPLY_TIMEOUT });
 	// The send button re-enables only once the stream is done.
-	await expect(page.getByRole("button", { name: "Send" })).toBeEnabled({ timeout: REPLY_TIMEOUT });
+	await expect(page.getByRole("button", { name: "Send" })).toBeEnabled({
+		timeout: REPLY_TIMEOUT,
+	});
 	return reply;
 }
 
-test("shows the consent banner on first visit and a chat box after accepting", async ({ page }) => {
+test("shows the consent banner on first visit and a chat box after accepting", async ({
+	page,
+}) => {
 	await page.goto("/en/");
-	await expect(page.getByText(/This site can remember your conversation/)).toBeVisible();
+	await expect(
+		page.getByText(/This site can remember your conversation/),
+	).toBeVisible();
 	await page.getByRole("button", { name: "Accept" }).click();
-	await expect(page.getByPlaceholder("Ask me about my work, background, or projects...")).toBeVisible();
+	await expect(
+		page.getByPlaceholder("Ask me about my work, background, or projects..."),
+	).toBeVisible();
 });
 
 test("rejecting consent still allows sending a message", async ({ page }) => {
 	await page.goto("/en/");
 	await page.getByRole("button", { name: "Reject" }).click();
-	const input = page.getByPlaceholder("Ask me about my work, background, or projects...");
+	const input = page.getByPlaceholder(
+		"Ask me about my work, background, or projects...",
+	);
 	await expect(input).toBeVisible();
 	await input.fill("What's your background?");
 	await page.getByRole("button", { name: "Send" }).click();
 	await expect(page.getByText("What's your background?")).toBeVisible();
 });
 
-test("the history toggle is hidden until a persisted conversation exists", async ({ page }) => {
+test("the history toggle is hidden until a persisted conversation exists", async ({
+	page,
+}) => {
 	await page.goto("/en/");
-	await expect(page.getByRole("button", { name: "Conversation history" })).toHaveCount(0);
+	await expect(
+		page.getByRole("button", { name: "Conversation history" }),
+	).toHaveCount(0);
 });
 
 test("consent choice persists across a reload", async ({ page }) => {
 	await page.goto("/en/");
 	await page.getByRole("button", { name: "Accept" }).click();
 	await page.reload();
-	await expect(page.getByText(/This site can remember your conversation/)).not.toBeVisible();
-	await expect(page.getByPlaceholder("Ask me about my work, background, or projects...")).toBeVisible();
+	await expect(
+		page.getByText(/This site can remember your conversation/),
+	).not.toBeVisible();
+	await expect(
+		page.getByPlaceholder("Ask me about my work, background, or projects..."),
+	).toBeVisible();
 });
 
 // These three drive the real Gemini endpoint. They run one at a time, spaced out,
@@ -71,7 +89,10 @@ test.describe("live model round-trips", () => {
 	// Gemini call 400s. Real coverage of this path only happens locally, against
 	// real credentials — skip it in CI rather than burn free-tier quota on a test
 	// that can never pass there.
-	test.skip(!!process.env.CI, "Requires real Gemini/Chroma credentials, not available in CI.");
+	test.skip(
+		!!process.env.CI,
+		"Requires real Gemini/Chroma credentials, not available in CI.",
+	);
 
 	test.beforeEach(async () => {
 		await new Promise((resolve) => setTimeout(resolve, QUOTA_COOLDOWN));
@@ -84,38 +105,55 @@ test.describe("live model round-trips", () => {
 		const reply = await askAndAwaitReply(page, "Who are you, in one sentence?");
 
 		// The visitor's own optimistically-appended bubble is separate from the reply.
-		await expect(page.getByTestId("chat-bubble-user")).toHaveText("Who are you, in one sentence?");
+		await expect(page.getByTestId("chat-bubble-user")).toHaveText(
+			"Who are you, in one sentence?",
+		);
 		expect((await reply.innerText()).trim().length).toBeGreaterThan(0);
 		// No error bubble alongside it.
 		await expect(page.getByRole("alert")).toHaveCount(0);
 	});
 
-	test("a persisted conversation is listed in the history sidebar after a reload", async ({ page }) => {
+	test("a persisted conversation is listed in the history sidebar after a reload", async ({
+		page,
+	}) => {
 		await page.goto("/en/");
 		await page.getByRole("button", { name: "Accept" }).click();
 		await askAndAwaitReply(page, "What projects have you worked on?");
 
 		await page.reload();
 
-		const historyToggle = page.getByRole("button", { name: "Conversation history" });
+		const historyToggle = page.getByRole("button", {
+			name: "Conversation history",
+		});
 		await expect(historyToggle).toBeVisible();
 		await historyToggle.click();
 		await expect(page.getByRole("heading", { name: "History" })).toBeVisible();
-		await expect(page.getByRole("button", { name: "What projects have you worked on?" })).toBeVisible();
+		await expect(
+			page.getByRole("button", { name: "What projects have you worked on?" }),
+		).toBeVisible();
 	});
 
-	test("deleting a conversation removes it from the history sidebar", async ({ page }) => {
+	test("deleting a conversation removes it from the history sidebar", async ({
+		page,
+	}) => {
 		await page.goto("/en/");
 		await page.getByRole("button", { name: "Accept" }).click();
 		await askAndAwaitReply(page, "Tell me about your background.");
 
-		const historyToggle = page.getByRole("button", { name: "Conversation history" });
+		const historyToggle = page.getByRole("button", {
+			name: "Conversation history",
+		});
 		await expect(historyToggle).toBeVisible();
 		await historyToggle.click();
 
-		const row = page.getByRole("button", { name: "Tell me about your background." });
+		const row = page.getByRole("button", {
+			name: "Tell me about your background.",
+		});
 		await expect(row).toBeVisible();
-		await page.getByRole("button", { name: "Delete conversation" }).first().click();
+		await page
+			.getByRole("button", { name: "Delete conversation" })
+			.first()
+			.click();
 
 		await expect(row).toHaveCount(0);
 	});

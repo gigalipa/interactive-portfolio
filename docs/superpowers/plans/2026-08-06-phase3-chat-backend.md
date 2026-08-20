@@ -25,6 +25,7 @@
 ### Task 1: Wrangler config, KV/Rate-Limit bindings, local dev secrets
 
 **Files:**
+
 - Modify: `wrangler.jsonc`
 - Modify: `.gitignore`
 - Modify: `package.json`
@@ -33,6 +34,7 @@
 - Create: `worker-configuration.d.ts` (generated, committed)
 
 **Interfaces:**
+
 - Produces: a `SESSION` KV binding and a `CHAT_RATE_LIMITER` rate-limit binding available via `env` from `cloudflare:workers` in every later task, plus ambient `Env` types covering `SESSION`, `CHAT_RATE_LIMITER`, `GOOGLE_API_KEY_EMB`, `GOOGLE_API_KEY_LLM`, `CHROMA_HOST`, `CHROMA_API_KEY`, `CHROMA_TENANT`, `CHROMA_DATABASE`.
 
 - [ ] **Step 1: Add the KV namespace and rate-limit bindings to `wrangler.jsonc`**
@@ -48,8 +50,8 @@ Replace the contents of `wrangler.jsonc` with:
 	"kv_namespaces": [
 		{
 			"binding": "SESSION",
-			"id": "5d50ebf2b87d44b2b45eb962c56bae42"
-		}
+			"id": "5d50ebf2b87d44b2b45eb962c56bae42",
+		},
 	],
 	"ratelimits": [
 		{
@@ -57,10 +59,10 @@ Replace the contents of `wrangler.jsonc` with:
 			"namespace_id": "1001",
 			"simple": {
 				"limit": 10,
-				"period": 60
-			}
-		}
-	]
+				"period": 60,
+			},
+		},
+	],
 }
 ```
 
@@ -128,11 +130,13 @@ git commit -m "Add KV and rate-limit bindings for Phase 3 chat backend"
 ### Task 2: Conversation types and KV history helpers
 
 **Files:**
+
 - Create: `src/lib/history/types.ts`
 - Create: `src/lib/history/kv.ts`
 - Test: `src/lib/history/kv.test.ts`
 
 **Interfaces:**
+
 - Produces: `ChatMessage { role: "user" | "model"; text: string; at: string }`, `StoredConversation { messages: ChatMessage[]; updatedAt: string; title: string }`, `ConversationSummary { conversationId: string; title: string; updatedAt: string }` (from `types.ts`); `ConversationKV` interface and `getConversation`, `putConversation`, `listConversations`, `deleteConversation`, `deleteAllConversations`, `buildTitle` (from `kv.ts`) — all consumed directly by Task 6 and Task 7.
 
 - [ ] **Step 1: Create the shared types**
@@ -246,8 +250,16 @@ describe("conversation KV helpers", () => {
 		const result = await listConversations(kv, "visitor-1");
 
 		expect(result).toEqual([
-			{ conversationId: "conv-new", title: "New", updatedAt: "2026-08-05T00:00:00.000Z" },
-			{ conversationId: "conv-old", title: "Old", updatedAt: "2026-08-01T00:00:00.000Z" },
+			{
+				conversationId: "conv-new",
+				title: "New",
+				updatedAt: "2026-08-05T00:00:00.000Z",
+			},
+			{
+				conversationId: "conv-old",
+				title: "Old",
+				updatedAt: "2026-08-01T00:00:00.000Z",
+			},
 		]);
 	});
 
@@ -294,7 +306,11 @@ Expected: FAIL — `Cannot find module './kv'` (file doesn't exist yet).
 `src/lib/history/kv.ts`:
 
 ```typescript
-import type { ChatMessage, ConversationSummary, StoredConversation } from "./types";
+import type {
+	ChatMessage,
+	ConversationSummary,
+	StoredConversation,
+} from "./types";
 
 const CONVERSATION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days, rolling from last write
 
@@ -387,7 +403,11 @@ export function buildTitle(firstUserMessage: string): string {
 }
 
 // Re-exported for convenience so callers don't need a separate import.
-export type { ChatMessage, StoredConversation, ConversationSummary } from "./types";
+export type {
+	ChatMessage,
+	StoredConversation,
+	ConversationSummary,
+} from "./types";
 ```
 
 - [ ] **Step 5: Run the tests to verify they pass**
@@ -410,10 +430,12 @@ git commit -m "Add KV-backed conversation history helpers"
 ### Task 3: Visitor cookie helpers
 
 **Files:**
+
 - Create: `src/lib/history/cookies.ts`
 - Test: `src/lib/history/cookies.test.ts`
 
 **Interfaces:**
+
 - Produces: `readVisitorId(cookieHeader: string | null): string | undefined`, `buildVisitorIdCookie(visitorId: string): string`, `resolveVisitorId(cookieHeader: string | null): { visitorId: string; isNew: boolean }` — consumed by Task 6 (`handleChatRequest`) and Task 7 (`historyHandlers`).
 
 - [ ] **Step 1: Write the failing tests**
@@ -422,7 +444,11 @@ git commit -m "Add KV-backed conversation history helpers"
 
 ```typescript
 import { describe, expect, it } from "vitest";
-import { buildVisitorIdCookie, readVisitorId, resolveVisitorId } from "./cookies";
+import {
+	buildVisitorIdCookie,
+	readVisitorId,
+	resolveVisitorId,
+} from "./cookies";
 
 describe("readVisitorId", () => {
 	it("returns undefined when there is no cookie header", () => {
@@ -434,7 +460,9 @@ describe("readVisitorId", () => {
 	});
 
 	it("extracts visitor_id from a cookie header with multiple cookies", () => {
-		expect(readVisitorId("other=1; visitor_id=abc-123; another=2")).toBe("abc-123");
+		expect(readVisitorId("other=1; visitor_id=abc-123; another=2")).toBe(
+			"abc-123",
+		);
 	});
 
 	it("decodes URI-encoded values", () => {
@@ -503,9 +531,10 @@ export function buildVisitorIdCookie(visitorId: string): string {
 	].join("; ");
 }
 
-export function resolveVisitorId(
-	cookieHeader: string | null,
-): { visitorId: string; isNew: boolean } {
+export function resolveVisitorId(cookieHeader: string | null): {
+	visitorId: string;
+	isNew: boolean;
+} {
 	const existing = readVisitorId(cookieHeader);
 	if (existing) return { visitorId: existing, isNew: false };
 	return { visitorId: crypto.randomUUID(), isNew: true };
@@ -529,10 +558,12 @@ git commit -m "Add visitor_id cookie helpers"
 ### Task 4: SSE event formatting helper
 
 **Files:**
+
 - Create: `src/lib/rag/sse.ts`
 - Test: `src/lib/rag/sse.test.ts`
 
 **Interfaces:**
+
 - Produces: `ChatSseEvent` union type and `formatSseEvent(event: ChatSseEvent): string` — consumed by Task 6 (`handleChatRequest`).
 
 - [ ] **Step 1: Write the failing tests**
@@ -545,9 +576,9 @@ import { formatSseEvent } from "./sse";
 
 describe("formatSseEvent", () => {
 	it("formats a meta event", () => {
-		expect(formatSseEvent({ event: "meta", data: { conversationId: "conv-1" } })).toBe(
-			'event: meta\ndata: {"conversationId":"conv-1"}\n\n',
-		);
+		expect(
+			formatSseEvent({ event: "meta", data: { conversationId: "conv-1" } }),
+		).toBe('event: meta\ndata: {"conversationId":"conv-1"}\n\n');
 	});
 
 	it("formats a delta event", () => {
@@ -557,7 +588,9 @@ describe("formatSseEvent", () => {
 	});
 
 	it("formats a done event with an empty data object", () => {
-		expect(formatSseEvent({ event: "done", data: {} })).toBe("event: done\ndata: {}\n\n");
+		expect(formatSseEvent({ event: "done", data: {} })).toBe(
+			"event: done\ndata: {}\n\n",
+		);
 	});
 
 	it("formats an error event", () => {
@@ -606,10 +639,12 @@ git commit -m "Add SSE event formatting helper"
 ### Task 5: Gemini streaming chat completion
 
 **Files:**
+
 - Create: `src/lib/rag/chat.ts`
 - Test: `src/lib/rag/chat.test.ts`
 
 **Interfaces:**
+
 - Consumes: nothing from earlier tasks (standalone module, mirrors the existing `src/lib/rag/embed.ts` pattern of calling the Gemini REST API directly via `fetch`).
 - Produces: `ChatMessageForModel { role: "user" | "model"; text: string }`, `FetchLike` type, `streamChatCompletion(options): AsyncGenerator<string>`, `parseGeminiSseStream(body: ReadableStream<Uint8Array>): AsyncGenerator<string>` — consumed by Task 6 (`handleChatRequest`).
 
@@ -619,7 +654,11 @@ git commit -m "Add SSE event formatting helper"
 
 ```typescript
 import { describe, expect, it, vi } from "vitest";
-import { parseGeminiSseStream, streamChatCompletion, type FetchLike } from "./chat";
+import {
+	parseGeminiSseStream,
+	streamChatCompletion,
+	type FetchLike,
+} from "./chat";
 
 function streamFromChunks(chunks: string[]): ReadableStream<Uint8Array> {
 	const encoder = new TextEncoder();
@@ -657,7 +696,10 @@ describe("parseGeminiSseStream", () => {
 			'data: {"candidates":[{"content":{"parts":[{"text":" there"}]}}]}\n\n',
 		]);
 
-		expect(await collect(parseGeminiSseStream(body))).toEqual(["Hello", " there"]);
+		expect(await collect(parseGeminiSseStream(body))).toEqual([
+			"Hello",
+			" there",
+		]);
 	});
 
 	it("handles a chunk split across two reads", async () => {
@@ -681,12 +723,16 @@ describe("parseGeminiSseStream", () => {
 
 describe("streamChatCompletion", () => {
 	it("posts the system prompt and message history, then yields streamed text", async () => {
-		const fetchImpl = vi.fn().mockImplementation(
-			fakeFetch(
-				200,
-				streamFromChunks(['data: {"candidates":[{"content":{"parts":[{"text":"Hi!"}]}}]}\n\n']),
-			),
-		);
+		const fetchImpl = vi
+			.fn()
+			.mockImplementation(
+				fakeFetch(
+					200,
+					streamFromChunks([
+						'data: {"candidates":[{"content":{"parts":[{"text":"Hi!"}]}}]}\n\n',
+					]),
+				),
+			);
 
 		const result = await collect(
 			streamChatCompletion({
@@ -699,17 +745,25 @@ describe("streamChatCompletion", () => {
 
 		expect(result).toEqual(["Hi!"]);
 		expect(fetchImpl).toHaveBeenCalledWith(
-			expect.stringContaining("gemma-4-31b-it:streamGenerateContent?alt=sse&key=test-key"),
+			expect.stringContaining(
+				"gemma-4-31b-it:streamGenerateContent?alt=sse&key=test-key",
+			),
 			expect.objectContaining({ method: "POST" }),
 		);
 		const [, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
 		const body = JSON.parse(init.body as string);
-		expect(body.systemInstruction).toEqual({ parts: [{ text: "You are Daniel's avatar." }] });
-		expect(body.contents).toEqual([{ role: "user", parts: [{ text: "Hello" }] }]);
+		expect(body.systemInstruction).toEqual({
+			parts: [{ text: "You are Daniel's avatar." }],
+		});
+		expect(body.contents).toEqual([
+			{ role: "user", parts: [{ text: "Hello" }] },
+		]);
 	});
 
 	it("throws with status and body text on a non-ok response", async () => {
-		const fetchImpl = vi.fn().mockImplementation(fakeFetch(429, null, "quota exceeded"));
+		const fetchImpl = vi
+			.fn()
+			.mockImplementation(fakeFetch(429, null, "quota exceeded"));
 
 		await expect(
 			collect(
@@ -745,7 +799,10 @@ export interface ChatMessageForModel {
 
 /** Narrow structural subset of `fetch` — real `fetch` satisfies this. */
 export interface FetchLike {
-	(url: string, init: RequestInit): Promise<{
+	(
+		url: string,
+		init: RequestInit,
+	): Promise<{
 		ok: boolean;
 		status: number;
 		body: ReadableStream<Uint8Array> | null;
@@ -847,11 +904,13 @@ git commit -m "Add Gemini streaming chat completion for gemma-4-31b-it"
 ### Task 6: `/api/chat` handler and route
 
 **Files:**
+
 - Create: `src/lib/chat/handler.ts`
 - Test: `src/lib/chat/handler.test.ts`
 - Create: `src/pages/api/chat.ts`
 
 **Interfaces:**
+
 - Consumes: `retrieveContext`/`ChromaCredentials` (`src/lib/rag/retrieve.ts`), `buildSystemPrompt` (`src/lib/rag/prompt.ts`), `streamChatCompletion`/`ChatMessageForModel` (`src/lib/rag/chat.ts`), `formatSseEvent` (`src/lib/rag/sse.ts`), `getConversation`/`putConversation`/`buildTitle`/`ConversationKV` (`src/lib/history/kv.ts`), `resolveVisitorId`/`buildVisitorIdCookie` (`src/lib/history/cookies.ts`), `ChatMessage`/`StoredConversation` (`src/lib/history/types.ts`).
 - Produces: `RateLimiter` interface, `ChatRequestBody`, `HandleChatRequestOptions`, `handleChatRequest(options): Promise<Response>` — consumed by `src/pages/api/chat.ts` and, structurally, by any future route needing the same handler.
 
@@ -1001,7 +1060,9 @@ describe("handleChatRequest", () => {
 		kv.store.set(
 			"conv:v-1:conv-1",
 			JSON.stringify({
-				messages: [{ role: "user", text: "First", at: "2026-08-06T00:00:00.000Z" }],
+				messages: [
+					{ role: "user", text: "First", at: "2026-08-06T00:00:00.000Z" },
+				],
 				updatedAt: "2026-08-06T00:00:00.000Z",
 				title: "First",
 			} satisfies StoredConversation),
@@ -1016,7 +1077,9 @@ describe("handleChatRequest", () => {
 		});
 		await readSse(response);
 
-		const conversation = JSON.parse(kv.store.get("conv:v-1:conv-1")!) as StoredConversation;
+		const conversation = JSON.parse(
+			kv.store.get("conv:v-1:conv-1")!,
+		) as StoredConversation;
 		expect(conversation.title).toBe("First");
 		expect(conversation.messages).toHaveLength(3);
 	});
@@ -1136,7 +1199,8 @@ const now = (): string => new Date().toISOString();
 export async function handleChatRequest(
 	options: HandleChatRequestOptions,
 ): Promise<Response> {
-	const { request, kv, rateLimiter, chroma, googleApiKeyEmb, googleApiKeyLlm } = options;
+	const { request, kv, rateLimiter, chroma, googleApiKeyEmb, googleApiKeyLlm } =
+		options;
 
 	let body: ChatRequestBody;
 	try {
@@ -1175,10 +1239,15 @@ export async function handleChatRequest(
 		priorMessages = body.history ?? [];
 	}
 
-	const userMessage: ChatMessage = { role: "user", text: body.message, at: now() };
-	const messagesForModel: ChatMessageForModel[] = [...priorMessages, userMessage].map(
-		({ role, text }) => ({ role, text }),
-	);
+	const userMessage: ChatMessage = {
+		role: "user",
+		text: body.message,
+		at: now(),
+	};
+	const messagesForModel: ChatMessageForModel[] = [
+		...priorMessages,
+		userMessage,
+	].map(({ role, text }) => ({ role, text }));
 
 	const responseHeaders = new Headers({
 		"Content-Type": "text/event-stream",
@@ -1205,7 +1274,10 @@ export async function handleChatRequest(
 					language: body.language,
 				}).catch(() => []);
 
-				const systemPrompt = buildSystemPrompt({ chunks, visitorLanguage: body.language });
+				const systemPrompt = buildSystemPrompt({
+					chunks,
+					visitorLanguage: body.language,
+				});
 
 				for await (const delta of streamChatCompletion({
 					systemPrompt,
@@ -1233,7 +1305,11 @@ export async function handleChatRequest(
 					};
 					await putConversation(kv, visitorId, conversationId, updated).catch(
 						(error: unknown) => {
-							console.error("Failed to persist conversation", conversationId, error);
+							console.error(
+								"Failed to persist conversation",
+								conversationId,
+								error,
+							);
 						},
 					);
 				}
@@ -1241,7 +1317,9 @@ export async function handleChatRequest(
 				send(
 					formatSseEvent({
 						event: "error",
-						data: { message: error instanceof Error ? error.message : "Unknown error" },
+						data: {
+							message: error instanceof Error ? error.message : "Unknown error",
+						},
 					}),
 				);
 			} finally {
@@ -1304,6 +1382,7 @@ git commit -m "Add /api/chat SSE endpoint with consent-gated history persistence
 ### Task 7: `/api/history/*` routes
 
 **Files:**
+
 - Create: `src/lib/chat/historyHandlers.ts`
 - Test: `src/lib/chat/historyHandlers.test.ts`
 - Create: `src/pages/api/history/list.ts`
@@ -1311,6 +1390,7 @@ git commit -m "Add /api/chat SSE endpoint with consent-gated history persistence
 - Create: `src/pages/api/history/index.ts`
 
 **Interfaces:**
+
 - Consumes: `readVisitorId` (`src/lib/history/cookies.ts`), `deleteAllConversations`/`deleteConversation`/`getConversation`/`listConversations`/`ConversationKV` (`src/lib/history/kv.ts`).
 - Produces: `handleListHistory`, `handleGetConversation`, `handleDeleteConversation`, `handleDeleteAllHistory` — each `(options: { request: Request; kv: ConversationKV } [+ conversationId]) => Promise<Response>` — consumed by the three route files.
 
@@ -1365,7 +1445,10 @@ const sample: StoredConversation = {
 
 describe("handleListHistory", () => {
 	it("returns an empty array when there is no visitor_id cookie", async () => {
-		const response = await handleListHistory({ request: requestWithCookie(), kv: createMockKV() });
+		const response = await handleListHistory({
+			request: requestWithCookie(),
+			kv: createMockKV(),
+		});
 		expect(response.status).toBe(200);
 		expect(await response.json()).toEqual([]);
 	});
@@ -1373,7 +1456,10 @@ describe("handleListHistory", () => {
 	it("returns the visitor's conversations", async () => {
 		const kv = createMockKV();
 		await putConversation(kv, "v-1", "c-1", sample);
-		const response = await handleListHistory({ request: requestWithCookie("visitor_id=v-1"), kv });
+		const response = await handleListHistory({
+			request: requestWithCookie("visitor_id=v-1"),
+			kv,
+		});
 		expect(await response.json()).toEqual([
 			{ conversationId: "c-1", title: "Hi", updatedAt: sample.updatedAt },
 		]);
@@ -1443,7 +1529,10 @@ describe("handleDeleteAllHistory", () => {
 		await putConversation(kv, "v-1", "c-2", sample);
 		await putConversation(kv, "v-2", "c-3", sample);
 
-		const response = await handleDeleteAllHistory({ request: requestWithCookie("visitor_id=v-1"), kv });
+		const response = await handleDeleteAllHistory({
+			request: requestWithCookie("visitor_id=v-1"),
+			kv,
+		});
 
 		expect(response.status).toBe(204);
 		expect(kv.store.has("conv:v-1:c-1")).toBe(false);
@@ -1452,7 +1541,10 @@ describe("handleDeleteAllHistory", () => {
 	});
 
 	it("is a no-op (still 204) when there is no visitor_id cookie", async () => {
-		const response = await handleDeleteAllHistory({ request: requestWithCookie(), kv: createMockKV() });
+		const response = await handleDeleteAllHistory({
+			request: requestWithCookie(),
+			kv: createMockKV(),
+		});
 		expect(response.status).toBe(204);
 	});
 });
@@ -1509,7 +1601,11 @@ export async function handleGetConversation(
 	const visitorId = requireVisitorId(options.request);
 	if (!visitorId) return jsonResponse(404, { message: "Not found" });
 
-	const conversation = await getConversation(options.kv, visitorId, options.conversationId);
+	const conversation = await getConversation(
+		options.kv,
+		visitorId,
+		options.conversationId,
+	);
 	if (!conversation) return jsonResponse(404, { message: "Not found" });
 
 	return jsonResponse(200, conversation);
@@ -1521,7 +1617,11 @@ export async function handleDeleteConversation(
 	const visitorId = requireVisitorId(options.request);
 	if (!visitorId) return new Response(null, { status: 404 });
 
-	const existing = await getConversation(options.kv, visitorId, options.conversationId);
+	const existing = await getConversation(
+		options.kv,
+		visitorId,
+		options.conversationId,
+	);
 	if (!existing) return new Response(null, { status: 404 });
 
 	await deleteConversation(options.kv, visitorId, options.conversationId);
@@ -1563,16 +1663,27 @@ export const GET: APIRoute = async ({ request }) => {
 ```typescript
 import type { APIRoute } from "astro";
 import { env } from "cloudflare:workers";
-import { handleDeleteConversation, handleGetConversation } from "../../../lib/chat/historyHandlers";
+import {
+	handleDeleteConversation,
+	handleGetConversation,
+} from "../../../lib/chat/historyHandlers";
 
 export const prerender = false;
 
 export const GET: APIRoute = async ({ request, params }) => {
-	return handleGetConversation({ request, kv: env.SESSION, conversationId: params.id! });
+	return handleGetConversation({
+		request,
+		kv: env.SESSION,
+		conversationId: params.id!,
+	});
 };
 
 export const DELETE: APIRoute = async ({ request, params }) => {
-	return handleDeleteConversation({ request, kv: env.SESSION, conversationId: params.id! });
+	return handleDeleteConversation({
+		request,
+		kv: env.SESSION,
+		conversationId: params.id!,
+	});
 };
 ```
 
@@ -1620,41 +1731,49 @@ Run: `astro dev --background` (per this repo's `CLAUDE.md` convention).
 - [ ] **Step 3: Verify a `persist: false` chat request streams a real reply**
 
 Run:
+
 ```bash
 curl -N -s -X POST http://localhost:4321/api/chat \
   -H "Content-Type: application/json" \
   -d '{"persist": false, "message": "What machine learning experience do you have?", "history": []}'
 ```
+
 Expected: a stream of `event: delta` lines containing readable text, followed by `event: done`. No `event: meta` (persist is false).
 
 - [ ] **Step 4: Verify a `persist: true` chat request sets a cookie and creates a KV entry**
 
 Run:
+
 ```bash
 curl -N -s -i -X POST http://localhost:4321/api/chat \
   -c /tmp/portfolio-cookies.txt \
   -H "Content-Type: application/json" \
   -d '{"persist": true, "message": "Tell me about the Asset Foundry project."}'
 ```
+
 Expected: response headers include `Set-Cookie: visitor_id=...`; body includes an `event: meta` line with a `conversationId`, then `event: delta` lines, then `event: done`.
 
 - [ ] **Step 5: Verify the conversation shows up in the history list**
 
 Run:
+
 ```bash
 curl -s http://localhost:4321/api/history/list -b /tmp/portfolio-cookies.txt
 ```
+
 Expected: a JSON array with one entry whose `title` is a truncated version of the message sent in Step 4.
 
 - [ ] **Step 6: Verify fetching and deleting that conversation works**
 
 Run:
+
 ```bash
 CONV_ID=$(curl -s http://localhost:4321/api/history/list -b /tmp/portfolio-cookies.txt | node -e "process.stdin.once('data', d => console.log(JSON.parse(d)[0].conversationId))")
 curl -s http://localhost:4321/api/history/$CONV_ID -b /tmp/portfolio-cookies.txt
 curl -s -o /dev/null -w "%{http_code}\n" -X DELETE http://localhost:4321/api/history/$CONV_ID -b /tmp/portfolio-cookies.txt
 curl -s http://localhost:4321/api/history/list -b /tmp/portfolio-cookies.txt
 ```
+
 Expected: the `GET` returns the full stored conversation; the `DELETE` returns `204`; the final `list` call returns `[]`.
 
 - [ ] **Step 7: Stop the dev server and clean up**

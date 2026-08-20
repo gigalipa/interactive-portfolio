@@ -20,7 +20,8 @@ export function int16ToFloat32(pcm: Int16Array): Float32Array {
 export function int16ToBase64(pcm: Int16Array): string {
 	const bytes = new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength);
 	let binary = "";
-	for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+	for (let i = 0; i < bytes.length; i++)
+		binary += String.fromCharCode(bytes[i]);
 	return btoa(binary);
 }
 
@@ -43,7 +44,10 @@ export function computeRmsLevel(frequencyData: Uint8Array): number {
 }
 
 /** Buckets byte-frequency data into `barCount` averaged, normalized (0-1) bar heights. */
-export function computeBarHeights(frequencyData: Uint8Array, barCount: number): number[] {
+export function computeBarHeights(
+	frequencyData: Uint8Array,
+	barCount: number,
+): number[] {
 	const bucketSize = Math.max(1, Math.floor(frequencyData.length / barCount));
 	const heights: number[] = [];
 	for (let i = 0; i < barCount; i++) {

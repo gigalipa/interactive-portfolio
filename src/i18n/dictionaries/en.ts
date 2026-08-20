@@ -17,7 +17,8 @@ export default {
 	},
 	cv: {
 		title: "CV",
-		tagline: "AI & Automation Engineer | Project Manager | Specialized in LLM Pipelines (n8n), NLP & Machine Learning",
+		tagline:
+			"AI & Automation Engineer | Project Manager | Specialized in LLM Pipelines (n8n), NLP & Machine Learning",
 		summary:
 			"Junior AI & ML Engineer with a strong engineering foundation and hands-on experience architecting generative AI solutions, multi-model AI agents, and automated business workflows. Proficient in Python, custom REST APIs, LLM routing (Claude, Gemini, Llama, Hugging Face, EvoLink API), orchestration platforms (n8n, Docker), vector databases (pgvector, ChromaDB), and predictive ML dashboards. Proven track record of turning complex technical concepts into clear business solutions, delivering rapid proofs of concept, and managing automated productivity workflows via CLI tools and MCPs.",
 		sections: {
@@ -57,8 +58,10 @@ export default {
 		voiceStart: "Start voice chat",
 		voiceEndCall: "End call",
 		voiceConnecting: "Connecting...",
-		voiceErrorGeneric: "The voice session couldn't connect. Please try text chat instead.",
-		voiceMicDenied: "Microphone access was denied. You can still use text chat.",
+		voiceErrorGeneric:
+			"The voice session couldn't connect. Please try text chat instead.",
+		voiceMicDenied:
+			"Microphone access was denied. You can still use text chat.",
 		thinking: "Thinking...",
 		errorGeneric: "The avatar couldn't reply just now. Please try again.",
 		errorRateLimited:

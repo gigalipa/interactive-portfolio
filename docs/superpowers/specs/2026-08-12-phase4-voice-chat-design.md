@@ -44,6 +44,7 @@ ChatBox "waves" click
 ```
 
 Two new pieces:
+
 - `src/pages/api/voice/token.ts` — POST, server-side only. Rate-limited (reuses `CHAT_RATE_LIMITER`). Runs `retrieveContext` + `buildVoiceSystemPrompt`, mints an ephemeral token via `GOOGLE_API_KEY_LIVE`, returns `{ token, expiresAt, model }`. System instructions are baked into the token's `liveConnectConstraints` server-side rather than echoed back to the browser; `model` is returned because the client needs it to call `live.connect`. The key itself never leaves the server.
 - `src/lib/voice/` (client-side): `liveSession.ts` (wraps the Live API WebSocket client: mic capture, audio streaming, playback) and `useVoiceSession.ts` (React hook, state machine, mirrors `useChatSession`'s shape).
 
@@ -71,7 +72,7 @@ If the visitor reconnects (new session), context is re-retrieved fresh. Mid-sess
 
 ## History integration
 
-Voice turns feed into the *same* `ChatMessage`/`StoredConversation` pipeline as text (same KV store, same 30-day TTL, same consent gate — `persist: false` visitors get session-only voice history exactly like session-only text history today).
+Voice turns feed into the _same_ `ChatMessage`/`StoredConversation` pipeline as text (same KV store, same 30-day TTL, same consent gate — `persist: false` visitors get session-only voice history exactly like session-only text history today).
 
 - `ChatMessage` gains an optional field: `mode?: "voice"` (undefined for existing/text messages — no migration needed, existing stored conversations remain valid).
 - Transcripts come from the Live API's input/output transcription events; each completed turn (visitor utterance + avatar reply) is appended as two tagged `ChatMessage`s, same as a text turn's `{role: "user"}`/`{role: "model"}` pair.
@@ -80,14 +81,14 @@ Voice turns feed into the *same* `ChatMessage`/`StoredConversation` pipeline as 
 
 ## Error handling summary
 
-| Failure | Behavior |
-|---|---|
-| `/api/voice/token` rate-limited | `429`; UI shows the same "slow down" message as text chat, waves button stays inactive |
-| Ephemeral token mint fails (Google API error) | `error` state, falls back to text, inline message |
-| Mic permission denied | Immediate fallback to text, no retry prompt |
-| WebSocket drops mid-session | One silent reconnect with a fresh token; second failure falls back to text with a visible error |
-| KV write failure (persisting a voice turn) | Same as text: response already delivered to the visitor is unaffected, logged server-side, that turn just won't survive a reload |
-| Chroma/`retrieveContext` failure at session start | Session still starts with `buildVoiceSystemPrompt({ chunks: [] })` fallback, same graceful-degradation pattern as text |
+| Failure                                           | Behavior                                                                                                                         |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/voice/token` rate-limited                   | `429`; UI shows the same "slow down" message as text chat, waves button stays inactive                                           |
+| Ephemeral token mint fails (Google API error)     | `error` state, falls back to text, inline message                                                                                |
+| Mic permission denied                             | Immediate fallback to text, no retry prompt                                                                                      |
+| WebSocket drops mid-session                       | One silent reconnect with a fresh token; second failure falls back to text with a visible error                                  |
+| KV write failure (persisting a voice turn)        | Same as text: response already delivered to the visitor is unaffected, logged server-side, that turn just won't survive a reload |
+| Chroma/`retrieveContext` failure at session start | Session still starts with `buildVoiceSystemPrompt({ chunks: [] })` fallback, same graceful-degradation pattern as text           |
 
 ## Testing
 

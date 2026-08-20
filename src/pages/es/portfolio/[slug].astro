@@ -12,7 +12,8 @@ interface Props {
 
 export async function getStaticPaths() {
 	const entries =
-		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>).es ?? [];
+		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)
+			.es ?? [];
 	return entries.map((entry) => ({
 		params: { slug: entry.slug },
 		props: { entry },

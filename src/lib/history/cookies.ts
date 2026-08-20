@@ -34,9 +34,14 @@ export function buildVisitorIdCookie(visitorId: string): string {
  * clear it — needed when a visitor withdraws consent and deletes their data, so
  * a later re-accept doesn't silently reuse the old identifier. */
 export function clearVisitorIdCookie(): string {
-	return [`${VISITOR_ID_COOKIE}=`, "Max-Age=0", "Path=/", "HttpOnly", "Secure", "SameSite=Lax"].join(
-		"; ",
-	);
+	return [
+		`${VISITOR_ID_COOKIE}=`,
+		"Max-Age=0",
+		"Path=/",
+		"HttpOnly",
+		"Secure",
+		"SameSite=Lax",
+	].join("; ");
 }
 
 export function resolveVisitorId(cookieHeader: string | null): {

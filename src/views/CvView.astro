@@ -3,7 +3,12 @@ import Layout from "../layouts/Layout.astro";
 import { Accordion } from "../components/cv/Accordion";
 import EntryCard from "../components/cv/EntryCard.astro";
 import { getDictionary, type Locale } from "../i18n";
-import { CV_SECTIONS, groupBySection, skillChipsFor, type CvSection } from "../lib/cv/groupEntries";
+import {
+	CV_SECTIONS,
+	groupBySection,
+	skillChipsFor,
+	type CvSection,
+} from "../lib/cv/groupEntries";
 import type { LocalizedEntry } from "../lib/notion/translate";
 import cvContent from "../lib/cv/content.json";
 
@@ -17,7 +22,8 @@ const t = getDictionary(lang);
 // Pre-fetched and pre-translated by `pnpm cv:sync` (scripts/sync-cv.ts) and
 // committed — the build never calls Notion/Gemini itself. Re-run that script
 // and commit the result whenever CV-relevant Notion content changes.
-const localizedEntries = (cvContent as Partial<Record<Locale, LocalizedEntry[]>>)[lang] ?? [];
+const localizedEntries =
+	(cvContent as Partial<Record<Locale, LocalizedEntry[]>>)[lang] ?? [];
 if (localizedEntries.length === 0) {
 	throw new Error(
 		`No CV content for locale "${lang}" in src/lib/cv/content.json. Run \`pnpm cv:sync\` and commit the result.`,
@@ -34,18 +40,30 @@ const sectionLabel: Record<CvSection, string> = {
 };
 ---
 
-<Layout title={`${t.cv.title} — Daniel Peraza`} description={t.meta.description} lang={lang}>
+<Layout
+	title={`${t.cv.title} — Daniel Peraza`}
+	description={t.meta.description}
+	lang={lang}
+>
 	<main class="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-24">
 		<header class="text-center">
-			<h1 class="font-display text-ion text-3xl font-semibold">Daniel Peraza</h1>
+			<h1 class="font-display text-ion text-3xl font-semibold">
+				Daniel Peraza
+			</h1>
 			<p class="text-signal-cyan mt-2 text-sm">{t.cv.tagline}</p>
-			<p class="font-body text-ion/70 mx-auto mt-4 max-w-xl text-sm">{t.cv.summary}</p>
+			<p class="font-body text-ion/70 mx-auto mt-4 max-w-xl text-sm">
+				{t.cv.summary}
+			</p>
 		</header>
 
 		<div class="flex flex-col gap-3">
 			{
 				CV_SECTIONS.map((section) => (
-					<Accordion title={sectionLabel[section]} defaultOpen={true} client:load>
+					<Accordion
+						title={sectionLabel[section]}
+						defaultOpen={true}
+						client:load
+					>
 						{sections[section].length > 0 ? (
 							sections[section].map((entry) => (
 								<EntryCard

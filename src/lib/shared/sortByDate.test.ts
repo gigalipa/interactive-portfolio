@@ -8,7 +8,9 @@ describe("dateSortKey", () => {
 	});
 
 	it("falls back to a priority-based key (below any real timestamp) when there's no start date", () => {
-		const withDate = dateSortKey({ metadata: { dates: { start: "2020-01-01" } } });
+		const withDate = dateSortKey({
+			metadata: { dates: { start: "2020-01-01" } },
+		});
 		const withoutDate = dateSortKey({ metadata: {}, priority: 9 });
 		expect(withoutDate).toBeLessThan(withDate);
 	});
@@ -20,7 +22,10 @@ describe("dateSortKey", () => {
 	});
 
 	it("treats an unparseable start date the same as no date", () => {
-		const key = dateSortKey({ metadata: { dates: { start: "not-a-date" } }, priority: 0 });
+		const key = dateSortKey({
+			metadata: { dates: { start: "not-a-date" } },
+			priority: 0,
+		});
 		expect(key).toBe(-1_000_000_000_000);
 	});
 });

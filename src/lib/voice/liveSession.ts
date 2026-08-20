@@ -1,5 +1,10 @@
 import { GoogleGenAI, Modality } from "@google/genai";
-import { base64ToInt16, floatTo16BitPCM, int16ToBase64, int16ToFloat32 } from "./audioUtils";
+import {
+	base64ToInt16,
+	floatTo16BitPCM,
+	int16ToBase64,
+	int16ToFloat32,
+} from "./audioUtils";
 
 const INPUT_SAMPLE_RATE = 16000;
 const OUTPUT_SAMPLE_RATE = 24000;
@@ -22,12 +27,16 @@ export interface StartLiveSessionOptions {
 }
 
 interface LiveSessionLike {
-	sendRealtimeInput(params: { audio: { data: string; mimeType: string } }): void;
+	sendRealtimeInput(params: {
+		audio: { data: string; mimeType: string };
+	}): void;
 	close(): void;
 }
 
 export interface LiveSessionDeps {
-	genAiFactory?: (apiKey: string) => { live: { connect(params: unknown): Promise<LiveSessionLike> } };
+	genAiFactory?: (apiKey: string) => {
+		live: { connect(params: unknown): Promise<LiveSessionLike> };
+	};
 	getUserMedia?: (constraints: MediaStreamConstraints) => Promise<MediaStream>;
 	audioContextFactory?: (options?: { sampleRate: number }) => AudioContext;
 }
@@ -106,7 +115,11 @@ export async function startLiveSession(
 			return;
 		}
 		const float32 = int16ToFloat32(pcm);
-		const buffer = outputContext.createBuffer(1, float32.length, OUTPUT_SAMPLE_RATE);
+		const buffer = outputContext.createBuffer(
+			1,
+			float32.length,
+			OUTPUT_SAMPLE_RATE,
+		);
 		// `int16ToFloat32` returns a plain `Float32Array` (backed by ArrayBufferLike);
 		// `copyToChannel` narrows to the ArrayBuffer-backed variant, so assert it here.
 		buffer.copyToChannel(float32 as Float32Array<ArrayBuffer>, 0);
@@ -127,7 +140,8 @@ export async function startLiveSession(
 		callbacks: {
 			onopen: () => options.callbacks.onOpen?.(),
 			onerror: (e: unknown) => options.callbacks.onError?.(e),
-			onclose: (e: { reason?: string }) => options.callbacks.onClose?.(e?.reason),
+			onclose: (e: { reason?: string }) =>
+				options.callbacks.onClose?.(e?.reason),
 			onmessage: (message: ServerMessage) => {
 				const content = message.serverContent;
 				if (!content) return;
@@ -139,7 +153,9 @@ export async function startLiveSession(
 					currentModelText += content.outputTranscription.text;
 				}
 
-				const audioPart = content.modelTurn?.parts?.find((part) => part.inlineData?.data);
+				const audioPart = content.modelTurn?.parts?.find(
+					(part) => part.inlineData?.data,
+				);
 				if (audioPart?.inlineData?.data) {
 					if (!turnHasAudio) {
 						turnHasAudio = true;
@@ -165,14 +181,21 @@ export async function startLiveSession(
 		},
 	});
 
-	const processor = inputContext.createScriptProcessor(CAPTURE_BUFFER_SIZE, 1, 1);
+	const processor = inputContext.createScriptProcessor(
+		CAPTURE_BUFFER_SIZE,
+		1,
+		1,
+	);
 	micSource.connect(processor);
 	processor.connect(inputContext.destination);
 	processor.onaudioprocess = (event: AudioProcessingEvent) => {
 		const input = event.inputBuffer.getChannelData(0);
 		const pcm = floatTo16BitPCM(input);
 		session.sendRealtimeInput({
-			audio: { data: int16ToBase64(pcm), mimeType: `audio/pcm;rate=${INPUT_SAMPLE_RATE}` },
+			audio: {
+				data: int16ToBase64(pcm),
+				mimeType: `audio/pcm;rate=${INPUT_SAMPLE_RATE}`,
+			},
 		});
 	};
 

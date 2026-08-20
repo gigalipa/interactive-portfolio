@@ -33,12 +33,21 @@ describe("ChatMessages", () => {
 				messages={[{ id: "1", role: "user", text: "Hi", mode: "voice" }]}
 			/>,
 		);
-		expect(screen.getByTestId("chat-bubble-voice-indicator")).toBeInTheDocument();
+		expect(
+			screen.getByTestId("chat-bubble-voice-indicator"),
+		).toBeInTheDocument();
 	});
 
 	it("does not render a mic indicator for a message with no mode", () => {
-		render(<ChatMessages {...baseProps} messages={[{ id: "1", role: "user", text: "Hi" }]} />);
-		expect(screen.queryByTestId("chat-bubble-voice-indicator")).not.toBeInTheDocument();
+		render(
+			<ChatMessages
+				{...baseProps}
+				messages={[{ id: "1", role: "user", text: "Hi" }]}
+			/>,
+		);
+		expect(
+			screen.queryByTestId("chat-bubble-voice-indicator"),
+		).not.toBeInTheDocument();
 	});
 
 	it("shows the thinking indicator while status is 'sending'", () => {
@@ -53,7 +62,14 @@ describe("ChatMessages", () => {
 
 	it("shows an error bubble with a retry button when status is 'error'", () => {
 		const onRetry = vi.fn();
-		render(<ChatMessages {...baseProps} status="error" errorMessage="Something broke" onRetry={onRetry} />);
+		render(
+			<ChatMessages
+				{...baseProps}
+				status="error"
+				errorMessage="Something broke"
+				onRetry={onRetry}
+			/>,
+		);
 		expect(screen.getByText("Something broke")).toBeInTheDocument();
 		fireEvent.click(screen.getByRole("button", { name: "Retry" }));
 		expect(onRetry).toHaveBeenCalled();

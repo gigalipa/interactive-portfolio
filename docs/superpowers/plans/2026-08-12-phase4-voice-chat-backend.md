@@ -22,10 +22,12 @@
 ### Task 1: Tag history messages with an optional voice mode
 
 **Files:**
+
 - Modify: `src/lib/history/types.ts`
 - Test: `src/lib/history/kv.test.ts` (add one case; do not restructure existing tests)
 
 **Interfaces:**
+
 - Produces: `ChatMessage.mode?: "voice"` — an optional field, read by later tasks and by the (separate, later) UI plan's `ChatBubble`/`HistorySidebar` rendering.
 
 - [ ] **Step 1: Write the failing test**
@@ -37,8 +39,18 @@ it("round-trips a voice-tagged message through put/get", async () => {
 	const kv = createMockKV();
 	const conversation: StoredConversation = {
 		messages: [
-			{ role: "user", text: "Hi", at: "2026-08-12T00:00:00.000Z", mode: "voice" },
-			{ role: "model", text: "Hello!", at: "2026-08-12T00:00:00.000Z", mode: "voice" },
+			{
+				role: "user",
+				text: "Hi",
+				at: "2026-08-12T00:00:00.000Z",
+				mode: "voice",
+			},
+			{
+				role: "model",
+				text: "Hello!",
+				at: "2026-08-12T00:00:00.000Z",
+				mode: "voice",
+			},
 		],
 		updatedAt: "2026-08-12T00:00:00.000Z",
 		title: "Hi",
@@ -102,10 +114,12 @@ git commit -m "feat(voice): add optional mode field to ChatMessage for voice-tag
 ### Task 2: Build the voice system prompt
 
 **Files:**
+
 - Modify: `src/lib/rag/prompt.ts`
 - Test: `src/lib/rag/prompt.test.ts`
 
 **Interfaces:**
+
 - Consumes: `RetrievedChunk` from `./retrieve` (already imported in `prompt.ts`).
 - Produces: `buildVoiceSystemPrompt(options: BuildVoiceSystemPromptOptions): string`, where `BuildVoiceSystemPromptOptions = { chunks: RetrievedChunk[]; visitorLanguage: string }`. Consumed by Task 4's token handler.
 
@@ -128,9 +142,15 @@ describe("buildVoiceSystemPrompt", () => {
 	});
 
 	it("formats provided chunks the same way as buildSystemPrompt", () => {
-		const chunk = makeChunk({ title: "AutoCAD", document: "Certified in AutoCAD." });
+		const chunk = makeChunk({
+			title: "AutoCAD",
+			document: "Certified in AutoCAD.",
+		});
 
-		const prompt = buildVoiceSystemPrompt({ chunks: [chunk], visitorLanguage: "EN" });
+		const prompt = buildVoiceSystemPrompt({
+			chunks: [chunk],
+			visitorLanguage: "EN",
+		});
 
 		expect(prompt).toContain("AutoCAD");
 		expect(prompt).toContain("Certified in AutoCAD.");
@@ -165,7 +185,9 @@ export interface BuildVoiceSystemPromptOptions {
  * the voice token handler) since the Live API doesn't support re-injecting
  * context per turn in this phase.
  */
-export function buildVoiceSystemPrompt(options: BuildVoiceSystemPromptOptions): string {
+export function buildVoiceSystemPrompt(
+	options: BuildVoiceSystemPromptOptions,
+): string {
 	const { chunks, visitorLanguage } = options;
 
 	const context = chunks.length
@@ -200,23 +222,29 @@ git commit -m "feat(voice): add buildVoiceSystemPrompt for Live API session inst
 ### Task 3: Mint Gemini Live API ephemeral tokens
 
 **Files:**
+
 - Create: `src/lib/voice/ephemeralToken.ts`
 - Test: `src/lib/voice/ephemeralToken.test.ts`
 - Modify: `package.json` (new dependency)
 
 **Interfaces:**
+
 - Produces: `mintEphemeralToken(options: MintEphemeralTokenOptions): Promise<EphemeralToken>`, `LIVE_MODEL: string`, where:
+
   ```ts
   interface MintEphemeralTokenOptions {
   	apiKey: string;
   	systemInstructions: string;
-  	genAiFactory?: (apiKey: string) => { authTokens: { create(args: unknown): Promise<{ name: string }> } };
+  	genAiFactory?: (apiKey: string) => {
+  		authTokens: { create(args: unknown): Promise<{ name: string }> };
+  	};
   }
   interface EphemeralToken {
   	token: string;
   	expiresAt: string; // ISO
   }
   ```
+
   Consumed by Task 4's token handler. `genAiFactory` is the test seam (same dependency-injection pattern as `FetchLike` in `src/lib/rag/chat.ts`) — production code omits it and falls back to constructing a real `GoogleGenAI` client.
 
 - [ ] **Step 1: Install the SDK**
@@ -230,6 +258,7 @@ The Live API's ephemeral-token feature is newer than this plan's author's traini
 Run: `grep -rn "authTokens" node_modules/@google/genai/dist/**/*.d.ts`
 
 Read the matched `.d.ts` file(s) and confirm:
+
 1. The client method name (expected: `ai.authTokens.create(...)`).
 2. The config field names for: how many times the token can be used, when the token itself expires, when a session started with it must begin by, and how to scope it to a specific model + Live session config (expected fields, based on Google's published Live API ephemeral-tokens guide: `uses`, `expireTime`, `newSessionExpireTime`, `liveConnectConstraints: { model, config }`).
 3. The shape of the returned object (expected: `{ name: string, ... }`, where `name` is the token string a client passes as its API key to open a Live session).
@@ -303,9 +332,9 @@ const SESSION_TTL_MINUTES = 60;
 export interface MintEphemeralTokenOptions {
 	apiKey: string;
 	systemInstructions: string;
-	genAiFactory?: (
-		apiKey: string,
-	) => { authTokens: { create(args: unknown): Promise<{ name: string }> } };
+	genAiFactory?: (apiKey: string) => {
+		authTokens: { create(args: unknown): Promise<{ name: string }> };
+	};
 }
 
 export interface EphemeralToken {
@@ -325,7 +354,9 @@ export async function mintEphemeralToken(
 	const { apiKey, systemInstructions, genAiFactory = defaultFactory } = options;
 	const ai = genAiFactory(apiKey);
 
-	const expireTime = new Date(Date.now() + TOKEN_TTL_MINUTES * 60_000).toISOString();
+	const expireTime = new Date(
+		Date.now() + TOKEN_TTL_MINUTES * 60_000,
+	).toISOString();
 	const newSessionExpireTime = new Date(
 		Date.now() + SESSION_TTL_MINUTES * 60_000,
 	).toISOString();
@@ -367,13 +398,16 @@ git commit -m "feat(voice): mint Gemini Live API ephemeral tokens via @google/ge
 ### Task 4: Voice token endpoint (`/api/voice/token`)
 
 **Files:**
+
 - Create: `src/lib/voice/tokenHandler.ts`
 - Create: `src/pages/api/voice/token.ts`
 - Test: `src/lib/voice/tokenHandler.test.ts`
 
 **Interfaces:**
+
 - Consumes: `RateLimiter` (import the interface from `../chat/handler`, do not redefine it), `retrieveContext`/`ChromaCredentials` from `../rag/retrieve`, `buildVoiceSystemPrompt` from `../rag/prompt` (Task 2), `mintEphemeralToken`/`LIVE_MODEL` from `./ephemeralToken` (Task 3).
 - Produces: `handleVoiceTokenRequest(options: HandleVoiceTokenRequestOptions): Promise<Response>`, where:
+
   ```ts
   interface VoiceTokenRequestBody {
   	language: string;
@@ -386,6 +420,7 @@ git commit -m "feat(voice): mint Gemini Live API ephemeral tokens via @google/ge
   	googleApiKeyLive: string;
   }
   ```
+
   Success response body: `{ token: string; expiresAt: string; model: string }`. Consumed by the (separate, later) UI plan's `useVoiceSession` hook.
 
 - [ ] **Step 1: Write the failing tests**
@@ -520,8 +555,12 @@ describe("handleVoiceTokenRequest", () => {
 	});
 
 	it("returns a generic error and does not leak the upstream message when minting fails", async () => {
-		vi.mocked(mintEphemeralToken).mockRejectedValueOnce(new Error("quota exceeded, key xyz"));
-		const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+		vi.mocked(mintEphemeralToken).mockRejectedValueOnce(
+			new Error("quota exceeded, key xyz"),
+		);
+		const consoleError = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
 
 		const response = await handleVoiceTokenRequest({
 			request: createRequest({ language: "EN" }),
@@ -582,7 +621,8 @@ function jsonError(status: number, message: string): Response {
 export async function handleVoiceTokenRequest(
 	options: HandleVoiceTokenRequestOptions,
 ): Promise<Response> {
-	const { request, rateLimiter, chroma, googleApiKeyEmb, googleApiKeyLive } = options;
+	const { request, rateLimiter, chroma, googleApiKeyEmb, googleApiKeyLive } =
+		options;
 
 	let body: VoiceTokenRequestBody;
 	try {
@@ -625,10 +665,13 @@ export async function handleVoiceTokenRequest(
 			systemInstructions,
 		});
 
-		return new Response(JSON.stringify({ token, expiresAt, model: LIVE_MODEL }), {
-			status: 200,
-			headers: { "Content-Type": "application/json" },
-		});
+		return new Response(
+			JSON.stringify({ token, expiresAt, model: LIVE_MODEL }),
+			{
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			},
+		);
 	} catch (error) {
 		console.error("Voice token mint failed", error);
 		return jsonError(502, GENERIC_ERROR_MESSAGE);
@@ -687,13 +730,16 @@ git commit -m "feat(voice): add POST /api/voice/token endpoint"
 Voice audio goes directly from the browser to Google — our Worker never sees it — so once a turn (visitor utterance + avatar reply) completes, the browser must explicitly report the transcribed text back to the Worker for it to be saved into history, tagged `mode: "voice"`, the same way a text turn is saved today.
 
 **Files:**
+
 - Create: `src/lib/voice/turnHandler.ts`
 - Create: `src/pages/api/voice/turn.ts`
 - Test: `src/lib/voice/turnHandler.test.ts`
 
 **Interfaces:**
+
 - Consumes: `resolveVisitorId`, `buildVisitorIdCookie` from `../history/cookies`; `getConversation`, `putConversation`, `buildTitle`, `type ConversationKV` from `../history/kv`; `type ChatMessage`, `type StoredConversation` from `../history/types`.
 - Produces: `handleVoiceTurnRequest(options: HandleVoiceTurnRequestOptions): Promise<Response>`, where:
+
   ```ts
   interface VoiceTurnRequestBody {
   	persist: boolean;
@@ -706,6 +752,7 @@ Voice audio goes directly from the browser to Google — our Worker never sees i
   	kv: ConversationKV;
   }
   ```
+
   Success response: `{ conversationId?: string }` (present only when `persist: true`, so the client learns the ID for a brand-new voice conversation — same contract shape as the `meta` SSE event in text chat). No rate limiting here: this endpoint never calls Chroma or an LLM, and is already gated behind a successful `/api/voice/token` mint plus a real Live API session, so it carries negligible abuse risk on its own.
 
 - [ ] **Step 1: Write the failing tests**
@@ -735,7 +782,11 @@ describe("handleVoiceTurnRequest", () => {
 	it("does nothing and returns 200 with no cookie when persist is false", async () => {
 		const kv = createMockKV();
 		const response = await handleVoiceTurnRequest({
-			request: createRequest({ persist: false, userText: "Hi", modelText: "Hello" }),
+			request: createRequest({
+				persist: false,
+				userText: "Hi",
+				modelText: "Hello",
+			}),
 			kv,
 		});
 
@@ -747,7 +798,11 @@ describe("handleVoiceTurnRequest", () => {
 	it("persists a new voice-tagged conversation and sets a visitor_id cookie when persist is true with no prior cookie", async () => {
 		const kv = createMockKV();
 		const response = await handleVoiceTurnRequest({
-			request: createRequest({ persist: true, userText: "Hi", modelText: "Hello there" }),
+			request: createRequest({
+				persist: true,
+				userText: "Hi",
+				modelText: "Hello there",
+			}),
 			kv,
 		});
 
@@ -757,7 +812,11 @@ describe("handleVoiceTurnRequest", () => {
 		const conversation = JSON.parse(stored) as StoredConversation;
 		expect(conversation.messages).toEqual([
 			expect.objectContaining({ role: "user", text: "Hi", mode: "voice" }),
-			expect.objectContaining({ role: "model", text: "Hello there", mode: "voice" }),
+			expect.objectContaining({
+				role: "model",
+				text: "Hello there",
+				mode: "voice",
+			}),
 		]);
 		expect(conversation.title).toBe("Hi");
 	});
@@ -767,7 +826,9 @@ describe("handleVoiceTurnRequest", () => {
 		kv.store.set(
 			`conv:${VISITOR_A}:${CONV_A}`,
 			JSON.stringify({
-				messages: [{ role: "user", text: "First", at: "2026-08-12T00:00:00.000Z" }],
+				messages: [
+					{ role: "user", text: "First", at: "2026-08-12T00:00:00.000Z" },
+				],
 				updatedAt: "2026-08-12T00:00:00.000Z",
 				title: "First",
 			} satisfies StoredConversation),
@@ -775,7 +836,12 @@ describe("handleVoiceTurnRequest", () => {
 
 		const response = await handleVoiceTurnRequest({
 			request: createRequest(
-				{ persist: true, conversationId: CONV_A, userText: "Second", modelText: "Reply" },
+				{
+					persist: true,
+					conversationId: CONV_A,
+					userText: "Second",
+					modelText: "Reply",
+				},
 				`visitor_id=${VISITOR_A}`,
 			),
 			kv,
@@ -805,7 +871,12 @@ describe("handleVoiceTurnRequest", () => {
 		const kv = createMockKV();
 		const response = await handleVoiceTurnRequest({
 			request: createRequest(
-				{ persist: true, conversationId: "../../evil", userText: "Hi", modelText: "Hello" },
+				{
+					persist: true,
+					conversationId: "../../evil",
+					userText: "Hi",
+					modelText: "Hello",
+				},
 				`visitor_id=${VISITOR_A}`,
 			),
 			kv,
@@ -828,7 +899,12 @@ Create `src/lib/voice/turnHandler.ts`:
 
 ```ts
 import { buildVisitorIdCookie, resolveVisitorId } from "../history/cookies";
-import { buildTitle, getConversation, putConversation, type ConversationKV } from "../history/kv";
+import {
+	buildTitle,
+	getConversation,
+	putConversation,
+	type ConversationKV,
+} from "../history/kv";
 import type { ChatMessage, StoredConversation } from "../history/types";
 
 export interface VoiceTurnRequestBody {
@@ -874,7 +950,10 @@ export async function handleVoiceTurnRequest(
 		return jsonError(400, "modelText is required");
 	}
 	if (body.persist && body.conversationId !== undefined) {
-		if (typeof body.conversationId !== "string" || !UUID_PATTERN.test(body.conversationId)) {
+		if (
+			typeof body.conversationId !== "string" ||
+			!UUID_PATTERN.test(body.conversationId)
+		) {
 			return jsonError(400, "conversationId must be a UUID");
 		}
 	}
@@ -906,7 +985,8 @@ export async function handleVoiceTurnRequest(
 	await putConversation(kv, visitorId, conversationId, updated);
 
 	const responseHeaders = new Headers({ "Content-Type": "application/json" });
-	if (resolved.isNew) responseHeaders.set("Set-Cookie", buildVisitorIdCookie(visitorId));
+	if (resolved.isNew)
+		responseHeaders.set("Set-Cookie", buildVisitorIdCookie(visitorId));
 
 	return new Response(JSON.stringify({ conversationId }), {
 		status: 200,
@@ -1011,7 +1091,9 @@ Write a throwaway script (delete it after this step) at the project root, `_tmp_
 import { GoogleGenAI, Modality } from "@google/genai";
 
 const { token } = JSON.parse(
-	await (await import("node:fs/promises")).readFile("/tmp/voice-token-response.json", "utf8"),
+	await (
+		await import("node:fs/promises")
+	).readFile("/tmp/voice-token-response.json", "utf8"),
 );
 
 const ai = new GoogleGenAI({ apiKey: token });
@@ -1055,9 +1137,11 @@ astro dev stop
 - [ ] **Step 7: Update the roadmap**
 
 In `project-roadmap.md`, under Phase 0.1, mark the `GOOGLE_API_KEY_LIVE` Worker-secret line as done (it was the last unchecked item in that section — check whether the Notion token part of that same line is also already done before checking the whole line). Under Phase 4, check off:
+
 ```
 - [x] Build a Cloudflare Worker that mints short-lived **ephemeral tokens** for the Gemini Live API (so the browser connects directly via WebSocket without exposing the long-lived API key)
 ```
+
 Leave the remaining Phase 4 checkboxes (client-side session, waves button wiring, multilingual voice, mic-permission fallback) unchecked — those belong to the separate, later UI plan.
 
 - [ ] **Step 8: Commit**

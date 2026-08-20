@@ -9,8 +9,14 @@ export interface VoiceVisorProps {
 	onEndCall: () => void;
 }
 
-export function VoiceVisor({ analyser, endCallLabel, onEndCall }: VoiceVisorProps) {
-	const [heights, setHeights] = useState<number[]>(() => new Array(BAR_COUNT).fill(0));
+export function VoiceVisor({
+	analyser,
+	endCallLabel,
+	onEndCall,
+}: VoiceVisorProps) {
+	const [heights, setHeights] = useState<number[]>(() =>
+		new Array(BAR_COUNT).fill(0),
+	);
 	const rafRef = useRef<number | null>(null);
 
 	useEffect(() => {
@@ -64,7 +70,13 @@ export function VoiceVisor({ analyser, endCallLabel, onEndCall }: VoiceVisorProp
 				title={endCallLabel}
 				className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-red-500/60 bg-red-500/15 text-red-400 hover:bg-red-500/25"
 			>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					className="h-4 w-4"
+				>
 					<path
 						strokeLinecap="round"
 						strokeLinejoin="round"

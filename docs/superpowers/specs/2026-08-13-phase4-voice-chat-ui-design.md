@@ -69,7 +69,11 @@ The design-token palette (`src/styles/global.css`) currently has two hues (elect
 
 ```css
 .presence-ring[data-voice="true"] .core {
-	background: radial-gradient(circle at 35% 30%, var(--color-voice-violet), var(--color-deep-blue) 70%);
+	background: radial-gradient(
+		circle at 35% 30%,
+		var(--color-voice-violet),
+		var(--color-deep-blue) 70%
+	);
 	box-shadow: var(--shadow-glow-violet);
 }
 ```
@@ -81,7 +85,9 @@ This applies for the whole call (per Daniel's explicit choice), so it's unambigu
 ```ts
 export function setVoiceMode(active: boolean): void {
 	if (typeof document === "undefined") return;
-	document.querySelector(".presence-ring")?.setAttribute("data-voice", String(active));
+	document
+		.querySelector(".presence-ring")
+		?.setAttribute("data-voice", String(active));
 }
 
 export function setVoicePulseRate(level: number): void {
@@ -117,12 +123,12 @@ Carries forward the state machine already approved at the backend-design level, 
 
 ## Error handling summary
 
-| Failure | Behavior |
-|---|---|
-| Mic permission denied | Immediate fallback to text, single inline error, no retry loop |
-| `/api/voice/token` fails (rate-limited, mint error) | Same generic error surfaced as the text-chat error-bubble pattern; stays in/falls back to text |
-| Live API WebSocket fails to open | Same as above |
-| WebSocket drops mid-session | One silent reconnect with a fresh token; second failure falls back to text with a visible error |
+| Failure                                                 | Behavior                                                                                                                |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Mic permission denied                                   | Immediate fallback to text, single inline error, no retry loop                                                          |
+| `/api/voice/token` fails (rate-limited, mint error)     | Same generic error surfaced as the text-chat error-bubble pattern; stays in/falls back to text                          |
+| Live API WebSocket fails to open                        | Same as above                                                                                                           |
+| WebSocket drops mid-session                             | One silent reconnect with a fresh token; second failure falls back to text with a visible error                         |
 | `AnalyserNode`/Web Audio unsupported (very old browser) | Voice entry point (waves button) is hidden entirely via a feature check at mount, rather than offered and failing later |
 
 ## Testing

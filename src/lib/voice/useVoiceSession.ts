@@ -2,15 +2,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { startLiveSession, type LiveSession } from "./liveSession";
 import { mintVoiceToken, persistVoiceTurn } from "./voiceApi";
 import { computeRmsLevel } from "./audioUtils";
-import { setPresenceState, setVoiceMode, setVoicePulseRate } from "../chat/presenceRingBridge";
+import {
+	setPresenceState,
+	setVoiceMode,
+	setVoicePulseRate,
+} from "../chat/presenceRingBridge";
 
-export type VoiceStatus = "idle" | "connecting" | "listening" | "speaking" | "error";
+export type VoiceStatus =
+	"idle" | "connecting" | "listening" | "speaking" | "error";
 
 export interface UseVoiceSessionOptions {
 	language: string;
 	persist: boolean;
 	conversationId: string | undefined;
-	onTurnPersisted: (turn: { conversationId?: string; userText: string; modelText: string }) => void;
+	onTurnPersisted: (turn: {
+		conversationId?: string;
+		userText: string;
+		modelText: string;
+	}) => void;
 	onError: (messageKey: "voice_connection_failed" | "voice_mic_denied") => void;
 }
 
@@ -29,7 +38,9 @@ function isPermissionError(error: unknown): boolean {
 	return error instanceof DOMException && error.name === "NotAllowedError";
 }
 
-export function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessionResult {
+export function useVoiceSession(
+	options: UseVoiceSessionOptions,
+): UseVoiceSessionResult {
 	const { language, onTurnPersisted, onError } = options;
 	const [status, setStatus] = useState<VoiceStatus>("idle");
 	const [micAnalyser, setMicAnalyser] = useState<AnalyserNode | null>(null);
@@ -88,12 +99,19 @@ export function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessio
 		async (turn: { userText: string; modelText: string }) => {
 			const result = await persistVoiceTurn({
 				persist: persistRef.current,
-				conversationId: persistRef.current ? conversationIdRef.current : undefined,
+				conversationId: persistRef.current
+					? conversationIdRef.current
+					: undefined,
 				userText: turn.userText,
 				modelText: turn.modelText,
 			});
-			if (result.conversationId) conversationIdRef.current = result.conversationId;
-			onTurnPersisted({ ...result, userText: turn.userText, modelText: turn.modelText });
+			if (result.conversationId)
+				conversationIdRef.current = result.conversationId;
+			onTurnPersisted({
+				...result,
+				userText: turn.userText,
+				modelText: turn.modelText,
+			});
 		},
 		[onTurnPersisted],
 	);
@@ -166,10 +184,21 @@ export function useVoiceSession(options: UseVoiceSessionOptions): UseVoiceSessio
 				startOutputMetering(session);
 			} catch (error) {
 				setStatus("error");
-				onError(isPermissionError(error) ? "voice_mic_denied" : "voice_connection_failed");
+				onError(
+					isPermissionError(error)
+						? "voice_mic_denied"
+						: "voice_connection_failed",
+				);
 			}
 		})();
-	}, [language, handleTurnComplete, onError, startOutputMetering, endLocally, stopMetering]);
+	}, [
+		language,
+		handleTurnComplete,
+		onError,
+		startOutputMetering,
+		endLocally,
+		stopMetering,
+	]);
 
 	const start = useCallback(() => {
 		endingRef.current = false;

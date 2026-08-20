@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { clearSessionMessages, loadSessionMessages, saveSessionMessages } from "./sessionHistory";
+import {
+	clearSessionMessages,
+	loadSessionMessages,
+	saveSessionMessages,
+} from "./sessionHistory";
 import type { ChatMessage } from "../history/types";
 
-const sample: ChatMessage[] = [{ role: "user", text: "Hi", at: "2026-08-06T00:00:00.000Z" }];
+const sample: ChatMessage[] = [
+	{ role: "user", text: "Hi", at: "2026-08-06T00:00:00.000Z" },
+];
 
 describe("session message storage", () => {
 	beforeEach(() => {

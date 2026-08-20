@@ -28,8 +28,18 @@ describe("conversation KV helpers", () => {
 		const kv = createMockKV();
 		const conversation: StoredConversation = {
 			messages: [
-				{ role: "user", text: "Hi", at: "2026-08-12T00:00:00.000Z", mode: "voice" },
-				{ role: "model", text: "Hello!", at: "2026-08-12T00:00:00.000Z", mode: "voice" },
+				{
+					role: "user",
+					text: "Hi",
+					at: "2026-08-12T00:00:00.000Z",
+					mode: "voice",
+				},
+				{
+					role: "model",
+					text: "Hello!",
+					at: "2026-08-12T00:00:00.000Z",
+					mode: "voice",
+				},
 			],
 			updatedAt: "2026-08-12T00:00:00.000Z",
 			title: "Hi",

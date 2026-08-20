@@ -3,3 +3,4 @@ dist/
 .wrangler/
 pnpm-lock.yaml
 worker-configuration.d.ts
+cert-to-kb/

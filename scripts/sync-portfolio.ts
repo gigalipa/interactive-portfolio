@@ -17,7 +17,10 @@ import { Client } from "@notionhq/client";
 import { locales, type Locale } from "../src/i18n/locales";
 import { fetchKnowledgeBaseEntries } from "../src/lib/notion/knowledgeBase";
 import { translateForLocale } from "../src/lib/notion/translate";
-import { loadTranslationCache, saveTranslationCache } from "../src/lib/notion/translationCache";
+import {
+	loadTranslationCache,
+	saveTranslationCache,
+} from "../src/lib/notion/translationCache";
 import { downloadEntryMedia } from "../src/lib/portfolio/downloadMedia";
 import {
 	assignSlugs,
@@ -59,7 +62,10 @@ async function run() {
 		const slug = slugs.get(entry.pageId);
 		const media = entry.metadata.media ?? [];
 		if (!slug || media.length === 0) continue;
-		entry.metadata = { ...entry.metadata, media: await downloadEntryMedia(slug, media) };
+		entry.metadata = {
+			...entry.metadata,
+			media: await downloadEntryMedia(slug, media),
+		};
 	}
 
 	const cache = loadTranslationCache();
@@ -67,8 +73,14 @@ async function run() {
 
 	for (const locale of locales) {
 		console.log(`Translating for locale "${locale}"...`);
-		const localized = await translateForLocale(portfolioEntries, locale, { apiKey: googleApiKey, cache });
-		content[locale] = localized.map((entry) => ({ ...entry, slug: slugs.get(entry.pageId) ?? "" }));
+		const localized = await translateForLocale(portfolioEntries, locale, {
+			apiKey: googleApiKey,
+			cache,
+		});
+		content[locale] = localized.map((entry) => ({
+			...entry,
+			slug: slugs.get(entry.pageId) ?? "",
+		}));
 	}
 
 	saveTranslationCache(cache);

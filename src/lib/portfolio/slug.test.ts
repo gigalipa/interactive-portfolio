@@ -3,11 +3,15 @@ import { slugify } from "./slug";
 
 describe("slugify", () => {
 	it("lowercases and hyphenates a normal title", () => {
-		expect(slugify("Language Quest AI Widget")).toBe("language-quest-ai-widget");
+		expect(slugify("Language Quest AI Widget")).toBe(
+			"language-quest-ai-widget",
+		);
 	});
 
 	it("strips punctuation", () => {
-		expect(slugify("Asset Foundry: Automated Pipelines!")).toBe("asset-foundry-automated-pipelines");
+		expect(slugify("Asset Foundry: Automated Pipelines!")).toBe(
+			"asset-foundry-automated-pipelines",
+		);
 	});
 
 	it("collapses repeated separators into one hyphen", () => {

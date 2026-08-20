@@ -23,13 +23,15 @@ describe("stripFileEmbeds", () => {
 	});
 
 	it("collapses the resulting blank-line gaps left by stripped embeds", () => {
-		const markdown = "Line one.\n\n![](https://prod-files-secure.s3.example/x)\n\nLine two.";
+		const markdown =
+			"Line one.\n\n![](https://prod-files-secure.s3.example/x)\n\nLine two.";
 
 		expect(stripFileEmbeds(markdown)).toBe("Line one.\n\nLine two.");
 	});
 
 	it("leaves ordinary markdown text untouched", () => {
-		const markdown = "# Title\n\nA normal paragraph with **bold** text and a [link](https://example.com).";
+		const markdown =
+			"# Title\n\nA normal paragraph with **bold** text and a [link](https://example.com).";
 
 		expect(stripFileEmbeds(markdown)).toBe(markdown);
 	});

@@ -32,20 +32,27 @@ export async function downloadEntryMedia(
 	media: MetadataMedia[],
 	options: { fetchImpl?: FetchLike; publicDir?: string } = {},
 ): Promise<MetadataMedia[]> {
-	const { fetchImpl = fetch as unknown as FetchLike, publicDir = "public" } = options;
+	const { fetchImpl = fetch as unknown as FetchLike, publicDir = "public" } =
+		options;
 	const results: MetadataMedia[] = [];
 
 	for (const [index, item] of media.entries()) {
 		try {
 			const response = await fetchImpl(item.url);
 			if (!response.ok) {
-				console.warn(`Skipping media for "${slug}" (HTTP ${response.status}): ${item.url}`);
+				console.warn(
+					`Skipping media for "${slug}" (HTTP ${response.status}): ${item.url}`,
+				);
 				continue;
 			}
-			const contentType = (response.headers.get("content-type") ?? "").split(";")[0].trim();
+			const contentType = (response.headers.get("content-type") ?? "")
+				.split(";")[0]
+				.trim();
 			const extension = EXTENSION_BY_CONTENT_TYPE[contentType];
 			if (!extension) {
-				console.warn(`Skipping media for "${slug}" (unrecognized content-type "${contentType}"): ${item.url}`);
+				console.warn(
+					`Skipping media for "${slug}" (unrecognized content-type "${contentType}"): ${item.url}`,
+				);
 				continue;
 			}
 			const relativePath = `portfolio/${slug}/${index}.${extension}`;
@@ -54,7 +61,9 @@ export async function downloadEntryMedia(
 			writeFileSync(absolutePath, Buffer.from(await response.arrayBuffer()));
 			results.push({ ...item, url: `/${relativePath}` });
 		} catch (error) {
-			console.warn(`Skipping media for "${slug}" (download failed): ${item.url} — ${String(error)}`);
+			console.warn(
+				`Skipping media for "${slug}" (download failed): ${item.url} — ${String(error)}`,
+			);
 		}
 	}
 

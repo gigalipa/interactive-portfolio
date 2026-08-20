@@ -10,21 +10,35 @@ describe("ChatBubble", () => {
 
 	it("applies avatar styling for role='model'", () => {
 		render(<ChatBubble role="model" text="Hi!" />);
-		expect(screen.getByTestId("chat-bubble-model")).toHaveClass("border-electric-blue/60");
+		expect(screen.getByTestId("chat-bubble-model")).toHaveClass(
+			"border-electric-blue/60",
+		);
 	});
 
 	it("applies visitor styling for role='user'", () => {
 		render(<ChatBubble role="user" text="Hi!" />);
-		expect(screen.getByTestId("chat-bubble-user")).toHaveClass("border-signal-cyan/60");
+		expect(screen.getByTestId("chat-bubble-user")).toHaveClass(
+			"border-signal-cyan/60",
+		);
 	});
 
 	it("renders markdown formatting in the avatar's replies", () => {
-		render(<ChatBubble role="model" text="I've built **Asset Foundry** and other projects." />);
+		render(
+			<ChatBubble
+				role="model"
+				text="I've built **Asset Foundry** and other projects."
+			/>,
+		);
 		expect(screen.getByText("Asset Foundry").tagName).toBe("STRONG");
 	});
 
 	it("renders markdown lists in the avatar's replies", () => {
-		render(<ChatBubble role="model" text={"Projects:\n- Asset Foundry\n- Language Quest"} />);
+		render(
+			<ChatBubble
+				role="model"
+				text={"Projects:\n- Asset Foundry\n- Language Quest"}
+			/>,
+		);
 		expect(screen.getByText("Asset Foundry").closest("ul")).toBeInTheDocument();
 	});
 
@@ -35,12 +49,16 @@ describe("ChatBubble", () => {
 
 	it("renders a mic indicator when mode is voice", () => {
 		render(<ChatBubble role="user" text="Hi!" mode="voice" />);
-		expect(screen.getByTestId("chat-bubble-voice-indicator")).toBeInTheDocument();
+		expect(
+			screen.getByTestId("chat-bubble-voice-indicator"),
+		).toBeInTheDocument();
 	});
 
 	it("does not render a mic indicator for a text message", () => {
 		render(<ChatBubble role="user" text="Hi!" />);
-		expect(screen.queryByTestId("chat-bubble-voice-indicator")).not.toBeInTheDocument();
+		expect(
+			screen.queryByTestId("chat-bubble-voice-indicator"),
+		).not.toBeInTheDocument();
 	});
 
 	it("applies voice-violet styling instead of the model color for a voice-tagged model bubble", () => {

@@ -70,7 +70,9 @@ export interface BuildVoiceSystemPromptOptions {
  * the voice token handler) since the Live API doesn't support re-injecting
  * context per turn in this phase.
  */
-export function buildVoiceSystemPrompt(options: BuildVoiceSystemPromptOptions): string {
+export function buildVoiceSystemPrompt(
+	options: BuildVoiceSystemPromptOptions,
+): string {
 	const { chunks, visitorLanguage } = options;
 
 	const context = chunks.length

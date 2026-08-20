@@ -20,7 +20,8 @@ const dateRange = dates?.start
 	? `${formatYear(dates.start)} – ${dates.ongoing || !dates.end ? presentLabel : formatYear(dates.end)}`
 	: null;
 
-const cover = entry.metadata.media?.find((item) => item.cover) ?? entry.metadata.media?.[0];
+const cover =
+	entry.metadata.media?.find((item) => item.cover) ?? entry.metadata.media?.[0];
 const metaLine = [entry.displayCategory, dateRange].filter(Boolean).join(" · ");
 ---
 
@@ -30,11 +31,21 @@ const metaLine = [entry.displayCategory, dateRange].filter(Boolean).join(" · ")
 >
 	{
 		cover && (
-			<img src={cover.url} alt={cover.alt ?? entry.displayTitle} class="aspect-video w-full object-cover" />
+			<img
+				src={cover.url}
+				alt={cover.alt ?? entry.displayTitle}
+				class="aspect-video w-full object-cover"
+			/>
 		)
 	}
 	<div class="flex flex-col gap-1 p-4">
-		<h3 class="font-display text-ion text-base font-semibold">{entry.displayTitle}</h3>
-		{metaLine && <p class="text-signal-cyan/70 font-mono text-xs">{metaLine}</p>}
+		<h3 class="font-display text-ion text-base font-semibold">
+			{entry.displayTitle}
+		</h3>
+		{
+			metaLine && (
+				<p class="text-signal-cyan/70 font-mono text-xs">{metaLine}</p>
+			)
+		}
 	</div>
 </a>

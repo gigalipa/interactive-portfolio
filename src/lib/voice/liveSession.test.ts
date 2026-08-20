@@ -16,7 +16,10 @@ function createFakeAudioContext() {
 	const context = {
 		currentTime: 0,
 		destination: {},
-		createMediaStreamSource: vi.fn(() => ({ connect: vi.fn(), disconnect: vi.fn() })),
+		createMediaStreamSource: vi.fn(() => ({
+			connect: vi.fn(),
+			disconnect: vi.fn(),
+		})),
 		createAnalyser: vi.fn(() => {
 			const analyser = createFakeAnalyser();
 			analysers.push(analyser);
@@ -42,7 +45,9 @@ function createFakeAudioContext() {
 }
 
 function createFakeMediaStream() {
-	return { getTracks: vi.fn(() => [{ stop: vi.fn() }]) } as unknown as MediaStream;
+	return {
+		getTracks: vi.fn(() => [{ stop: vi.fn() }]),
+	} as unknown as MediaStream;
 }
 
 describe("startLiveSession", () => {
@@ -53,11 +58,19 @@ describe("startLiveSession", () => {
 		onmessage?: (message: unknown) => void;
 	};
 	let fakeSession: {
-		sendRealtimeInput: ReturnType<typeof vi.fn<(params: { audio: { data: string; mimeType: string } }) => void>>;
+		sendRealtimeInput: ReturnType<
+			typeof vi.fn<
+				(params: { audio: { data: string; mimeType: string } }) => void
+			>
+		>;
 		close: ReturnType<typeof vi.fn<() => void>>;
 	};
 	let connect: ReturnType<
-		typeof vi.fn<(params: { callbacks: typeof liveCallbacks }) => Promise<typeof fakeSession>>
+		typeof vi.fn<
+			(params: {
+				callbacks: typeof liveCallbacks;
+			}) => Promise<typeof fakeSession>
+		>
 	>;
 
 	beforeEach(() => {
@@ -76,7 +89,9 @@ describe("startLiveSession", () => {
 		return {
 			genAiFactory: vi.fn(() => ({ live: { connect } })),
 			getUserMedia: vi.fn().mockResolvedValue(createFakeMediaStream()),
-			audioContextFactory: vi.fn(() => contexts.shift() as unknown as AudioContext),
+			audioContextFactory: vi.fn(
+				() => contexts.shift() as unknown as AudioContext,
+			),
 			input,
 			output,
 		};
@@ -87,12 +102,22 @@ describe("startLiveSession", () => {
 		const onOpen = vi.fn();
 
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onOpen, onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: {
+					onOpen,
+					onSpeakingChange: vi.fn(),
+					onTurnComplete: vi.fn(),
+				},
+			},
 			deps,
 		);
 
 		expect(deps.genAiFactory).toHaveBeenCalledWith("tok");
-		expect(connect).toHaveBeenCalledWith(expect.objectContaining({ model: "m" }));
+		expect(connect).toHaveBeenCalledWith(
+			expect.objectContaining({ model: "m" }),
+		);
 		liveCallbacks.onopen?.();
 		expect(onOpen).toHaveBeenCalledTimes(1);
 	});
@@ -100,11 +125,16 @@ describe("startLiveSession", () => {
 	it("streams mic PCM via sendRealtimeInput on each audio-process tick", async () => {
 		const deps = baseDeps();
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() },
+			},
 			deps,
 		);
 
-		const processor = deps.input.context.createScriptProcessor.mock.results[0].value as {
+		const processor = deps.input.context.createScriptProcessor.mock.results[0]
+			.value as {
 			onaudioprocess: (event: unknown) => void;
 		};
 		processor.onaudioprocess({
@@ -124,7 +154,11 @@ describe("startLiveSession", () => {
 		const onSpeakingChange = vi.fn();
 
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange, onTurnComplete } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange, onTurnComplete },
+			},
 			deps,
 		);
 
@@ -141,7 +175,10 @@ describe("startLiveSession", () => {
 			serverContent: { turnComplete: true },
 		});
 
-		expect(onTurnComplete).toHaveBeenCalledWith({ userText: "Hello there", modelText: "Hi!" });
+		expect(onTurnComplete).toHaveBeenCalledWith({
+			userText: "Hello there",
+			modelText: "Hi!",
+		});
 	});
 
 	it("calls onSpeakingChange(true) on the first audio chunk of a turn, then (false) at turnComplete", async () => {
@@ -149,7 +186,11 @@ describe("startLiveSession", () => {
 		const onSpeakingChange = vi.fn();
 
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange, onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange, onTurnComplete: vi.fn() },
+			},
 			deps,
 		);
 
@@ -169,7 +210,11 @@ describe("startLiveSession", () => {
 		const onTurnComplete = vi.fn();
 
 		await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange: vi.fn(), onTurnComplete } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange: vi.fn(), onTurnComplete },
+			},
 			deps,
 		);
 
@@ -184,13 +229,21 @@ describe("startLiveSession", () => {
 		deps.getUserMedia.mockResolvedValue(mediaStream);
 
 		const session = await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() },
+			},
 			deps,
 		);
 		session.close();
 
 		expect(
-			(mediaStream.getTracks() as unknown as { stop: ReturnType<typeof vi.fn<() => void>> }[])[0].stop,
+			(
+				mediaStream.getTracks() as unknown as {
+					stop: ReturnType<typeof vi.fn<() => void>>;
+				}[]
+			)[0].stop,
 		).toBeDefined();
 		expect(deps.input.context.close).toHaveBeenCalledTimes(1);
 		expect(deps.output.context.close).toHaveBeenCalledTimes(1);
@@ -201,7 +254,11 @@ describe("startLiveSession", () => {
 		const deps = baseDeps();
 
 		const session = await startLiveSession(
-			{ token: "tok", model: "m", callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() } },
+			{
+				token: "tok",
+				model: "m",
+				callbacks: { onSpeakingChange: vi.fn(), onTurnComplete: vi.fn() },
+			},
 			deps,
 		);
 

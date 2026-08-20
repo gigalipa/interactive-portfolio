@@ -4,7 +4,11 @@ export interface HistoryToggleButtonProps {
 	onClick: () => void;
 }
 
-export function HistoryToggleButton({ visible, label, onClick }: HistoryToggleButtonProps) {
+export function HistoryToggleButton({
+	visible,
+	label,
+	onClick,
+}: HistoryToggleButtonProps) {
 	if (!visible) return null;
 
 	return (

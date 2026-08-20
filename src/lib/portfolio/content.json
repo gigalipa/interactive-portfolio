@@ -6,10 +6,7 @@
 			"summary": "An AI-powered \"spellbook\" widget embedded in a Notion language-learning dashboard, giving contextual word/phrase explanations, corrections, and activity ideas via a secured Google Gemini API proxy.",
 			"description": "I built an embeddable Notion micro-widget (\"Grimorio IA\" / AI Spellbook) for Language Quest, a fantasy-RPG-themed gamified language-learning dashboard my wife Yennifer Abreu designed. It lets users query a word or phrase in a target language and get a contextual explanation adapted to their native language, plus text correction and activity suggestions, powered by the Google AI Studio (Gemini) API behind a secure serverless proxy I built to keep the API key off the client.",
 			"contentType": "Project",
-			"tags": [
-				"ai",
-				"web-dev"
-			],
+			"tags": ["ai", "web-dev"],
 			"priority": 4,
 			"status": "Published",
 			"language": "EN",
@@ -27,10 +24,7 @@
 			"summary": "Multi-agent AI publishing pipeline (n8n + hybrid LLMs) that autonomously researches, writes, edits, and markets self-help books, already generating royalties on Amazon KDP.",
 			"description": "Fully automated digital publishing house that generates, edits, and markets self-help books via an n8n multi-agent LLM pipeline, plus a RAG chatbot (Archie) that recommends or generates ultra-personalized books on demand.",
 			"contentType": "Project",
-			"tags": [
-				"ai",
-				"data-science"
-			],
+			"tags": ["ai", "data-science"],
 			"priority": 5,
 			"status": "Published",
 			"language": "EN",
@@ -71,10 +65,7 @@
 			"summary": "An AI-powered \"spellbook\" widget embedded in a Notion language-learning dashboard, giving contextual word/phrase explanations, corrections, and activity ideas via a secured Google Gemini API proxy.",
 			"description": "I built an embeddable Notion micro-widget (\"Grimorio IA\" / AI Spellbook) for Language Quest, a fantasy-RPG-themed gamified language-learning dashboard my wife Yennifer Abreu designed. It lets users query a word or phrase in a target language and get a contextual explanation adapted to their native language, plus text correction and activity suggestions, powered by the Google AI Studio (Gemini) API behind a secure serverless proxy I built to keep the API key off the client.",
 			"contentType": "Project",
-			"tags": [
-				"ai",
-				"web-dev"
-			],
+			"tags": ["ai", "web-dev"],
 			"priority": 4,
 			"status": "Published",
 			"language": "EN",
@@ -92,10 +83,7 @@
 			"summary": "Multi-agent AI publishing pipeline (n8n + hybrid LLMs) that autonomously researches, writes, edits, and markets self-help books, already generating royalties on Amazon KDP.",
 			"description": "Fully automated digital publishing house that generates, edits, and markets self-help books via an n8n multi-agent LLM pipeline, plus a RAG chatbot (Archie) that recommends or generates ultra-personalized books on demand.",
 			"contentType": "Project",
-			"tags": [
-				"ai",
-				"data-science"
-			],
+			"tags": ["ai", "data-science"],
 			"priority": 5,
 			"status": "Published",
 			"language": "EN",
@@ -136,10 +124,7 @@
 			"summary": "An AI-powered \"spellbook\" widget embedded in a Notion language-learning dashboard, giving contextual word/phrase explanations, corrections, and activity ideas via a secured Google Gemini API proxy.",
 			"description": "I built an embeddable Notion micro-widget (\"Grimorio IA\" / AI Spellbook) for Language Quest, a fantasy-RPG-themed gamified language-learning dashboard my wife Yennifer Abreu designed. It lets users query a word or phrase in a target language and get a contextual explanation adapted to their native language, plus text correction and activity suggestions, powered by the Google AI Studio (Gemini) API behind a secure serverless proxy I built to keep the API key off the client.",
 			"contentType": "Project",
-			"tags": [
-				"ai",
-				"web-dev"
-			],
+			"tags": ["ai", "web-dev"],
 			"priority": 4,
 			"status": "Published",
 			"language": "EN",
@@ -157,10 +142,7 @@
 			"summary": "Multi-agent AI publishing pipeline (n8n + hybrid LLMs) that autonomously researches, writes, edits, and markets self-help books, already generating royalties on Amazon KDP.",
 			"description": "Fully automated digital publishing house that generates, edits, and markets self-help books via an n8n multi-agent LLM pipeline, plus a RAG chatbot (Archie) that recommends or generates ultra-personalized books on demand.",
 			"contentType": "Project",
-			"tags": [
-				"ai",
-				"data-science"
-			],
+			"tags": ["ai", "data-science"],
 			"priority": 5,
 			"status": "Published",
 			"language": "EN",

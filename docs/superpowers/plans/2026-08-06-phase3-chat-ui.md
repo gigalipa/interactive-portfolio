@@ -23,12 +23,14 @@
 ### Task 1: i18n strings for chat, consent, and history
 
 **Files:**
+
 - Modify: `src/i18n/dictionary.ts`
 - Modify: `src/i18n/dictionaries/en.ts`
 - Modify: `src/i18n/dictionaries/es.ts`
 - Modify: `src/i18n/dictionaries/fr.ts`
 
 **Interfaces:**
+
 - Produces: a `chat` section on the `Dictionary` type, populated in all three locales, consumed by every later task via `getDictionary(lang).chat.*`.
 
 - [ ] **Step 1: Add the `chat` section to the `Dictionary` interface**
@@ -36,29 +38,29 @@
 In `src/i18n/dictionary.ts`, add this member to the `Dictionary` interface (alongside the existing `nav`/`meta`/`home`/`cv`/`portfolio`/`contact` members):
 
 ```typescript
-	chat: {
-		inputPlaceholder: string;
-		send: string;
-		voiceComingSoon: string;
-		thinking: string;
-		errorGeneric: string;
-		errorRateLimited: string;
-		retry: string;
-		newConversation: string;
-		historyToggleLabel: string;
-		historyTitle: string;
-		deleteConversation: string;
-		retentionNotice: string;
-		consent: {
-			message: string;
-			accept: string;
-			reject: string;
-			infoToggle: string;
-			infoBody: string;
-			preferencesLink: string;
-			deleteOption: string;
-		};
-	};
+chat: {
+	inputPlaceholder: string;
+	send: string;
+	voiceComingSoon: string;
+	thinking: string;
+	errorGeneric: string;
+	errorRateLimited: string;
+	retry: string;
+	newConversation: string;
+	historyToggleLabel: string;
+	historyTitle: string;
+	deleteConversation: string;
+	retentionNotice: string;
+	consent: {
+		message: string;
+		accept: string;
+		reject: string;
+		infoToggle: string;
+		infoBody: string;
+		preferencesLink: string;
+		deleteOption: string;
+	}
+}
 ```
 
 - [ ] **Step 2: Add the English translations**
@@ -180,6 +182,7 @@ git commit -m "Add chat/consent/history i18n strings (EN/ES/FR)"
 ### Task 2: Pure client-side modules (SSE parser, consent, session storage, history API, presence-ring bridge)
 
 **Files:**
+
 - Create: `src/lib/chat/sseClient.ts`
 - Test: `src/lib/chat/sseClient.test.ts`
 - Create: `src/lib/chat/consent.ts`
@@ -192,6 +195,7 @@ git commit -m "Add chat/consent/history i18n strings (EN/ES/FR)"
 - Test: `src/lib/chat/presenceRingBridge.test.ts`
 
 **Interfaces:**
+
 - Consumes: `ChatSseEvent` (`src/lib/rag/sse.ts`), `ChatMessage`/`StoredConversation`/`ConversationSummary` (`src/lib/history/types.ts`) — all pre-existing, do not modify.
 - Produces: `ChatRequestPayload`, `streamChatResponse(payload, fetchImpl?): AsyncGenerator<ChatSseEvent>` (`sseClient.ts`); `ConsentChoice`, `getConsent()`, `setConsent()` (`consent.ts`); `loadSessionMessages()`, `saveSessionMessages()`, `clearSessionMessages()` (`sessionHistory.ts`); `fetchHistoryList()`, `fetchConversation()`, `deleteConversation()`, `deleteAllHistory()` (`historyApi.ts`); `setPresenceState(state)` (`presenceRingBridge.ts`) — all consumed by Task 3's `useChatSession`.
 
@@ -201,7 +205,11 @@ git commit -m "Add chat/consent/history i18n strings (EN/ES/FR)"
 
 ```typescript
 import { describe, expect, it, vi } from "vitest";
-import { parseSseStream, streamChatResponse, type FetchLike } from "./sseClient";
+import {
+	parseSseStream,
+	streamChatResponse,
+	type FetchLike,
+} from "./sseClient";
 
 function streamFromChunks(chunks: string[]): ReadableStream<Uint8Array> {
 	const encoder = new TextEncoder();
@@ -219,7 +227,11 @@ async function collect<T>(iterable: AsyncGenerator<T>): Promise<T[]> {
 	return result;
 }
 
-function fakeFetch(status: number, body: ReadableStream<Uint8Array> | null, text = ""): FetchLike {
+function fakeFetch(
+	status: number,
+	body: ReadableStream<Uint8Array> | null,
+	text = "",
+): FetchLike {
 	return async () => ({
 		ok: status >= 200 && status < 300,
 		status,
@@ -244,7 +256,10 @@ describe("parseSseStream", () => {
 	});
 
 	it("handles a frame split across two reads", async () => {
-		const body = streamFromChunks(['event: delta\ndata: {"text":"Hel', 'lo"}\n\n']);
+		const body = streamFromChunks([
+			'event: delta\ndata: {"text":"Hel',
+			'lo"}\n\n',
+		]);
 
 		expect(await collect(parseSseStream(body))).toEqual([
 			{ event: "delta", data: { text: "Hello" } },
@@ -254,9 +269,14 @@ describe("parseSseStream", () => {
 
 describe("streamChatResponse", () => {
 	it("posts the payload and yields parsed SSE events", async () => {
-		const fetchImpl = vi.fn().mockImplementation(
-			fakeFetch(200, streamFromChunks(['event: delta\ndata: {"text":"Hi"}\n\n'])),
-		);
+		const fetchImpl = vi
+			.fn()
+			.mockImplementation(
+				fakeFetch(
+					200,
+					streamFromChunks(['event: delta\ndata: {"text":"Hi"}\n\n']),
+				),
+			);
 
 		const result = await collect(
 			streamChatResponse({ persist: false, message: "Hello" }, fetchImpl),
@@ -268,17 +288,24 @@ describe("streamChatResponse", () => {
 			expect.objectContaining({ method: "POST" }),
 		);
 		const [, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
-		expect(JSON.parse(init.body as string)).toEqual({ persist: false, message: "Hello" });
+		expect(JSON.parse(init.body as string)).toEqual({
+			persist: false,
+			message: "Hello",
+		});
 	});
 
 	it("yields a rate_limited error event on a 429 response", async () => {
-		const fetchImpl = vi.fn().mockImplementation(fakeFetch(429, null, "Rate limit exceeded"));
+		const fetchImpl = vi
+			.fn()
+			.mockImplementation(fakeFetch(429, null, "Rate limit exceeded"));
 
 		const result = await collect(
 			streamChatResponse({ persist: false, message: "Hi" }, fetchImpl),
 		);
 
-		expect(result).toEqual([{ event: "error", data: { message: "rate_limited" } }]);
+		expect(result).toEqual([
+			{ event: "error", data: { message: "rate_limited" } },
+		]);
 	});
 
 	it("yields a request_failed error event on any other non-ok response", async () => {
@@ -288,7 +315,9 @@ describe("streamChatResponse", () => {
 			streamChatResponse({ persist: false, message: "Hi" }, fetchImpl),
 		);
 
-		expect(result).toEqual([{ event: "error", data: { message: "request_failed" } }]);
+		expect(result).toEqual([
+			{ event: "error", data: { message: "request_failed" } },
+		]);
 	});
 });
 ```
@@ -314,7 +343,10 @@ export interface ChatRequestPayload {
 
 /** Narrow structural subset of `fetch` — real `fetch` satisfies this. */
 export interface FetchLike {
-	(url: string, init: RequestInit): Promise<{
+	(
+		url: string,
+		init: RequestInit,
+	): Promise<{
 		ok: boolean;
 		status: number;
 		body: ReadableStream<Uint8Array> | null;
@@ -379,7 +411,12 @@ function parseFrame(frame: string): ChatSseEvent | null {
 	const eventName = eventLine.slice("event:".length).trim();
 	const data = JSON.parse(dataLine.slice("data:".length).trim());
 
-	if (eventName === "meta" || eventName === "delta" || eventName === "done" || eventName === "error") {
+	if (
+		eventName === "meta" ||
+		eventName === "delta" ||
+		eventName === "done" ||
+		eventName === "error"
+	) {
 		return { event: eventName, data } as ChatSseEvent;
 	}
 	return null;
@@ -452,10 +489,16 @@ Run: `pnpm test src/lib/chat/consent.test.ts` — expect PASS (4 tests) after im
 
 ```typescript
 import { beforeEach, describe, expect, it } from "vitest";
-import { clearSessionMessages, loadSessionMessages, saveSessionMessages } from "./sessionHistory";
+import {
+	clearSessionMessages,
+	loadSessionMessages,
+	saveSessionMessages,
+} from "./sessionHistory";
 import type { ChatMessage } from "../history/types";
 
-const sample: ChatMessage[] = [{ role: "user", text: "Hi", at: "2026-08-06T00:00:00.000Z" }];
+const sample: ChatMessage[] = [
+	{ role: "user", text: "Hi", at: "2026-08-06T00:00:00.000Z" },
+];
 
 describe("session message storage", () => {
 	beforeEach(() => {
@@ -521,10 +564,19 @@ Run: `pnpm test src/lib/chat/sessionHistory.test.ts` — expect PASS (4 tests).
 
 ```typescript
 import { describe, expect, it, vi } from "vitest";
-import { deleteAllHistory, deleteConversation, fetchConversation, fetchHistoryList } from "./historyApi";
+import {
+	deleteAllHistory,
+	deleteConversation,
+	fetchConversation,
+	fetchHistoryList,
+} from "./historyApi";
 import type { StoredConversation } from "../history/types";
 
-function mockFetchOnce(response: { ok: boolean; status?: number; json?: () => Promise<unknown> }) {
+function mockFetchOnce(response: {
+	ok: boolean;
+	status?: number;
+	json?: () => Promise<unknown>;
+}) {
 	return vi.fn().mockResolvedValue({
 		ok: response.ok,
 		status: response.status ?? (response.ok ? 200 : 500),
@@ -534,7 +586,13 @@ function mockFetchOnce(response: { ok: boolean; status?: number; json?: () => Pr
 
 describe("fetchHistoryList", () => {
 	it("returns the parsed list on success", async () => {
-		const list = [{ conversationId: "c-1", title: "Hi", updatedAt: "2026-08-06T00:00:00.000Z" }];
+		const list = [
+			{
+				conversationId: "c-1",
+				title: "Hi",
+				updatedAt: "2026-08-06T00:00:00.000Z",
+			},
+		];
 		vi.stubGlobal("fetch", mockFetchOnce({ ok: true, json: async () => list }));
 		expect(await fetchHistoryList()).toEqual(list);
 		vi.unstubAllGlobals();
@@ -549,8 +607,15 @@ describe("fetchHistoryList", () => {
 
 describe("fetchConversation", () => {
 	it("returns the conversation on success", async () => {
-		const conversation: StoredConversation = { messages: [], updatedAt: "2026-08-06T00:00:00.000Z", title: "Hi" };
-		vi.stubGlobal("fetch", mockFetchOnce({ ok: true, json: async () => conversation }));
+		const conversation: StoredConversation = {
+			messages: [],
+			updatedAt: "2026-08-06T00:00:00.000Z",
+			title: "Hi",
+		};
+		vi.stubGlobal(
+			"fetch",
+			mockFetchOnce({ ok: true, json: async () => conversation }),
+		);
 		expect(await fetchConversation("c-1")).toEqual(conversation);
 		vi.unstubAllGlobals();
 	});
@@ -567,7 +632,9 @@ describe("deleteConversation", () => {
 		const fetchImpl = mockFetchOnce({ ok: true, status: 204 });
 		vi.stubGlobal("fetch", fetchImpl);
 		expect(await deleteConversation("c-1")).toBe(true);
-		expect(fetchImpl).toHaveBeenCalledWith("/api/history/c-1", { method: "DELETE" });
+		expect(fetchImpl).toHaveBeenCalledWith("/api/history/c-1", {
+			method: "DELETE",
+		});
 		vi.unstubAllGlobals();
 	});
 });
@@ -577,7 +644,9 @@ describe("deleteAllHistory", () => {
 		const fetchImpl = mockFetchOnce({ ok: true, status: 204 });
 		vi.stubGlobal("fetch", fetchImpl);
 		expect(await deleteAllHistory()).toBe(true);
-		expect(fetchImpl).toHaveBeenCalledWith("/api/history", { method: "DELETE" });
+		expect(fetchImpl).toHaveBeenCalledWith("/api/history", {
+			method: "DELETE",
+		});
 		vi.unstubAllGlobals();
 	});
 });
@@ -602,8 +671,12 @@ export async function fetchConversation(
 	return (await response.json()) as StoredConversation;
 }
 
-export async function deleteConversation(conversationId: string): Promise<boolean> {
-	const response = await fetch(`/api/history/${conversationId}`, { method: "DELETE" });
+export async function deleteConversation(
+	conversationId: string,
+): Promise<boolean> {
+	const response = await fetch(`/api/history/${conversationId}`, {
+		method: "DELETE",
+	});
 	return response.ok;
 }
 
@@ -629,9 +702,12 @@ describe("setPresenceState", () => {
 	});
 
 	it("sets data-state on the .presence-ring element", () => {
-		document.body.innerHTML = '<div class="presence-ring" data-state="idle"></div>';
+		document.body.innerHTML =
+			'<div class="presence-ring" data-state="idle"></div>';
 		setPresenceState("speaking");
-		expect(document.querySelector(".presence-ring")?.getAttribute("data-state")).toBe("speaking");
+		expect(
+			document.querySelector(".presence-ring")?.getAttribute("data-state"),
+		).toBe("speaking");
 	});
 
 	it("does nothing (no throw) when the element isn't on the page", () => {
@@ -646,7 +722,9 @@ describe("setPresenceState", () => {
 /** Imperatively updates the server-rendered PresenceRing's visual state
  * (see src/components/ui/PresenceRing.astro) from client-side chat state.
  * There is exactly one PresenceRing per page. */
-export function setPresenceState(state: "idle" | "listening" | "speaking"): void {
+export function setPresenceState(
+	state: "idle" | "listening" | "speaking",
+): void {
 	if (typeof document === "undefined") return;
 	document.querySelector(".presence-ring")?.setAttribute("data-state", state);
 }
@@ -669,10 +747,12 @@ git commit -m "Add pure client-side chat modules (SSE parser, consent, session s
 ### Task 3: `useChatSession` orchestration hook
 
 **Files:**
+
 - Create: `src/lib/chat/useChatSession.ts`
 - Test: `src/lib/chat/useChatSession.test.ts`
 
 **Interfaces:**
+
 - Consumes: everything from Task 2 (`streamChatResponse`, `getConsent`/`setConsent`, `loadSessionMessages`/`saveSessionMessages`/`clearSessionMessages`, `fetchHistoryList`/`fetchConversation`/`deleteConversation`/`deleteAllHistory`, `setPresenceState`), plus `ChatMessage`/`StoredConversation`/`ConversationSummary` (`src/lib/history/types.ts`).
 - Produces: `DisplayMessage { id: string; role: "user" | "model"; text: string }`, `ChatStatus = "idle" | "sending" | "streaming" | "error"`, `UseChatSessionOptions`, `UseChatSessionResult`, `useChatSession(options): UseChatSessionResult` — consumed by `ChatWidget` (Task 7).
 
@@ -693,7 +773,12 @@ vi.mock("./historyApi", () => ({
 }));
 
 import { streamChatResponse } from "./sseClient";
-import { deleteAllHistory, deleteConversation, fetchConversation, fetchHistoryList } from "./historyApi";
+import {
+	deleteAllHistory,
+	deleteConversation,
+	fetchConversation,
+	fetchHistoryList,
+} from "./historyApi";
 import { getConsent, setConsent } from "./consent";
 import { clearSessionMessages, loadSessionMessages } from "./sessionHistory";
 import { useChatSession } from "./useChatSession";
@@ -702,7 +787,11 @@ async function* eventsOf(events: unknown[]) {
 	for (const event of events) yield event as never;
 }
 
-const options = { language: "EN", errorGenericMessage: "generic error", errorRateLimitedMessage: "slow down" };
+const options = {
+	language: "EN",
+	errorGenericMessage: "generic error",
+	errorRateLimitedMessage: "slow down",
+};
 
 beforeEach(() => {
 	window.localStorage.clear();
@@ -762,7 +851,10 @@ describe("useChatSession — sending a message", () => {
 
 	it("saves the conversation to sessionStorage when not persisting", async () => {
 		vi.mocked(streamChatResponse).mockReturnValue(
-			eventsOf([{ event: "delta", data: { text: "Hi!" } }, { event: "done", data: {} }]),
+			eventsOf([
+				{ event: "delta", data: { text: "Hi!" } },
+				{ event: "done", data: {} },
+			]),
 		);
 		const { result } = renderHook(() => useChatSession(options));
 
@@ -788,7 +880,9 @@ describe("useChatSession — sending a message", () => {
 		await act(async () => result.current.sendMessage("Hey"));
 
 		const [payload] = vi.mocked(streamChatResponse).mock.calls[0];
-		expect(payload).toEqual(expect.objectContaining({ persist: true, message: "Hey" }));
+		expect(payload).toEqual(
+			expect.objectContaining({ persist: true, message: "Hey" }),
+		);
 	});
 
 	it("shows the localized rate-limit message on a rate_limited error event", async () => {
@@ -805,7 +899,9 @@ describe("useChatSession — sending a message", () => {
 
 	it("shows the generic localized message on any other error event", async () => {
 		vi.mocked(streamChatResponse).mockReturnValue(
-			eventsOf([{ event: "error", data: { message: "The avatar couldn't reply..." } }]),
+			eventsOf([
+				{ event: "error", data: { message: "The avatar couldn't reply..." } },
+			]),
 		);
 		const { result } = renderHook(() => useChatSession(options));
 
@@ -822,12 +918,17 @@ describe("useChatSession — sending a message", () => {
 		await act(async () => result.current.sendMessage("Hi"));
 
 		vi.mocked(streamChatResponse).mockReturnValueOnce(
-			eventsOf([{ event: "delta", data: { text: "Now it works" } }, { event: "done", data: {} }]),
+			eventsOf([
+				{ event: "delta", data: { text: "Now it works" } },
+				{ event: "done", data: {} },
+			]),
 		);
 		await act(async () => result.current.retryLast());
 
 		expect(result.current.status).toBe("idle");
-		expect(result.current.messages.at(-1)).toEqual(expect.objectContaining({ text: "Now it works" }));
+		expect(result.current.messages.at(-1)).toEqual(
+			expect.objectContaining({ text: "Now it works" }),
+		);
 	});
 });
 
@@ -842,7 +943,9 @@ describe("useChatSession — history", () => {
 
 		await act(async () => result.current.selectConversation("conv-1"));
 
-		expect(result.current.messages).toEqual([expect.objectContaining({ role: "user", text: "Old" })]);
+		expect(result.current.messages).toEqual([
+			expect.objectContaining({ role: "user", text: "Old" }),
+		]);
 	});
 
 	it("deleteConversationById removes it from the list and resets if it was the active one", async () => {
@@ -862,7 +965,10 @@ describe("useChatSession — history", () => {
 
 	it("startNewConversation clears messages and sessionStorage", async () => {
 		vi.mocked(streamChatResponse).mockReturnValue(
-			eventsOf([{ event: "delta", data: { text: "Hi!" } }, { event: "done", data: {} }]),
+			eventsOf([
+				{ event: "delta", data: { text: "Hi!" } },
+				{ event: "done", data: {} },
+			]),
 		);
 		const { result } = renderHook(() => useChatSession(options));
 		await act(async () => result.current.sendMessage("Hey"));
@@ -886,7 +992,11 @@ Expected: FAIL — module not found.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { streamChatResponse } from "./sseClient";
 import { getConsent, setConsent, type ConsentChoice } from "./consent";
-import { clearSessionMessages, loadSessionMessages, saveSessionMessages } from "./sessionHistory";
+import {
+	clearSessionMessages,
+	loadSessionMessages,
+	saveSessionMessages,
+} from "./sessionHistory";
 import {
 	deleteAllHistory,
 	deleteConversation,
@@ -936,20 +1046,28 @@ function toDisplayMessages(messages: ChatMessage[]): DisplayMessage[] {
 	}));
 }
 
-function toWireMessages(messages: DisplayMessage[]): Array<Pick<ChatMessage, "role" | "text">> {
+function toWireMessages(
+	messages: DisplayMessage[],
+): Array<Pick<ChatMessage, "role" | "text">> {
 	return messages.map(({ role, text }) => ({ role, text }));
 }
 
-export function useChatSession(options: UseChatSessionOptions): UseChatSessionResult {
+export function useChatSession(
+	options: UseChatSessionOptions,
+): UseChatSessionResult {
 	const { language, errorGenericMessage, errorRateLimitedMessage } = options;
 
-	const [consent, setConsentState] = useState<ConsentChoice | null>(() => getConsent());
+	const [consent, setConsentState] = useState<ConsentChoice | null>(() =>
+		getConsent(),
+	);
 	const [messages, setMessages] = useState<DisplayMessage[]>(() =>
 		consent === "accepted" ? [] : toDisplayMessages(loadSessionMessages()),
 	);
 	const [status, setStatus] = useState<ChatStatus>("idle");
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-	const [conversationId, setConversationId] = useState<string | undefined>(undefined);
+	const [conversationId, setConversationId] = useState<string | undefined>(
+		undefined,
+	);
 	const [conversations, setConversations] = useState<ConversationSummary[]>([]);
 	const [historyOpen, setHistoryOpen] = useState(false);
 	const lastUserTextRef = useRef<string | null>(null);
@@ -976,7 +1094,11 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	}, []);
 
 	const runStream = useCallback(
-		async (text: string, persist: boolean, historyForRequest: DisplayMessage[]) => {
+		async (
+			text: string,
+			persist: boolean,
+			historyForRequest: DisplayMessage[],
+		) => {
 			setStatus("sending");
 			setErrorMessage(null);
 			setPresenceState("listening");
@@ -1000,12 +1122,17 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 						setPresenceState("speaking");
 						assistantMessageId = crypto.randomUUID();
 						const id = assistantMessageId;
-						setMessages((prev) => [...prev, { id, role: "model", text: event.data.text }]);
+						setMessages((prev) => [
+							...prev,
+							{ id, role: "model", text: event.data.text },
+						]);
 					} else {
 						const id = assistantMessageId;
 						setMessages((prev) =>
 							prev.map((message) =>
-								message.id === id ? { ...message, text: message.text + event.data.text } : message,
+								message.id === id
+									? { ...message, text: message.text + event.data.text }
+									: message,
 							),
 						);
 					}
@@ -1030,12 +1157,20 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 					setStatus("error");
 					setPresenceState("idle");
 					setErrorMessage(
-						event.data.message === "rate_limited" ? errorRateLimitedMessage : errorGenericMessage,
+						event.data.message === "rate_limited"
+							? errorRateLimitedMessage
+							: errorGenericMessage,
 					);
 				}
 			}
 		},
-		[conversationId, language, errorGenericMessage, errorRateLimitedMessage, refreshHistory],
+		[
+			conversationId,
+			language,
+			errorGenericMessage,
+			errorRateLimitedMessage,
+			refreshHistory,
+		],
 	);
 
 	const sendMessage = useCallback(
@@ -1043,7 +1178,11 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 			const trimmed = text.trim();
 			if (!trimmed) return;
 			lastUserTextRef.current = trimmed;
-			const userMessage: DisplayMessage = { id: crypto.randomUUID(), role: "user", text: trimmed };
+			const userMessage: DisplayMessage = {
+				id: crypto.randomUUID(),
+				role: "user",
+				text: trimmed,
+			};
 			const historySnapshot = messages;
 			setMessages((prev) => [...prev, userMessage]);
 			runStream(trimmed, consent === "accepted", historySnapshot);
@@ -1079,7 +1218,9 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 	const deleteConversationById = useCallback(
 		async (id: string) => {
 			await deleteConversation(id);
-			setConversations((prev) => prev.filter((conversation) => conversation.conversationId !== id));
+			setConversations((prev) =>
+				prev.filter((conversation) => conversation.conversationId !== id),
+			);
 			if (id === conversationId) {
 				setMessages([]);
 				setConversationId(undefined);
@@ -1117,7 +1258,7 @@ export function useChatSession(options: UseChatSessionOptions): UseChatSessionRe
 }
 ```
 
-Note on `retryLast`: after a failed `sendMessage`, `messages` already ends with the user message that failed to get a reply (it was appended optimistically before the stream ran). `retryLast` resends that same text as the current `message`, so it must pass `messages.slice(0, -1)` as history — everything *except* that trailing user message — otherwise the failed message would appear twice in the model's context (once as history, once as the resent `message`).
+Note on `retryLast`: after a failed `sendMessage`, `messages` already ends with the user message that failed to get a reply (it was appended optimistically before the stream ran). `retryLast` resends that same text as the current `message`, so it must pass `messages.slice(0, -1)` as history — everything _except_ that trailing user message — otherwise the failed message would appear twice in the model's context (once as history, once as the resent `message`).
 
 - [ ] **Step 4: Run to verify pass**
 
@@ -1139,12 +1280,14 @@ git commit -m "Add useChatSession hook orchestrating consent, streaming, and his
 ### Task 4: `ChatBubble` and `ChatMessages` presentational components
 
 **Files:**
+
 - Create: `src/components/chat/ChatBubble.tsx`
 - Test: `src/components/chat/ChatBubble.test.tsx`
 - Create: `src/components/chat/ChatMessages.tsx`
 - Test: `src/components/chat/ChatMessages.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `DisplayMessage`, `ChatStatus` (`src/lib/chat/useChatSession.ts`).
 - Produces: `ChatBubble({ role, text })`, `ChatMessages({ messages, status, errorMessage, thinkingLabel, retryLabel, onRetry })` — consumed by `ChatWidget` (Task 7).
 
@@ -1345,12 +1488,14 @@ git commit -m "Add ChatBubble and ChatMessages presentational components"
 ### Task 5: `ChatBox` and `ConsentBanner` components
 
 **Files:**
+
 - Create: `src/components/chat/ChatBox.tsx`
 - Test: `src/components/chat/ChatBox.test.tsx`
 - Create: `src/components/chat/ConsentBanner.tsx`
 - Test: `src/components/chat/ConsentBanner.test.tsx`
 
 **Interfaces:**
+
 - Produces: `ChatBox({ inputPlaceholder, sendLabel, voiceLabel, disabled, onSend })`, `ConsentBanner({ messageText, acceptLabel, rejectLabel, infoToggleLabel, infoBodyText, showDeleteOption, deleteOptionLabel, onAccept, onReject })` — consumed by `ChatWidget` (Task 7).
 
 - [ ] **Step 1: Write the failing tests for `ChatBox`**
@@ -1633,12 +1778,14 @@ git commit -m "Add ChatBox and ConsentBanner components"
 ### Task 6: `HistorySidebar` and `HistoryToggleButton` components
 
 **Files:**
+
 - Create: `src/components/chat/HistorySidebar.tsx`
 - Test: `src/components/chat/HistorySidebar.test.tsx`
 - Create: `src/components/chat/HistoryToggleButton.tsx`
 - Test: `src/components/chat/HistoryToggleButton.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `ConversationSummary` (`src/lib/history/types.ts`).
 - Produces: `HistorySidebar({ open, conversations, titleText, newConversationLabel, deleteLabel, retentionNoticeText, onClose, onSelect, onDelete, onNewConversation })`, `HistoryToggleButton({ visible, label, onClick })` — consumed by `ChatWidget` (Task 7).
 
@@ -1866,11 +2013,13 @@ git commit -m "Add HistorySidebar and HistoryToggleButton components"
 ### Task 7: `ChatWidget`, page wiring, and end-to-end verification
 
 **Files:**
+
 - Create: `src/components/chat/ChatWidget.tsx`
 - Modify: `src/views/HomeView.astro`
 - Create: `tests/e2e/chat.spec.ts`
 
 **Interfaces:**
+
 - Consumes: `useChatSession` (Task 3), `ChatMessages`/`ChatBubble` (Task 4), `ChatBox`/`ConsentBanner` (Task 5), `HistorySidebar`/`HistoryToggleButton` (Task 6), `getDictionary`/`Locale` (`src/i18n`).
 - Produces: `ChatWidget({ lang })`, mounted from `HomeView.astro`.
 
@@ -2012,34 +2161,50 @@ In `src/views/HomeView.astro`, add the import and mount the island after the exi
 ```typescript
 import { expect, test } from "@playwright/test";
 
-test("shows the consent banner on first visit and a chat box after accepting", async ({ page }) => {
+test("shows the consent banner on first visit and a chat box after accepting", async ({
+	page,
+}) => {
 	await page.goto("/en/");
-	await expect(page.getByText(/This site can remember your conversation/)).toBeVisible();
+	await expect(
+		page.getByText(/This site can remember your conversation/),
+	).toBeVisible();
 	await page.getByRole("button", { name: "Accept" }).click();
-	await expect(page.getByPlaceholder("Ask me about my work, background, or projects...")).toBeVisible();
+	await expect(
+		page.getByPlaceholder("Ask me about my work, background, or projects..."),
+	).toBeVisible();
 });
 
 test("rejecting consent still allows sending a message", async ({ page }) => {
 	await page.goto("/en/");
 	await page.getByRole("button", { name: "Reject" }).click();
-	const input = page.getByPlaceholder("Ask me about my work, background, or projects...");
+	const input = page.getByPlaceholder(
+		"Ask me about my work, background, or projects...",
+	);
 	await expect(input).toBeVisible();
 	await input.fill("What's your background?");
 	await page.getByRole("button", { name: "Send" }).click();
 	await expect(page.getByText("What's your background?")).toBeVisible();
 });
 
-test("the history toggle is hidden until a persisted conversation exists", async ({ page }) => {
+test("the history toggle is hidden until a persisted conversation exists", async ({
+	page,
+}) => {
 	await page.goto("/en/");
-	await expect(page.getByRole("button", { name: "Conversation history" })).toHaveCount(0);
+	await expect(
+		page.getByRole("button", { name: "Conversation history" }),
+	).toHaveCount(0);
 });
 
 test("consent choice persists across a reload", async ({ page }) => {
 	await page.goto("/en/");
 	await page.getByRole("button", { name: "Accept" }).click();
 	await page.reload();
-	await expect(page.getByText(/This site can remember your conversation/)).not.toBeVisible();
-	await expect(page.getByPlaceholder("Ask me about my work, background, or projects...")).toBeVisible();
+	await expect(
+		page.getByText(/This site can remember your conversation/),
+	).not.toBeVisible();
+	await expect(
+		page.getByPlaceholder("Ask me about my work, background, or projects..."),
+	).toBeVisible();
 });
 ```
 
@@ -2056,6 +2221,7 @@ Run: `pnpm test:e2e tests/e2e/chat.spec.ts`
 Expected: all 4 new e2e tests pass against the real dev server (real `/api/chat`/`/api/history/*` calls, real Gemma replies — this is the first time the UI and the already-merged backend talk to each other for real).
 
 Manually confirm in a browser (or via the `claude-in-chrome`/`run` tooling if available in this environment) that:
+
 - The consent banner appears on first load, with working Accept/Reject.
 - After accepting, sending a message streams a real reply and the presence ring visibly changes state (idle → listening → speaking → idle) — inspect via browser devtools if a visual check isn't practical (`document.querySelector(".presence-ring").dataset.state`).
 - After accepting and sending at least one message, reloading the page shows the history toggle button, and clicking it opens the sidebar with that conversation listed.

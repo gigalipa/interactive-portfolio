@@ -13,7 +13,8 @@ export default {
 	home: {
 		title: "Daniel Peraza — Portafolio Interactivo",
 		status: "Señal: en línea",
-		tagline: "Pregúntame lo que quieras sobre mi trabajo, trayectoria o proyectos.",
+		tagline:
+			"Pregúntame lo que quieras sobre mi trabajo, trayectoria o proyectos.",
 	},
 	cv: {
 		title: "CV",
@@ -58,10 +59,13 @@ export default {
 		voiceStart: "Iniciar chat de voz",
 		voiceEndCall: "Finalizar llamada",
 		voiceConnecting: "Conectando...",
-		voiceErrorGeneric: "No se pudo conectar la sesión de voz. Prueba con el chat de texto.",
-		voiceMicDenied: "Se denegó el acceso al micrófono. Aún puedes usar el chat de texto.",
+		voiceErrorGeneric:
+			"No se pudo conectar la sesión de voz. Prueba con el chat de texto.",
+		voiceMicDenied:
+			"Se denegó el acceso al micrófono. Aún puedes usar el chat de texto.",
 		thinking: "Pensando...",
-		errorGeneric: "El avatar no pudo responder en este momento. Inténtalo de nuevo.",
+		errorGeneric:
+			"El avatar no pudo responder en este momento. Inténtalo de nuevo.",
 		errorRateLimited:
 			"Demasiados mensajes — espera un momento antes de intentarlo de nuevo.",
 		retry: "Reintentar",

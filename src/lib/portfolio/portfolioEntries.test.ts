@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { assignSlugs, selectPortfolioEntries } from "./portfolioEntries";
 import type { KnowledgeBaseEntry } from "../notion/knowledgeBase";
 
-function kbEntry(overrides: Partial<KnowledgeBaseEntry> = {}): KnowledgeBaseEntry {
+function kbEntry(
+	overrides: Partial<KnowledgeBaseEntry> = {},
+): KnowledgeBaseEntry {
 	return {
 		pageId: "p1",
 		title: "Title",
@@ -24,7 +26,11 @@ describe("selectPortfolioEntries", () => {
 		const entries = [
 			kbEntry({ pageId: "a", status: "Published", contentType: "Project" }),
 			kbEntry({ pageId: "b", status: "Draft", contentType: "Project" }),
-			kbEntry({ pageId: "c", status: "Published", contentType: "Professional Experience" }),
+			kbEntry({
+				pageId: "c",
+				status: "Published",
+				contentType: "Professional Experience",
+			}),
 		];
 		expect(selectPortfolioEntries(entries).map((e) => e.pageId)).toEqual(["a"]);
 	});
@@ -32,7 +38,10 @@ describe("selectPortfolioEntries", () => {
 
 describe("assignSlugs", () => {
 	it("assigns a slug per entry keyed by pageId", () => {
-		const entries = [kbEntry({ pageId: "a", title: "Asset Foundry" }), kbEntry({ pageId: "b", title: "Language Quest" })];
+		const entries = [
+			kbEntry({ pageId: "a", title: "Asset Foundry" }),
+			kbEntry({ pageId: "b", title: "Language Quest" }),
+		];
 		const slugs = assignSlugs(entries);
 		expect(slugs.get("a")).toBe("asset-foundry");
 		expect(slugs.get("b")).toBe("language-quest");
