@@ -28,9 +28,18 @@ export interface Dictionary {
 		emptySection: string;
 	};
 	portfolio: {
-		phase: string;
 		title: string;
-		body: string;
+		intro: string;
+		emptyState: string;
+		backToPortfolio: string;
+		linkLabels: {
+			demo: string;
+			repo: string;
+			company: string;
+			certificate: string;
+			article: string;
+			other: string;
+		};
 	};
 	contact: {
 		phase: string;

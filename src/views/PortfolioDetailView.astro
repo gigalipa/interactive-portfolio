@@ -1,0 +1,104 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getDictionary, type Locale } from "../i18n";
+import type { LocalizedPortfolioEntry } from "../lib/portfolio/portfolioEntries";
+
+interface Props {
+	lang: Locale;
+	entry: LocalizedPortfolioEntry;
+}
+
+const { lang, entry } = Astro.props;
+const t = getDictionary(lang);
+
+function formatYear(iso: string): string {
+	const year = new Date(iso).getFullYear();
+	return Number.isNaN(year) ? iso : String(year);
+}
+
+const dates = entry.metadata.dates;
+const dateRange = dates?.start
+	? `${formatYear(dates.start)} – ${dates.ongoing || !dates.end ? t.cv.present : formatYear(dates.end)}`
+	: null;
+
+const metaLine = [entry.displayCategory, entry.displayLocation, dateRange].filter(Boolean).join(" · ");
+
+const techStack = entry.metadata.techStack ?? [];
+const links = entry.metadata.links ?? [];
+const media = entry.metadata.media ?? [];
+
+const linkLabels = t.portfolio.linkLabels;
+function labelForLinkType(type: string | undefined): string {
+	if (type && type in linkLabels) return linkLabels[type as keyof typeof linkLabels];
+	return linkLabels.other;
+}
+---
+
+<Layout
+	title={`${entry.displayTitle} — Daniel Peraza`}
+	description={entry.displayDescription || t.meta.description}
+	lang={lang}
+>
+	<main class="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-24">
+		<a href={`/${lang}/portfolio`} class="text-signal-cyan w-fit text-sm hover:text-signal-cyan/80">
+			{t.portfolio.backToPortfolio}
+		</a>
+
+		<header>
+			<h1 class="font-display text-ion text-3xl font-semibold">{entry.displayTitle}</h1>
+			{metaLine && <p class="text-signal-cyan/70 mt-2 font-mono text-xs">{metaLine}</p>}
+		</header>
+
+		{
+			media.length > 0 && (
+				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+					{media.map((item) =>
+						item.type === "video" ? (
+							<video src={item.url} controls class="border-slate-mist w-full rounded-xl border" />
+						) : (
+							<figure>
+								<img
+									src={item.url}
+									alt={item.alt ?? entry.displayTitle}
+									class="border-slate-mist w-full rounded-xl border"
+								/>
+								{item.caption && <figcaption class="text-ion/60 mt-1 text-xs">{item.caption}</figcaption>}
+							</figure>
+						),
+					)}
+				</div>
+			)
+		}
+
+		{entry.displayDescription && <p class="font-body text-ion/80 text-sm">{entry.displayDescription}</p>}
+
+		{
+			techStack.length > 0 && (
+				<div class="flex flex-wrap gap-1.5">
+					{techStack.map((chip) => (
+						<span class="border-slate-mist-strong text-ion/70 rounded-full border px-2 py-0.5 text-xs">
+							{chip}
+						</span>
+					))}
+				</div>
+			)
+		}
+
+		{
+			links.length > 0 && (
+				<div class="flex flex-wrap gap-3">
+					{links.map((link) => (
+						<a
+							href={link.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-signal-cyan text-sm underline hover:text-signal-cyan/80"
+						>
+							{link.label} ({labelForLinkType(link.type)})
+						</a>
+					))}
+				</div>
+			)
+		}
+	</main>
+</Layout>

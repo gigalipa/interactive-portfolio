@@ -1,6 +1,7 @@
 ---
 import type { LocalizedEntry } from "../../lib/notion/translate";
 import type { Locale } from "../../i18n/locales";
+import { slugify } from "../../lib/portfolio/slug";
 
 interface Props {
 	entry: LocalizedEntry;
@@ -60,7 +61,7 @@ const isProject = entry.contentType === "Project";
 	{
 		isProject && (
 			<a
-				href={`/${lang}/portfolio`}
+				href={`/${lang}/portfolio/${slugify(entry.title)}`}
 				class="text-signal-cyan mt-3 inline-block text-sm underline hover:text-signal-cyan/80"
 			>
 				{viewProjectsLabel}

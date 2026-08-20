@@ -1,4 +1,5 @@
 import type { KnowledgeBaseEntry } from "../notion/knowledgeBase";
+import { dateSortKey } from "../shared/sortByDate";
 
 /** Structurally identical to `LocalizedEntry` from `../notion/translate` (Task 3) —
  * kept as a local alias here so this module has no runtime or type-only
@@ -51,17 +52,6 @@ export function selectCvEntries(entries: KnowledgeBaseEntry[]): KnowledgeBaseEnt
 	);
 }
 
-function entrySortKey(entry: LocalizedEntryLike): number {
-	const start = entry.metadata.dates?.start;
-	if (start) {
-		const time = new Date(start).getTime();
-		if (!Number.isNaN(time)) return time;
-	}
-	// No usable date: sort after every dated entry (real timestamps are far
-	// larger than this), ranked among themselves by Priority (higher first).
-	return (entry.priority ?? 0) - 1_000_000_000_000;
-}
-
 /** Bidirectional match: a Skill's own `relatedTo` list, or any Skill entry whose
  * `relatedTo` includes this entry's pageId — Notion relations are bidirectional
  * but a single page's properties only ever show one side of the link. */
@@ -96,7 +86,7 @@ export function groupBySection(
 	}
 
 	for (const section of CV_SECTIONS) {
-		grouped[section].sort((a, b) => entrySortKey(b) - entrySortKey(a));
+		grouped[section].sort((a, b) => dateSortKey(b) - dateSortKey(a));
 	}
 
 	return grouped;

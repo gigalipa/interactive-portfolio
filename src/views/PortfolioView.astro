@@ -1,7 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import GlassPanel from "../components/ui/GlassPanel.astro";
+import ProjectCard from "../components/portfolio/ProjectCard.astro";
 import { getDictionary, type Locale } from "../i18n";
+import { groupByCategory } from "../lib/portfolio/groupByCategory";
+import type { LocalizedPortfolioEntry } from "../lib/portfolio/portfolioEntries";
+import portfolioContent from "../lib/portfolio/content.json";
 
 interface Props {
 	lang: Locale;
@@ -9,24 +12,38 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = getDictionary(lang);
+
+// Pre-fetched and pre-translated by `pnpm portfolio:sync` (scripts/sync-portfolio.ts)
+// and committed — the build never calls Notion/Gemini itself. Re-run that script
+// and commit the result whenever Portfolio-relevant Notion content changes.
+const localizedEntries = (portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>)[lang] ?? [];
+const groups = groupByCategory(localizedEntries);
 ---
 
-<Layout
-	title={`${t.portfolio.title} — Daniel Peraza`}
-	description={t.meta.description}
-	lang={lang}
->
-	<main class="flex min-h-screen items-center justify-center px-6 py-24">
-		<GlassPanel class="max-w-lg p-8 text-center" glow="blue">
-			<p
-				class="text-signal-cyan/80 font-mono text-xs tracking-[0.2em] uppercase"
-			>
-				{t.portfolio.phase}
-			</p>
-			<h1 class="font-display text-ion mt-3 text-2xl font-semibold">
-				{t.portfolio.title}
-			</h1>
-			<p class="font-body text-ion/70 mt-3 text-sm">{t.portfolio.body}</p>
-		</GlassPanel>
+<Layout title={`${t.portfolio.title} — Daniel Peraza`} description={t.meta.description} lang={lang}>
+	<main class="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-24">
+		<header class="text-center">
+			<h1 class="font-display text-ion text-3xl font-semibold">{t.portfolio.title}</h1>
+			<p class="font-body text-ion/70 mt-2 text-sm">{t.portfolio.intro}</p>
+		</header>
+
+		{
+			groups.length === 0 ? (
+				<p class="text-ion/60 text-center text-sm">{t.portfolio.emptyState}</p>
+			) : (
+				<div class="flex flex-col gap-10">
+					{groups.map((group) => (
+						<section class="flex flex-col gap-4">
+							<h2 class="text-signal-cyan font-mono text-xs tracking-[0.2em] uppercase">{group.category}</h2>
+							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+								{group.entries.map((entry) => (
+									<ProjectCard entry={entry} lang={lang} presentLabel={t.cv.present} />
+								))}
+							</div>
+						</section>
+					))}
+				</div>
+			)
+		}
 	</main>
 </Layout>
