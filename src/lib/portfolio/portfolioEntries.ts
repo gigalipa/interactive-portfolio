@@ -17,17 +17,17 @@ export function selectPortfolioEntries(entries: KnowledgeBaseEntry[]): Knowledge
  * auto-disambiguated (see the Phase 6 design spec). */
 export function assignSlugs(entries: KnowledgeBaseEntry[]): Map<string, string> {
 	const slugs = new Map<string, string>();
-	const titleBySlug = new Map<string, string>();
+	const ownerBySlug = new Map<string, { pageId: string; title: string }>();
 
 	for (const entry of entries) {
 		const slug = slugify(entry.title);
-		const existingTitle = titleBySlug.get(slug);
-		if (existingTitle && existingTitle !== entry.title) {
+		const owner = ownerBySlug.get(slug);
+		if (owner && owner.pageId !== entry.pageId) {
 			throw new Error(
-				`Slug collision: "${entry.title}" and "${existingTitle}" both produce the slug "${slug}". Rename one of the titles in Notion.`,
+				`Slug collision: "${entry.title}" and "${owner.title}" both produce the slug "${slug}". Rename one of the titles in Notion.`,
 			);
 		}
-		titleBySlug.set(slug, entry.title);
+		ownerBySlug.set(slug, { pageId: entry.pageId, title: entry.title });
 		slugs.set(entry.pageId, slug);
 	}
 

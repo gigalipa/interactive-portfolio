@@ -50,4 +50,12 @@ describe("assignSlugs", () => {
 		const entries = [kbEntry({ pageId: "a", title: "Solo Project" })];
 		expect(() => assignSlugs(entries)).not.toThrow();
 	});
+
+	it("throws when two different entries share the exact same title", () => {
+		const entries = [
+			kbEntry({ pageId: "a", title: "Portfolio Site" }),
+			kbEntry({ pageId: "b", title: "Portfolio Site" }),
+		];
+		expect(() => assignSlugs(entries)).toThrow(/slug/i);
+	});
 });
