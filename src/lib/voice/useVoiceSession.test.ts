@@ -225,7 +225,7 @@ describe("useVoiceSession", () => {
 	it("reconnects once with a freshly minted token on an unexpected close, then falls back to error on a second failure", async () => {
 		const closeA = vi.fn();
 		const closeB = vi.fn();
-		let callSequence: Parameters<typeof startLiveSession>[0]["callbacks"][] = [];
+		const callSequence: Parameters<typeof startLiveSession>[0]["callbacks"][] = [];
 		vi.mocked(startLiveSession)
 			.mockImplementationOnce((opts) => {
 				callSequence.push(opts.callbacks);

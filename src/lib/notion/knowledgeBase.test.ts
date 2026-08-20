@@ -20,8 +20,7 @@ function fakePage(overrides: Partial<PageObjectResponse["properties"]> = {}): Pa
 				rich_text: [{ plain_text: '{"category":"Full-time Role","location":"Remote"}' }],
 			},
 			...overrides,
-			// biome-ignore: test fixture, not a real PageObjectResponse
-		} as any,
+		} as unknown as PageObjectResponse["properties"],
 	} as PageObjectResponse;
 }
 

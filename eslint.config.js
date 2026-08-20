@@ -12,7 +12,7 @@ import globals from "globals";
 // type-checks via `astro check`. Revisit once the plugins catch up.
 export default tseslint.config(
 	{
-		ignores: ["dist/**", ".astro/**", ".wrangler/**", "node_modules/**"],
+		ignores: ["dist/**", ".astro/**", ".wrangler/**", "node_modules/**", "cert-to-kb/**"],
 	},
 	js.configs.recommended,
 	...tseslint.configs.recommended,
