@@ -58,4 +58,9 @@ describe("assignSlugs", () => {
 		];
 		expect(() => assignSlugs(entries)).toThrow(/slug/i);
 	});
+
+	it("throws when a title produces an empty slug", () => {
+		const entries = [kbEntry({ pageId: "a", title: "!!!" })];
+		expect(() => assignSlugs(entries)).toThrow(/empty slug/i);
+	});
 });

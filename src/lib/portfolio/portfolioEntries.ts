@@ -21,6 +21,11 @@ export function assignSlugs(entries: KnowledgeBaseEntry[]): Map<string, string> 
 
 	for (const entry of entries) {
 		const slug = slugify(entry.title);
+		if (!slug) {
+			throw new Error(
+				`Entry "${entry.title}" (${entry.pageId}) produces an empty slug. Give it a title containing Latin letters or digits in Notion.`,
+			);
+		}
 		const owner = ownerBySlug.get(slug);
 		if (owner && owner.pageId !== entry.pageId) {
 			throw new Error(
