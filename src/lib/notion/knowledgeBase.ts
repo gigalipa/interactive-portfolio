@@ -19,11 +19,20 @@ export interface MetadataDates {
 	ongoing?: boolean;
 }
 
+export interface MetadataMedia {
+	type: "image" | "video";
+	url: string;
+	alt?: string;
+	caption?: string;
+	cover?: boolean;
+}
+
 export interface EntryMetadata {
 	category?: string;
 	dates?: MetadataDates;
 	location?: string;
 	links?: MetadataLink[];
+	media?: MetadataMedia[];
 	techStack?: string[];
 }
 

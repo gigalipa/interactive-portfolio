@@ -44,6 +44,16 @@ describe("parseMetadata", () => {
 	it("returns an empty object if the JSON parses to a non-object", () => {
 		expect(parseMetadata('"just a string"')).toEqual({});
 	});
+
+	it("parses a media array", () => {
+		expect(
+			parseMetadata(
+				'{"media":[{"type":"image","url":"https://example.com/a.png","alt":"Screenshot","cover":true}]}',
+			),
+		).toEqual({
+			media: [{ type: "image", url: "https://example.com/a.png", alt: "Screenshot", cover: true }],
+		});
+	});
 });
 
 describe("extractEntry", () => {
@@ -71,6 +81,23 @@ describe("extractEntry", () => {
 	it("defaults metadata to an empty object when the Metadata property is absent", () => {
 		const entry = extractEntry(fakePage({ Metadata: undefined as never }));
 		expect(entry.metadata).toEqual({});
+	});
+
+	it("includes a media array when present in Metadata", () => {
+		const entry = extractEntry(
+			fakePage({
+				Metadata: {
+					type: "rich_text",
+					rich_text: [
+						{
+							plain_text:
+								'{"category":"Web App","media":[{"type":"video","url":"https://example.com/demo.mp4"}]}',
+						},
+					],
+				} as never,
+			}),
+		);
+		expect(entry.metadata.media).toEqual([{ type: "video", url: "https://example.com/demo.mp4" }]);
 	});
 });
 
