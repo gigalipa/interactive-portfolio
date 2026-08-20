@@ -1,0 +1,25 @@
+---
+import PortfolioDetailView from "../../../views/PortfolioDetailView.astro";
+import type { Locale } from "../../../i18n/locales";
+import type { LocalizedPortfolioEntry } from "../../../lib/portfolio/portfolioEntries";
+import portfolioContent from "../../../lib/portfolio/content.json";
+
+export const prerender = true;
+
+interface Props {
+	entry: LocalizedPortfolioEntry;
+}
+
+export async function getStaticPaths() {
+	const entries =
+		(portfolioContent as Partial<Record<Locale, LocalizedPortfolioEntry[]>>).es ?? [];
+	return entries.map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry },
+	}));
+}
+
+const { entry } = Astro.props;
+---
+
+<PortfolioDetailView lang="es" entry={entry} />
