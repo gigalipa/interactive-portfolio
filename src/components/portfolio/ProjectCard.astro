@@ -1,0 +1,40 @@
+---
+import type { Locale } from "../../i18n/locales";
+import type { LocalizedPortfolioEntry } from "../../lib/portfolio/portfolioEntries";
+
+interface Props {
+	entry: LocalizedPortfolioEntry;
+	lang: Locale;
+	presentLabel: string;
+}
+
+const { entry, lang, presentLabel } = Astro.props;
+
+function formatYear(iso: string): string {
+	const year = new Date(iso).getFullYear();
+	return Number.isNaN(year) ? iso : String(year);
+}
+
+const dates = entry.metadata.dates;
+const dateRange = dates?.start
+	? `${formatYear(dates.start)} – ${dates.ongoing || !dates.end ? presentLabel : formatYear(dates.end)}`
+	: null;
+
+const cover = entry.metadata.media?.find((item) => item.cover) ?? entry.metadata.media?.[0];
+const metaLine = [entry.displayCategory, dateRange].filter(Boolean).join(" · ");
+---
+
+<a
+	href={`/${lang}/portfolio/${entry.slug}`}
+	class="border-slate-mist bg-deep-blue/30 hover:border-signal-cyan/50 flex flex-col overflow-hidden rounded-xl border transition-colors"
+>
+	{
+		cover && (
+			<img src={cover.url} alt={cover.alt ?? entry.displayTitle} class="aspect-video w-full object-cover" />
+		)
+	}
+	<div class="flex flex-col gap-1 p-4">
+		<h3 class="font-display text-ion text-base font-semibold">{entry.displayTitle}</h3>
+		{metaLine && <p class="text-signal-cyan/70 font-mono text-xs">{metaLine}</p>}
+	</div>
+</a>
